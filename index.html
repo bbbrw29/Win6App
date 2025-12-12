@@ -7,8 +7,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="app.css">
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit-id.js" crossorigin="anonymous"></script> 
-</head>
+    </head>
 
 <body class="p-4 sm:p-8" onload="initApp()">
 
@@ -58,13 +57,13 @@
                 <div class="flex justify-between mt-4 text-xs font-bold items-center">
                     <button id="undo-button" onclick="showConfirmationModal('နောက်ဆုံး ဂဏန်း ၂ လုံးကို ဖျက်ပြီး ပြန်ပြင်မှာလား။', undoLastTwoInputs)"
                         class="text-yellow-400 hover:text-yellow-500 transition duration-150 py-1 px-2 rounded hidden" disabled>
-                        <i class="fas fa-undo"></i> Undo Last 2
+                         Undo Last 2
                     </button>
 
                     <button onclick="showConfirmationModal('မှတ်တမ်းအားလုံး ဖျက်သိမ်းပြီး ဂိမ်းအသစ် စတင်မှာလား။', handleConfirmedReset)" class="text-red-400 hover:text-red-500 transition duration-150">မှတ်တမ်းများဖျက်ရန်</button>
 
                     <button id="copy-csv-button" onclick="copyCSVToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded transition duration-200">
-                        <i class="fas fa-clipboard"></i> <span id="copy-csv-text">ကူးယူပါ</span>
+                        <span id="copy-csv-text">ကူးယူပါ</span>
                     </button>
                 </div>
 
