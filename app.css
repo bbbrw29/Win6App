@@ -1,101 +1,137 @@
-/* app.css */
+/* styles.css */
 
-/* General Styles */
+/* NEW COLOR SCHEME: Dark Mode with Vibrant Neon/High Contrast Accents */
 body {
-    background-color: #1f2937; /* Dark background */
-    color: #ffffff;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', sans-serif;
+    background-color: #1f2937; /* Dark Gray 800 background */
+    color: #f3f4f6; /* Light text */
 }
-
-/* Game Card & History Log Styles */
+.container {
+    max-width: 520px; 
+}
 .game-card {
-    background-color: #374151;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #111827; 
+    box-shadow: 0 15px 30px -5px rgba(255, 0, 0, 0.3), 0 6px 10px -3px rgba(255, 0, 0, 0.1);
+    border: 3px solid #ef4444; 
 }
-
-/* Input & Buttons */
 .input-digit {
-    background-color: #4b5563;
-    color: #ffffff;
-    border: 1px solid #6b7280;
     text-align: center;
-    font-size: 1.5rem;
-    padding: 0.5rem;
-    height: 3rem;
-}
-.input-digit:focus {
-    border-color: #f87171;
-    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.5);
-}
-
-/* Neon Effects (Bubbles) */
-.large-bubble {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    margin-top: 0.5rem;
+    font-size: 1.25rem; 
+    height: 2.75rem; 
+    border: 2px solid #a78bfa; 
+    font-weight: bold;
+    background-color: #f3f4f6; 
+    color: #1f2937; 
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+    -webkit-appearance: none; 
 }
 
-/* Neon Colors */
-/* Solid Success (P) - Emerald */
-.neon-solid-s {
-    background-color: #10b981; /* bg-emerald-500 */
-    box-shadow: 0 0 8px #10b981, 0 0 15px #059669;
-    border: 2px solid #047857;
-}
-
-/* Solid Base (X) - Blue/Indigo */
-.neon-solid-b {
-    background-color: #3b82f6; /* bg-blue-500 */
-    box-shadow: 0 0 8px #3b82f6, 0 0 15px #2563eb;
-    border: 2px solid #1d4ed8;
-}
-
-/* Border Success (E) - Indigo */
-.neon-border-s {
-    background-color: transparent;
-    border: 3px solid #6366f1; /* border-indigo-500 */
-    box-shadow: 0 0 8px #6366f1, 0 0 15px #4f46e5;
-}
-
-/* History Log Styles */
 #history-log-container {
-    /* Vertical Scroll ကို ထိန်းချုပ်ရန် Max Height နှင့် Overflow-y ကို ထည့်သွင်းထားသည် (History Fix) */
-    max-height: 110px; /* 3-4 history items အတွက် ခန့်မှန်းထားသော အမြင့် */
-    overflow-y: auto; /* ဒေတာများရင် ဒေါင်လိုက် scroll လုပ်ရန် */
-
-    /* Horizontal Scroll ကို ထိန်းချုပ်ရန် */
-    display: flex;
-    gap: 0.5rem;
-    padding-bottom: 0.5rem;
-    flex-wrap: nowrap; /* items တွေ အောက်ကို မကျအောင် */
+    -webkit-overflow-scrolling: touch; 
+}
+#history-log-container::-webkit-scrollbar {
+    height: 8px; 
+    width: 8px; 
+}
+#history-log-container::-webkit-scrollbar-thumb {
+    background-color: #9ca3af; 
+    border-radius: 4px;
 }
 
-.history-item {
-    flex-shrink: 0;
+/* Flash Animation */
+@keyframes flash {
+    0% { transform: scale(1); background-color: #111827; box-shadow: none; } 
+    50% { transform: scale(1.05); background-color: #fde047; box-shadow: 0 0 15px rgba(253, 224, 71, 1); }
+    100% { transform: scale(1); background-color: #111827; box-shadow: none; }
+}
+.animate-flash {
+    animation: flash 0.5s ease-in-out;
 }
 
-.history-bubble {
-    width: 30px;
-    height: 30px;
-    display: flex;
+/* --- NEON BUBBLE STYLES (SHARED FOR ALL PREDICTIONS AND HISTORY) --- */
+/* Base styles for all bubbles */
+.base-bubble {
+    border-radius: 9999px; /* rounded-full */
+    width: 1.6rem; /* Slightly larger for prediction box */
+    height: 1.6rem; 
+    line-height: 1.6rem;
+    font-size: 0.85rem; /* Larger font */
+    font-weight: 800;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.2rem;
+    text-shadow: 0 0 3px rgba(0,0,0,0.5); 
+    transition: all 0.2s;
 }
 
-/* Custom Animation */
-@keyframes flash {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+/* Styles for Prediction Boxes (Larger Bubble Size) */
+.large-bubble {
+    border-radius: 9999px;
+    width: 3.5rem; /* Large size for main prediction box */
+    height: 3.5rem; 
+    line-height: 3.5rem;
+    font-size: 1.5rem;
+    font-weight: 900;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.25rem; 
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
-.animate-flash {
-    animation: flash 0.3s ease-in-out;
+/* G / P (Target Group / Prediction - Solid Neon Fill) */
+.neon-solid-s { 
+    background-color: #10b981; /* Emerald 500 - Neon Green */
+    color: #ecfdf5; 
+    box-shadow: 0 0 5px #10b981;
+}
+.neon-solid-b { 
+    background-color: #f43f5e; /* Rose 500 - Hot Pink */
+    color: #fff1f2; 
+    box-shadow: 0 0 5px #f43f5e;
+}
+
+/* E (Extra Prediction - Border Only Neon) */
+.neon-border-s {
+    border: 3px solid #6366f1; /* Indigo 500 Border */
+    color: #a5b4fc; /* Indigo 300 Text */
+    background-color: transparent;
+    text-shadow: none;
+}
+.neon-border-b {
+    border: 3px solid #6366f1; /* Indigo 500 Border */
+    color: #a5b4fc; /* Indigo 300 Text */
+    background-color: transparent;
+    text-shadow: none;
+}
+
+/* History Log specific style (override base-bubble for smaller size) */
+.history-bubble {
+    width: 1.25rem; 
+    height: 1.25rem; 
+    line-height: 1.25rem;
+    font-size: 0.75rem; 
+    font-weight: 800;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px; 
+    text-shadow: 0 0 3px rgba(0,0,0,0.5);
+    transition: none;
+}
+
+/* New history entry style for correct/incorrect rows */
+.history-entry-correct-p {
+    background-color: rgba(16, 185, 129, 0.2); /* Green 500 with opacity for P */
+    border-left: 3px solid #10b981;
+}
+.history-entry-incorrect-p {
+    background-color: rgba(244, 63, 94, 0.2); /* Red 500 with opacity for P */
+    border-left: 3px solid #f43f5e;
+}
+/* Highlight row if E is correct and P is incorrect */
+.history-entry-correct-e {
+    background-color: rgba(99, 102, 241, 0.2); /* Indigo 500 with opacity for E */
+    border-right: 3px solid #6366f1;
 }
