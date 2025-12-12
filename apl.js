@@ -1,241 +1,101 @@
-// ====================================================
-// *** CORE GAME LOGIC (6-Digit Predictor) ***
-// ====================================================
+/* app.css */
 
-// 🚨 LOGIN/SUPABASE Logic အားလုံးကို ဖယ်ရှားပြီးဖြစ်သည် 🚨
-
-// Local Storage Keys
-const HISTORY_KEY = 'game_history';
-const STATE_KEY = 'game_state';
-
-// Global Variables
-let currentDigits = []; 
-let currentRound = 1;
-let currentStep = 1;
-const MAX_STEPS = 10;
-
-// Main function to initialize the app (Login Logic မပါဘဲ Game ကို တိုက်ရိုက်စတင်သည်)
-function initApp() {
-    initGame(); 
+/* General Styles */
+body {
+    background-color: #1f2937; /* Dark background */
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
 }
 
-// Global Alert Function (အတိုချုပ်ထားသည်)
-function alertUserMessage(message) {
-    alert(message); 
+/* Game Card & History Log Styles */
+.game-card {
+    background-color: #374151;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-// Load initial state or default digits
-function loadGameState() {
-    const savedState = localStorage.getItem(STATE_KEY);
-    if (savedState) {
-        const state = JSON.parse(savedState);
-        currentDigits = state.digits;
-        currentRound = state.round;
-        currentStep = state.step;
-        return true;
-    }
-    // Default starting sequence if no state is found
-    currentDigits = [3, 9, 7, 0, 1, 6]; 
-    currentRound = 1;
-    currentStep = 1;
-    return false;
+/* Input & Buttons */
+.input-digit {
+    background-color: #4b5563;
+    color: #ffffff;
+    border: 1px solid #6b7280;
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    height: 3rem;
+}
+.input-digit:focus {
+    border-color: #f87171;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.5);
 }
 
-function saveGameState() {
-    const state = {
-        digits: currentDigits,
-        round: currentRound,
-        step: currentStep
-    };
-    localStorage.setItem(STATE_KEY, JSON.stringify(state));
-    saveHistoryLog();
+/* Neon Effects (Bubbles) */
+.large-bubble {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin-top: 0.5rem;
 }
 
-function generatePrediction() {
-    if (currentDigits.length < 3) return { P: '...', E: '...' };
-    const lastThree = currentDigits.slice(-3);
-    const sum = lastThree.reduce((a, b) => a + b, 0);
-    const P = sum % 10; 
-    const E = currentDigits.length >= 4 ? currentDigits[currentDigits.length - 4] : '...';
-    return { P: P, E: E };
+/* Neon Colors */
+/* Solid Success (P) - Emerald */
+.neon-solid-s {
+    background-color: #10b981; /* bg-emerald-500 */
+    box-shadow: 0 0 8px #10b981, 0 0 15px #059669;
+    border: 2px solid #047857;
 }
 
-function updateUI() {
-    const prediction = generatePrediction();
-    
-    const roundDisplayEl = document.getElementById('round-display');
-    if (roundDisplayEl) {
-        roundDisplayEl.textContent = `Roll: ${currentRound} | အဆင့်: ${currentStep} / ${MAX_STEPS}`;
-    }
-
-    const currentDigitEl = document.getElementById('current-digit');
-    const lastDigit = currentDigits.length > 0 ? currentDigits[currentDigits.length - 1] : '...';
-    if(currentDigitEl) {
-        currentDigitEl.textContent = lastDigit;
-    }
-    
-    const pPredictionEl = document.getElementById('app-prediction');
-    const ePredictionEl = document.getElementById('app-extra-prediction');
-    
-    if(pPredictionEl) pPredictionEl.textContent = prediction.P;
-    if(ePredictionEl) ePredictionEl.textContent = prediction.E;
-
-    if (currentDigits.length > 0) {
-        const lastIndex = currentDigits.length - 1;
-        const winStatus = checkWinStatus(lastIndex);
-        const circleEl = document.getElementById('current-digit-display');
-
-        if (circleEl) {
-            circleEl.classList.remove('neon-solid-s', 'neon-solid-b', 'neon-border-s', 'neon-border-b', 'animate-flash');
-            circleEl.classList.add(winStatus.P ? 'neon-solid-s' : winStatus.E ? 'neon-border-s' : 'neon-solid-b');
-            circleEl.classList.add('animate-flash');
-            setTimeout(() => circleEl.classList.remove('animate-flash'), 500);
-        }
-    }
-    
-    // Pattern Warning Logic (Streak Count Fix)
-    checkPatternWarning();
-    
-    // Undo Button Logic (Undo Last 2 Feature)
-    const undoButton = document.getElementById('undo-button');
-    if (undoButton) {
-        if (currentDigits.length >= 2) {
-            undoButton.classList.remove('hidden');
-            undoButton.disabled = false;
-        } else {
-            undoButton.classList.add('hidden');
-            undoButton.disabled = true;
-        }
-    }
-    
-    // UI update ပြီးနောက် Input ၏ disabled state ကို ပြန်စစ်ဆေး
-    const input = document.getElementById('next-digit-input');
-    if (input) {
-        handleInput({ target: input });
-    }
-    
-    renderHistoryLog();
+/* Solid Base (X) - Blue/Indigo */
+.neon-solid-b {
+    background-color: #3b82f6; /* bg-blue-500 */
+    box-shadow: 0 0 8px #3b82f6, 0 0 15px #2563eb;
+    border: 2px solid #1d4ed8;
 }
 
-function initGame() {
-    loadGameState();
-    updateUI();
-    updateDateTime();
-    setInterval(updateDateTime, 1000); 
+/* Border Success (E) - Indigo */
+.neon-border-s {
+    background-color: transparent;
+    border: 3px solid #6366f1; /* border-indigo-500 */
+    box-shadow: 0 0 8px #6366f1, 0 0 15px #4f46e5;
 }
 
-// Input Logic
-function handleInput(event) {
-    const input = event.target;
-    const submitButton = document.getElementById('submit-button');
-    
-    let value = input.value.trim();
-    let digit = NaN;
+/* History Log Styles */
+#history-log-container {
+    /* Vertical Scroll ကို ထိန်းချုပ်ရန် Max Height နှင့် Overflow-y ကို ထည့်သွင်းထားသည် (History Fix) */
+    max-height: 110px; /* 3-4 history items အတွက် ခန့်မှန်းထားသော အမြင့် */
+    overflow-y: auto; /* ဒေတာများရင် ဒေါင်လိုက် scroll လုပ်ရန် */
 
-    if (value.length > 1) {
-        value = value.slice(0, 1);
-        input.value = value;
-    }
-    
-    if (value.length === 1) {
-        digit = parseInt(value);
-    }
-    
-    if (submitButton) {
-        if (value && !isNaN(digit) && digit >= 0 && digit <= 9) {
-            submitButton.disabled = false;
-        } else {
-            submitButton.disabled = true;
-        }
-    }
+    /* Horizontal Scroll ကို ထိန်းချုပ်ရန် */
+    display: flex;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    flex-wrap: nowrap; /* items တွေ အောက်ကို မကျအောင် */
 }
 
-function checkEnter(event) {
-    const submitButton = document.getElementById('submit-button');
-    if (event.key === 'Enter' && submitButton && !submitButton.disabled) {
-        submitDigit();
-    }
+.history-item {
+    flex-shrink: 0;
 }
 
-function submitDigit() {
-    const input = document.getElementById('next-digit-input');
-    const digit = parseInt(input.value);
-
-    if (isNaN(digit) || digit < 0 || digit > 9) {
-        alertUserMessage("ဂဏန်း 0 မှ 9 အတွင်းသာ ထည့်သွင်းပါ။");
-        return;
-    }
-
-    currentDigits.push(digit);
-    currentStep++;
-    if (currentStep > MAX_STEPS) {
-        currentRound++;
-        currentStep = 1;
-    }
-
-    input.value = '';
-    
-    document.getElementById('submit-button').disabled = true; 
-    
-    saveGameState();
-    updateUI();
+.history-bubble {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
 }
 
-// Pattern Warning Logic (Streak Count Fix)
-function checkPatternWarning() {
-    const warningBox = document.getElementById('pattern-warning-box');
-    if (!warningBox || currentDigits.length < 3) {
-        if (warningBox) {
-            warningBox.classList.add('hidden', 'opacity-0');
-        }
-        return;
-    }
-
-    let lastStatus = '';
-    let currentStreak = 0;
-    
-    for (let i = currentDigits.length - 1; i >= 3; i--) {
-        const { P } = checkWinStatus(i); 
-        const status = P ? 'P' : 'X';
-        
-        if (lastStatus === '') {
-            lastStatus = status;
-            currentStreak = 1;
-        } else if (status === lastStatus) {
-            currentStreak++;
-        } else {
-            break;
-        }
-    }
-    
-    if (currentStreak >= 8) {
-        warningBox.innerHTML = `⚠️ Pattern Alert: **${lastStatus}** ပုံစံသည် **${currentStreak}** ကြိမ် ဆက်တိုက် ဖြစ်နေပါသည်။`;
-        warningBox.classList.remove('hidden');
-        setTimeout(() => warningBox.classList.remove('opacity-0'), 10);
-    } else {
-        warningBox.classList.add('opacity-0');
-        setTimeout(() => warningBox.classList.add('hidden'), 300);
-    }
+/* Custom Animation */
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
-// Undo Last Two Inputs Function
-function undoLastTwoInputs() {
-    if (currentDigits.length < 2) {
-        alertUserMessage("ဖျက်သိမ်းရန် မှတ်တမ်းအလုံအလောက် မရှိပါ။");
-        return;
-    }
-
-    currentDigits.pop();
-    currentDigits.pop();
-
-    if (currentStep > 1) {
-        currentStep -= 2;
-        if (currentStep <= 0) {
-            if (currentRound > 1) {
-                currentRound--;
-                currentStep = MAX_STEPS + currentStep; 
-            } else {
-                currentStep = 1;
-            }
-        }
-    }
+.animate-flash {
+    animation: flash 0.3s ease-in-out;
+}

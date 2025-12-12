@@ -1,16 +1,14 @@
-
-
 <!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>6 Lottery</title>
+    <title>6 Lottery Prediction App</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="app.css">
     <script src="https://kit.fontawesome.com/your-font-awesome-kit-id.js" crossorigin="anonymous"></script> 
-    </head>
+</head>
 
 <body class="p-4 sm:p-8" onload="initApp()">
 
@@ -18,7 +16,7 @@
         <div class="container mx-auto mt-4 sm:mt-8">
 
             <div class="text-center mb-6 text-gray-300">
-                <h1 class="text-3xl font-extrabold text-yellow-400 mb-1">6 Lottery Prediction </h1>
+                <h1 class="text-3xl font-extrabold text-yellow-400 mb-1">6 Lottery Prediction</h1>
                 <p class="text-sm" id="round-display">Roll: 1 | အဆင့်: 1 / 10</p>
                 <div class="text-xs mt-1">
                     <span id="datetime-display">...</span>
@@ -63,10 +61,10 @@
                         <i class="fas fa-undo"></i> Undo Last 2
                     </button>
 
-                    <button onclick="showConfirmationModal('မှတ်တမ်းအားလုံး ဖျက်သိမ်းပြီး ဂိမ်းအသစ် စတင်မှာလား။', handleConfirmedReset)" class="text-red-400 hover:text-red-500 transition duration-150">မှတ်တမ်းဖျက်/ပြန်စတင်</button>
+                    <button onclick="showConfirmationModal('မှတ်တမ်းအားလုံး ဖျက်သိမ်းပြီး ဂိမ်းအသစ် စတင်မှာလား။', handleConfirmedReset)" class="text-red-400 hover:text-red-500 transition duration-150">မှတ်တမ်းများဖျက်ရန်</button>
 
                     <button id="copy-csv-button" onclick="copyCSVToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded transition duration-200">
-                        <i class="fas fa-clipboard"></i> <span id="copy-csv-text">ကူးယူ</span>
+                        <i class="fas fa-clipboard"></i> <span id="copy-csv-text">ကူးယူပါ</span>
                     </button>
                 </div>
 
