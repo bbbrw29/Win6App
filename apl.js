@@ -643,7 +643,7 @@ function alertUserMessage(message) {
     if (!msgBox) {
         msgBox = document.createElement('div');
         msgBox.id = 'user-alert-box';
-        // fixed bottom-5 left-1/2 transform -translate-x-1/2 ပြောင်းလဲလိုက်သည်။
+        // စာတန်းထိုးနေရာကို အောက်ခြေဗဟို (Bottom Center) တွင် ပြင်ဆင်ထားသည်
         msgBox.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white p-3 rounded-lg shadow-2xl z-50 transition duration-300 opacity-0 pointer-events-none text-center min-w-[200px] sm:min-w-[300px] border-2 border-white/50';
         document.body.appendChild(msgBox);
     }
@@ -658,54 +658,129 @@ function alertUserMessage(message) {
 }
 
 function getPatternWarning() {
-    const minCheckLength = 3;
+    // 3 ကြိမ်အောက်ဆိုရင် Warning မပြသေးဘူး
+    const minCheckLength = 3; 
     if (history.length < minCheckLength) return { pattern: null, message: null }; 
 
-    const gSequence = history.slice(-8).map(item => item.targetGroup).join('');
-    const len = gSequence.length;
+    // နောက်ဆုံး 20 ခု အထိ ယူပြီး စစ်ဆေးသည်။
+    const fullGSequence = history.slice(-20).map(item => item.targetGroup).join('');
+    const len = fullGSequence.length;
     
-    const isStreak = (seq) => !seq.includes(seq[0] === 'S' ? 'B' : 'S');
-    const isSingleAlternating = (seq) => {
-        for (let i = 0; i < seq.length - 1; i++) {
-            if (seq[i] === seq[i+1]) return false;
-        }
-        return true;
-    };
+    let bestWarning = { pattern: null, message: null, length: 0, type: null };
 
-    const doubleAltPatterns = {
-        4: ['SSBB', 'BBSS'],
-        8: ['SSBBSSBB', 'BBSSBBSS']
-    };
-    for (const l of [8, 4]) {
-        if (len >= l) {
-            const subSeq = gSequence.slice(l * -1);
-            if (doubleAltPatterns[l] && doubleAltPatterns[l].includes(subSeq)) {
-                return { 
-                    pattern: subSeq, 
-                    message: `${subSeq} ပုံစံ (နှစ်ခုပူးတွဲ တစ်လှည့်စီ) ဆက်တိုက် ${l} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`
-                };
+    // -----------------------------------------------------
+    // 1. တူညီဆက်တိုက် (Streak) Pattern စစ်ဆေးခြင်း
+    // -----------------------------------------------------
+    const checkStreak = (group) => {
+        let currentLen = 0;
+        
+        // Sequence ရဲ့ အဆုံးကနေ စပြီး တူညီမှုကို စစ်ဆေးမယ်။
+        for (let i = len - 1; i >= 0; i--) {
+            if (fullGSequence[i] === group) {
+                currentLen++;
+            } else {
+                break;
             }
         }
+        
+        if (currentLen >= minCheckLength) {
+            // လက်ရှိ ဖြစ်ပေါ်နေသော Streak Pattern ကို တိကျစွာ ဖြတ်ယူပါ
+            const streakPattern = fullGSequence.substring(len - currentLen); 
+            return { length: currentLen, pattern: streakPattern }; 
+        }
+        return null;
+    };
+    
+    const bStreak = checkStreak('B');
+    const sStreak = checkStreak('S');
+
+    // ပိုရှည်တဲ့ Streak ကို ရွေးချယ်ပြီး bestWarning တွင် ထည့်သွင်းသည်။
+    if (bStreak && bStreak.length > bestWarning.length) {
+        bestWarning = { pattern: bStreak.pattern, message: `${bStreak.pattern} ပုံစံ (တူညီခြင်း) ဆက်တိုက် ${bStreak.length} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`, length: bStreak.length, type: 'Streak' };
+    }
+    if (sStreak && sStreak.length > bestWarning.length) {
+        bestWarning = { pattern: sStreak.pattern, message: `${sStreak.pattern} ပုံစံ (တူညီခြင်း) ဆက်တိုက် ${sStreak.length} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`, length: sStreak.length, type: 'Streak' };
     }
 
-    for (let l = Math.min(len, 8); l >= 4; l--) {
-        const subSeq = gSequence.slice(l * -1);
-        if (isStreak(subSeq)) {
-            return { 
-                pattern: subSeq, 
-                message: `${subSeq} ပုံစံ (တူညီခြင်း) ဆက်တိုက် ${l} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`
+    // -----------------------------------------------------
+    // 2. တစ်လှည့်စီ (Single Alternating) Pattern စစ်ဆေးခြင်း
+    // -----------------------------------------------------
+    const checkSingleAlternating = () => {
+        if (len < minCheckLength) return null;
+        
+        for (let l = len; l >= minCheckLength; l--) {
+            const subSeq = fullGSequence.slice(l * -1);
+            let isAlt = true;
+            for (let i = 0; i < subSeq.length - 1; i++) {
+                if (subSeq[i] === subSeq[i+1]) {
+                    isAlt = false;
+                    break;
+                }
+            }
+            if (isAlt) {
+                return { length: l, pattern: subSeq };
+            }
+        }
+        return null;
+    };
+
+    const singleAlt = checkSingleAlternating();
+    if (singleAlt && singleAlt.length >= bestWarning.length) { 
+        if (singleAlt.length > bestWarning.length || bestWarning.type !== 'Streak') {
+             bestWarning = { 
+                pattern: singleAlt.pattern, 
+                message: `${singleAlt.pattern} ပုံစံ (တစ်လှည့်စီ) ဆက်တိုက် ${singleAlt.length} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`, 
+                length: singleAlt.length,
+                type: 'SingleAlt'
             };
         }
     }
     
-    for (let l = Math.min(len, 8); l >= 3; l--) {
-        const subSeq = gSequence.slice(l * -1);
-        if (isSingleAlternating(subSeq)) {
-             return { 
-                pattern: subSeq, 
-                message: `${subSeq} ပုံစံ (တစ်လှည့်စီ) ဆက်တိုက် ${l} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`
+    // -----------------------------------------------------
+    // 3. နှစ်ခုပူးတွဲ (Double Alternating) Pattern စစ်ဆေးခြင်း 
+    // -----------------------------------------------------
+    const doubleAltPatterns = ['SSBB', 'BBSS'];
+    const minDoubleAltLength = 4;
+    
+    if (len >= minDoubleAltLength) {
+        let maxLen = 0;
+        let longestPattern = null;
+
+        for (let l = Math.min(len, 20); l >= minDoubleAltLength; l -= 4) {
+             if (l % 4 === 0) { 
+                const subSeq = fullGSequence.slice(l * -1);
+                
+                let isDoubleAltMatch = true;
+                const basePattern = subSeq[0] === 'S' ? 'SSBB' : 'BBSS';
+                
+                for (let i = 0; i < l; i++) {
+                    if (subSeq[i] !== basePattern[i % 4]) {
+                        isDoubleAltMatch = false;
+                        break;
+                    }
+                }
+                
+                if (isDoubleAltMatch) {
+                    maxLen = l;
+                    longestPattern = subSeq;
+                    break; 
+                }
+            }
+        }
+
+        if (longestPattern && maxLen > bestWarning.length) { 
+            bestWarning = { 
+                pattern: longestPattern, 
+                message: `${longestPattern} ပုံစံ (နှစ်ခုပူးတွဲ တစ်လှည့်စီ) ဆက်တိုက် ${maxLen} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`, 
+                length: maxLen,
+                type: 'DoubleAlt'
             };
         }
+    }
+
+    // နောက်ဆုံး စစ်ဆေးချက်: အရှည်ဆုံး Pattern ကိုသာ ပြန်ပို့မည်။
+    if (bestWarning.length > 0) {
+        return { pattern: bestWarning.pattern, message: bestWarning.message };
     }
 
     return { pattern: null, message: null };
@@ -821,5 +896,3 @@ window.checkEnter = checkEnter;
 window.submitDigit = submitDigit;
 
 window.onload = initGame;
-
-
