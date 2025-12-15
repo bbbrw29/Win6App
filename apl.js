@@ -464,10 +464,10 @@ function updateHistory() {
         const headerRow = document.createElement('div');
         headerRow.className = 'flex justify-between items-center text-[10px] font-bold text-gray-400 mb-1 border-b border-gray-600 pb-0.5 px-0.5';
         
-        // G နေရာကို P ဖြင့် အစားထိုးခြင်း
+        // G နေရာကို P ဖြင့် အစားထိုးခြင်း (*** သင်္ကေတများ ဖယ်ရှားပြီး ***)
         headerRow.innerHTML = `
             <span class="w-[12%] text-left">အဆင့်</span>
-            <span class="w-[15%] text-center">**P**</span> 
+            <span class="w-[15%] text-center">P</span> 
             <span class="w-[18%] text-center">P-C</span> 
             <span class="w-[18%] text-center">ဂဏန်း</span>  
             <span class="w-[15%] text-center">E</span>
