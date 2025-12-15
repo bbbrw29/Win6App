@@ -31,7 +31,7 @@ const submitButtonEl = document.getElementById('submit-button');
 const datetimeDisplayEl = document.getElementById('datetime-display'); 
 const gameStartTimeEl = document.getElementById('game-start-time'); 
 const patternWarningBoxEl = document.getElementById('pattern-warning-box'); 
-const patternRecordsContainerEl = document.getElementById('pattern-records-container'); 
+const patternRecordsContainerEl = document.getElementById('pattern-records-container'); // Pattern Records Container
 
 // Modal references
 const modalOverlayEl = document.getElementById('confirmation-modal-overlay');
@@ -353,20 +353,32 @@ function updatePredictionDisplays() {
 // --- UI Update & Utility Functions ---
 
 function updatePatternRecordsUI() {
-    // UNCHANGED
     patternRecordsContainerEl.innerHTML = '';
     
+    // *** Pattern Records Container ကို Fixed Height Scroll Box အဖြစ် ပြင်ဆင်ခြင်း ***
+    // (Tailwind CSS တွင် h-[300px] သို့မဟုတ် max-h-[300px] ကို HTML/CSS တွင် သတ်မှတ်ပေးရန် လိုအပ်ပါသည်။
+    // ဤနေရာတွင် JS မှ ၎င်း၏ Class ကို ထိန်းချုပ်ပါမည်)
+    patternRecordsContainerEl.className = 'space-y-2 max-h-[300px] overflow-y-auto pr-1'; // Scrollable and max height 300px
+
     if (recordedPatterns.length === 0) {
         patternRecordsContainerEl.innerHTML = '<p class="text-gray-500 text-sm text-center py-2">Pattern မှတ်တမ်းများ ဤနေရာတွင် ပေါ်လာမည်။</p>';
         return;
     }
-
-    recordedPatterns.sort((a, b) => {
+    
+    // မှတ်တမ်းများကို နောက်ဆုံး ဝင်လာသည်ကို အပေါ်ဆုံးထားရန် ပြန်စီပါမည်
+    const sortedRecords = recordedPatterns.sort((a, b) => {
         if (a.rollNumber !== b.rollNumber) {
             return b.rollNumber - a.rollNumber;
         }
         return b.roundInRoll - a.roundInRoll;
-    }).forEach(pattern => {
+    });
+
+    const totalRecords = sortedRecords.length;
+
+    sortedRecords.forEach((pattern, index) => {
+        // နံပါတ်စဉ်ကို 1 ကစပြီး တပ်ရန်
+        const recordNumber = totalRecords - index; 
+
         const isDoubleAlt = pattern.patternType.includes('နှစ်ခုပူးတွဲ');
         const isSingleAlt = pattern.patternType.includes('တစ်လှည့်စီ');
         const isStreak = pattern.patternType.includes('တူညီဆက်တိုက်');
@@ -376,24 +388,35 @@ function updatePatternRecordsUI() {
                         isStreak ? 'bg-green-900/50 border-green-500' : 'bg-gray-900/50 border-gray-500';
 
         const patternEl = document.createElement('div');
-        patternEl.className = `p-2 rounded-lg text-xs font-mono border ${bgColor} flex justify-between items-center transition duration-200 hover:shadow-xl`;
+        // gap-2 ကို ထည့်ပြီး နံပါတ်စဉ် အတွက် နေရာဖယ်ထားသည်
+        patternEl.className = `p-2 rounded-lg text-xs font-mono border ${bgColor} flex items-center transition duration-200 hover:shadow-xl`;
         
         patternEl.innerHTML = `
-            <div class="flex-shrink-0 w-1/4">
-                <span class="font-bold text-gray-300 block">${pattern.patternType}</span>
-                <span class="text-gray-400 text-[10px]">${pattern.length} အရှည်</span>
+            <div class="flex-shrink-0 w-[20px] text-center mr-2">
+                <span class="font-bold text-red-300 text-sm">${recordNumber}.</span> 
             </div>
-            <div class="flex-grow text-center">
-                <span class="text-lg font-extrabold text-yellow-300 leading-none">${pattern.sequence}</span>
-                <span class="text-red-400 text-xs block">(ပြီးဆုံး: ${pattern.terminatorGroup})</span>
-            </div>
-            <div class="flex-shrink-0 w-1/4 text-right">
-                <span class="font-bold text-red-300 block">Roll ${pattern.rollNumber} / S${pattern.roundInRoll}</span>
-                <span class="text-gray-400 text-[10px]">${pattern.timestamp}</span>
+            <div class="flex flex-grow justify-between items-center">
+                <div class="flex-shrink-0 w-1/4">
+                    <span class="font-bold text-gray-300 block">${pattern.patternType}</span>
+                    <span class="text-gray-400 text-[10px]">${pattern.length} အရှည်</span>
+                </div>
+                <div class="flex-grow text-center">
+                    <span class="text-lg font-extrabold text-yellow-300 leading-none">${pattern.sequence}</span>
+                    <span class="text-red-400 text-xs block">(ပြီးဆုံး: ${pattern.terminatorGroup})</span>
+                </div>
+                <div class="flex-shrink-0 w-1/4 text-right">
+                    <span class="font-bold text-red-300 block">Roll ${pattern.rollNumber} / S${pattern.roundInRoll}</span>
+                    <span class="text-gray-400 text-[10px]">${pattern.timestamp}</span>
+                </div>
             </div>
         `;
         patternRecordsContainerEl.appendChild(patternEl);
     });
+    
+    // မှတ်တမ်းအသစ်ကို ထည့်လိုက်တိုင်း အပေါ်ဆုံးကို Scroll လုပ်သွားရန် (နောက်ဆုံးမှတ်တမ်း နှစ်ခုပြလိုသော ရည်ရွယ်ချက်အတွက်)
+    if (patternRecordsContainerEl.scrollHeight > patternRecordsContainerEl.clientHeight) {
+         patternRecordsContainerEl.scrollTop = 0; // အသစ်ဝင်လာသောမှတ်တမ်းများ (နံပါတ် 1, 2) အပေါ်တွင်ရှိနေစေရန်
+    }
 }
 
 
