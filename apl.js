@@ -1,6 +1,6 @@
 
 
-// script.js
+// apl.js
 
 // Constants
 const ROUNDS_PER_ROLL = 10;
@@ -31,7 +31,7 @@ const submitButtonEl = document.getElementById('submit-button');
 const datetimeDisplayEl = document.getElementById('datetime-display'); 
 const gameStartTimeEl = document.getElementById('game-start-time'); 
 const patternWarningBoxEl = document.getElementById('pattern-warning-box'); 
-const patternRecordsContainerEl = document.getElementById('pattern-records-container'); // Pattern Records Container
+const patternRecordsContainerEl = document.getElementById('pattern-records-container'); 
 
 // Modal references
 const modalOverlayEl = document.getElementById('confirmation-modal-overlay');
@@ -72,7 +72,7 @@ function handleConfirmedReset() {
      localStorage.removeItem(STORAGE_KEY);
     recordedPatterns.length = 0; 
     initGame(); 
-    alertUserMessage("ဂိမ်းအသစ် စတင်လိုက်ပါပြီ။"); 
+    alertUserMessage("ဂိမ်းမှတ်တမ်းအားလုံးကို ဖျက်ပြီး ဂိမ်းအသစ် စတင်လိုက်ပါပြီ။"); 
 }
 
 // --- Local Storage Functions ---
@@ -291,6 +291,7 @@ function submitAnswer(userDigit) {
         rollNumber: previousRoll,
         roundInRoll: previousRoundInRoll,
         sumRemainder: sumRemainder, 
+        // Timestamp ကို မြန်မာလို ထားရှိခြင်း
         timestamp: new Date().toLocaleTimeString('my-MM', {
             hour: '2-digit', minute: '2-digit', hour12: true
         })
@@ -355,10 +356,8 @@ function updatePredictionDisplays() {
 function updatePatternRecordsUI() {
     patternRecordsContainerEl.innerHTML = '';
     
-    // *** Pattern Records Container ကို Fixed Height Scroll Box အဖြစ် ပြင်ဆင်ခြင်း ***
-    // (Tailwind CSS တွင် h-[300px] သို့မဟုတ် max-h-[300px] ကို HTML/CSS တွင် သတ်မှတ်ပေးရန် လိုအပ်ပါသည်။
-    // ဤနေရာတွင် JS မှ ၎င်း၏ Class ကို ထိန်းချုပ်ပါမည်)
-    patternRecordsContainerEl.className = 'space-y-2 max-h-[300px] overflow-y-auto pr-1'; // Scrollable and max height 300px
+    // Fixed Height Scroll Box Class များကို သတ်မှတ်ခြင်း
+    patternRecordsContainerEl.className = 'space-y-2 max-h-[300px] overflow-y-auto pr-1'; 
 
     if (recordedPatterns.length === 0) {
         patternRecordsContainerEl.innerHTML = '<p class="text-gray-500 text-sm text-center py-2">Pattern မှတ်တမ်းများ ဤနေရာတွင် ပေါ်လာမည်။</p>';
@@ -376,7 +375,7 @@ function updatePatternRecordsUI() {
     const totalRecords = sortedRecords.length;
 
     sortedRecords.forEach((pattern, index) => {
-        // နံပါတ်စဉ်ကို 1 ကစပြီး တပ်ရန်
+        // နံပါတ်စဉ်ကို 1 ကစပြီး တပ်ရန် (အပေါ်ဆုံးက စတင်ရေတွက်ပါမည်)
         const recordNumber = totalRecords - index; 
 
         const isDoubleAlt = pattern.patternType.includes('နှစ်ခုပူးတွဲ');
@@ -388,7 +387,7 @@ function updatePatternRecordsUI() {
                         isStreak ? 'bg-green-900/50 border-green-500' : 'bg-gray-900/50 border-gray-500';
 
         const patternEl = document.createElement('div');
-        // gap-2 ကို ထည့်ပြီး နံပါတ်စဉ် အတွက် နေရာဖယ်ထားသည်
+        // နံပါတ်စဉ်အတွက် နေရာချပေးခြင်း
         patternEl.className = `p-2 rounded-lg text-xs font-mono border ${bgColor} flex items-center transition duration-200 hover:shadow-xl`;
         
         patternEl.innerHTML = `
@@ -413,9 +412,9 @@ function updatePatternRecordsUI() {
         patternRecordsContainerEl.appendChild(patternEl);
     });
     
-    // မှတ်တမ်းအသစ်ကို ထည့်လိုက်တိုင်း အပေါ်ဆုံးကို Scroll လုပ်သွားရန် (နောက်ဆုံးမှတ်တမ်း နှစ်ခုပြလိုသော ရည်ရွယ်ချက်အတွက်)
+    // မှတ်တမ်းအသစ်ကို ထည့်လိုက်တိုင်း အပေါ်ဆုံး (နံပါတ် 1 သို့) Scroll လုပ်သွားရန်
     if (patternRecordsContainerEl.scrollHeight > patternRecordsContainerEl.clientHeight) {
-         patternRecordsContainerEl.scrollTop = 0; // အသစ်ဝင်လာသောမှတ်တမ်းများ (နံပါတ် 1, 2) အပေါ်တွင်ရှိနေစေရန်
+         patternRecordsContainerEl.scrollTop = 0; 
     }
 }
 
@@ -428,38 +427,47 @@ function triggerFlashEffect() {
 }
 
 function updateUI() {
-    // UNCHANGED
+    // အဆင့် ကို Stage သို့ ပြောင်းလဲခြင်း
     currentDigitEl.textContent = currentDigit !== null ? currentDigit : '...';
-    roundDisplayEl.textContent = `Roll: ${currentRoll} | အဆင့်: ${roundInRoll} / ${ROUNDS_PER_ROLL}`;
+    roundDisplayEl.textContent = `Roll: ${currentRoll} | Stage: ${roundInRoll} / ${ROUNDS_PER_ROLL}`;
 }
 
 function updateDateTime() {
-    // UNCHANGED
     const now = new Date();
-    const options = { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric', 
+    
+    // Date/Time ကို English language/US locale (MM/DD/YY ပုံစံ) ဖြင့်ပြောင်းလဲခြင်း
+    const dateOptions = { 
+        month: '2-digit', 
+        day: '2-digit', 
+        year: '2-digit' // YY format
+    };
+    const timeOptions = {
         hour: '2-digit', 
         minute: '2-digit', 
         second: '2-digit',
-        hour12: true 
+        hour12: true // AM/PM ဖြင့်ပြသရန်
     };
-    const dateTimeString = now.toLocaleString('my-MM', options); 
-    datetimeDisplayEl.textContent = dateTimeString;
+    
+    // MM/DD/YY ပုံစံ
+    const dateString = now.toLocaleDateString('en-US', dateOptions); 
+    // Time String (ဥပမာ: 07:34:27 PM)
+    const timeString = now.toLocaleTimeString('en-US', timeOptions);
+    
+    datetimeDisplayEl.textContent = `${dateString} | ${timeString}`; // 12/15/25 | 7:34:27 PM
+    // HTML တွင် text-white သတ်မှတ်ထားသည်
 }
 
 function updateHistoryHeader() {
-     // UNCHANGED
     if (gameStartTime) {
-        const formattedTime = gameStartTime.toLocaleString('my-MM', {
-            year: 'numeric', month: 'short', day: 'numeric', 
+        // Start Time ကိုလည်း English/US style ဖြင့်ပြောင်းလဲခြင်း
+        const formattedTime = gameStartTime.toLocaleString('en-US', {
+            year: '2-digit', month: '2-digit', day: '2-digit', 
             hour: '2-digit', minute: '2-digit', hour12: true
         });
-        gameStartTimeEl.textContent = `စတင်ချိန်: ${formattedTime}`;
+        gameStartTimeEl.textContent = `Start Time: ${formattedTime}`;
          gameStartTimeEl.classList.remove('hidden', 'sm:block'); 
     } else {
-         gameStartTimeEl.textContent = `စတင်ချိန်: ---`;
+         gameStartTimeEl.textContent = `Start Time: ---`;
          gameStartTimeEl.classList.add('hidden', 'sm:block'); 
     }
 }
@@ -501,10 +509,9 @@ function updateHistory() {
         const headerRow = document.createElement('div');
         headerRow.className = 'flex justify-between items-center text-[10px] font-bold text-gray-400 mb-1 border-b border-gray-600 pb-0.5 px-0.5';
         
-        // G နေရာကို P ဖြင့် အစားထိုးခြင်း 
+        // P Column
         headerRow.innerHTML = `
-            <span class="w-[12%] text-left">အဆင့်</span>
-            <span class="w-[15%] text-center">P</span> 
+            <span class="w-[12%] text-left">Stage</span> <span class="w-[15%] text-center">P</span> 
             <span class="w-[18%] text-center">P-C</span> 
             <span class="w-[18%] text-center">ဂဏန်း</span>  
             <span class="w-[15%] text-center">E</span>
@@ -583,17 +590,17 @@ function updateHistory() {
 function generateCSV() {
     let csv = '';
     if (gameStartTime) {
+        // CSV အတွက် English format ဖြင့်ထုတ်ပါမည်။
         const formattedTime = gameStartTime.toLocaleString('en-US', {
             year: 'numeric', month: 'numeric', day: 'numeric', 
             hour: '2-digit', minute: '2-digit', second: '2-digit',
             hour12: false, timeZoneName: 'short'
         }).replace(/,/g, ''); 
-        csv += `"မှတ်တမ်းစတင်ချိန် (Game Start Time)","${formattedTime}"\n`;
+        csv += `"Start Time","${formattedTime}"\n`;
     }
     
     // Header
-    // Note: CSV တွင် Target Group (G) ကို ဆက်လက်ထည့်သွင်းထားပါသည်။
-    const headers = ["Roll", "Round", "Target Group (G)", "User Digit", "P Prediction", "P Correct", "E Prediction", "E Correct"]; 
+    const headers = ["Roll", "Stage", "Target Group (G)", "User Digit", "P Prediction", "P Correct", "E Prediction", "E Correct"]; 
     csv += headers.join(',') + '\n';
     
     history.forEach(item => {
@@ -605,8 +612,8 @@ function generateCSV() {
 
         const row = [
             item.rollNumber,
-            item.roundInRoll,
-            item.targetGroup, // CSV တွင် G ကို ဆက်လက်ထည့်ထားသည်
+            item.roundInRoll, // Stage
+            item.targetGroup, 
             item.userDigit, 
             item.appPrediction || '—', 
             pCorrectSymbol,
@@ -634,8 +641,8 @@ async function copyCSVToClipboard() {
 
     try {
         // Use the correct encoding for symbols (UTF-8)
-        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], {type: "text/csv;charset=utf-8"}); // Added BOM for UTF-8 compatibility
-        const data = await blob.text(); // Read back as text
+        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], {type: "text/csv;charset=utf-8"}); 
+        const data = await blob.text(); 
         
         await navigator.clipboard.writeText(data);
 
