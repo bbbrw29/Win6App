@@ -1,122 +1,137 @@
-/* app.css */
+/* styles.css */
 
-/* General Styles */
+/* NEW COLOR SCHEME: Dark Mode with Vibrant Neon/High Contrast Accents */
 body {
-    background-color: #1a1a2e; /* Dark space background */
-    color: #ffffff;
     font-family: 'Inter', sans-serif;
+    background-color: #1f2937; /* Dark Gray 800 background */
+    color: #f3f4f6; /* Light text */
 }
-
 .container {
-    max-width: 600px;
+    max-width: 520px; 
 }
-
 .game-card {
-    background-color: #242a42; /* Darker card background */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    border: 1px solid #3d4a66;
+    background-color: #111827; 
+    box-shadow: 0 15px 30px -5px rgba(255, 0, 0, 0.3), 0 6px 10px -3px rgba(255, 0, 0, 0.1);
+    border: 3px solid #ef4444; 
 }
-
-/* Input Styles */
 .input-digit {
-    background-color: #333956;
-    color: #ffffff;
-    border: 2px solid #5a6691;
-    padding: 0.75rem 1rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    transition: border-color 0.2s;
-}
-
-.input-digit:focus {
-    outline: none;
-    border-color: #ff3b5f; /* Neon Red Focus */
-}
-
-/* Prediction/Current Digit Bubbles */
-.large-bubble {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
+    text-align: center;
     font-size: 1.25rem; 
-    font-weight: 900;
-    margin-top: 0.5rem;
-    box-sizing: border-box;
+    height: 2.75rem; 
+    border: 2px solid #a78bfa; 
+    font-weight: bold;
+    background-color: #f3f4f6; 
+    color: #1f2937; 
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+    -webkit-appearance: none; 
 }
 
-/* Neon Styles */
-.neon-solid-s {
-    background-color: #4bffa5; /* Emerald/Success */
-    color: #1a1a2e;
-    box-shadow: 0 0 10px #4bffa5, 0 0 20px #4bffa5;
+#history-log-container {
+    -webkit-overflow-scrolling: touch; 
+}
+#history-log-container::-webkit-scrollbar {
+    height: 8px; 
+    width: 8px; 
+}
+#history-log-container::-webkit-scrollbar-thumb {
+    background-color: #9ca3af; 
+    border-radius: 4px;
 }
 
-.neon-solid-b {
-    background-color: #64748b; /* Blue/Base/Neutral */
-    color: #1a1a2e;
-    box-shadow: 0 0 8px #64748b;
-}
-
-.neon-border-s {
-    background-color: transparent;
-    border: 3px solid #ff3b5f; /* Neon Red/Extra */
-    color: #ff3b5f;
-    box-shadow: 0 0 8px rgba(255, 59, 95, 0.8);
-}
-
-/* Animation for win */
+/* Flash Animation */
 @keyframes flash {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0% { transform: scale(1); background-color: #111827; box-shadow: none; } 
+    50% { transform: scale(1.05); background-color: #fde047; box-shadow: 0 0 15px rgba(253, 224, 71, 1); }
+    100% { transform: scale(1); background-color: #111827; box-shadow: none; }
 }
-
 .animate-flash {
     animation: flash 0.5s ease-in-out;
 }
 
-/* History Log Styles */
-#history-log-container {
-    display: flex;
-    gap: 0.5rem;
-    padding-bottom: 0.5rem;
-}
-
-.history-item {
-    flex-shrink: 0;
-}
-
-.history-bubble {
-    width: 30px;
-    height: 30px;
-    display: flex;
+/* --- NEON BUBBLE STYLES (SHARED FOR ALL PREDICTIONS AND HISTORY) --- */
+/* Base styles for all bubbles */
+.base-bubble {
+    border-radius: 9999px; /* rounded-full */
+    width: 1.6rem; /* Slightly larger for prediction box */
+    height: 1.6rem; 
+    line-height: 1.6rem;
+    font-size: 0.85rem; /* Larger font */
+    font-weight: 800;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.2rem;
+    text-shadow: 0 0 3px rgba(0,0,0,0.5); 
+    transition: all 0.2s;
 }
 
-/* Z-index Fixes */
-/* 🚨 FIX: Input area ကို Z-index မြှင့်ထားခြင်း */
-#input-area {
-    position: relative;
-    z-index: 55; /* Modal z-index 50 ထက် ပိုများရပါမည် */
+/* Styles for Prediction Boxes (Larger Bubble Size) */
+.large-bubble {
+    border-radius: 9999px;
+    width: 3.5rem; /* Large size for main prediction box */
+    height: 3.5rem; 
+    line-height: 3.5rem;
+    font-size: 1.5rem;
+    font-weight: 900;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.25rem; 
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
-/* 🚨 FIX: Login/App Content တွေကို JS မခေါ်ခင် ပေါ်မလာအောင် display:none လုပ်ခြင်း */
-#game-ui-content.hidden {
-    display: none !important;
+/* G / P (Target Group / Prediction - Solid Neon Fill) */
+.neon-solid-s { 
+    background-color: #10b981; /* Emerald 500 - Neon Green */
+    color: #ecfdf5; 
+    box-shadow: 0 0 5px #10b981;
+}
+.neon-solid-b { 
+    background-color: #f43f5e; /* Rose 500 - Hot Pink */
+    color: #fff1f2; 
+    box-shadow: 0 0 5px #f43f5e;
 }
 
-#login-gate.hidden {
-    display: none !important;
+/* E (Extra Prediction - Border Only Neon) */
+.neon-border-s {
+    border: 3px solid #6366f1; /* Indigo 500 Border */
+    color: #a5b4fc; /* Indigo 300 Text */
+    background-color: transparent;
+    text-shadow: none;
+}
+.neon-border-b {
+    border: 3px solid #6366f1; /* Indigo 500 Border */
+    color: #a5b4fc; /* Indigo 300 Text */
+    background-color: transparent;
+    text-shadow: none;
 }
 
-/* Modal Overlay ကို အမြဲတမ်း အပေါ်ဆုံးထားရန် */
-#confirmation-modal-overlay {
-    z-index: 10000 !important; 
+/* History Log specific style (override base-bubble for smaller size) */
+.history-bubble {
+    width: 1.25rem; 
+    height: 1.25rem; 
+    line-height: 1.25rem;
+    font-size: 0.75rem; 
+    font-weight: 800;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px; 
+    text-shadow: 0 0 3px rgba(0,0,0,0.5);
+    transition: none;
+}
+
+/* New history entry style for correct/incorrect rows */
+.history-entry-correct-p {
+    background-color: rgba(16, 185, 129, 0.2); /* Green 500 with opacity for P */
+    border-left: 3px solid #10b981;
+}
+.history-entry-incorrect-p {
+    background-color: rgba(244, 63, 94, 0.2); /* Red 500 with opacity for P */
+    border-left: 3px solid #f43f5e;
+}
+/* Highlight row if E is correct and P is incorrect */
+.history-entry-correct-e {
+    background-color: rgba(99, 102, 241, 0.2); /* Indigo 500 with opacity for E */
+    border-right: 3px solid #6366f1;
 }

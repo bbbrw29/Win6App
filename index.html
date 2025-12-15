@@ -6,107 +6,98 @@
     <title>6 Lottery Predictor App</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <link rel="stylesheet" href="app.css"> 
     
 </head>
-<body class="p-4 sm:p-8" onload="initApp()"> 
+<body class="p-4 sm:p-8" onload="initGame()">
 
-    <div id="login-gate" class="container mx-auto mt-10 p-6 bg-gray-900 rounded-xl shadow-2xl border-2 border-red-500 max-w-sm hidden" style="display: none;">
-        <h2 class="text-2xl font-bold text-red-400 mb-4 text-center">🔐 Access Code ထည့်သွင်းပါ</h2>
-        <div class="space-y-4">
-            <input type="text" id="access-code-input" placeholder="Premium Code" class="input-digit w-full rounded-lg text-center" maxlength="20">
-            <button id="login-button" onclick="checkAccessCode()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition duration-200">
-                ဝင်ရောက်ခွင့် စစ်ဆေးရန်
-            </button>
-            <p id="login-message" class="text-center text-sm text-gray-400 mt-3">... သို့မဟုတ် အခမဲ့ စမ်းသပ်ပါ ...</p>
-            <button onclick="startTrial()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition duration-200 text-sm">
-                ၇ ရက် အခမဲ့ စမ်းသပ်သုံးစွဲရန်
-            </button>
-            
-            <hr class="border-gray-700"/>
-            <button onclick="resetAppData()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 rounded-lg transition duration-200 text-xs mt-2">
-                ဒေတာ ပြန်လည်သတ်မှတ်ရန် / ပြဿနာဖြေရှင်းရန်
-            </button>
-        </div>
-    </div>
-    <div id="game-ui-content" class="hidden"> 
-        <div class="container mx-auto mt-4 sm:mt-8">
-            
-            <div class="text-center mb-6 text-gray-300">
-                <h1 class="text-3xl font-extrabold text-red-400 mb-1">6 ဂဏန်း ခန့်မှန်းစနစ်</h1>
-                <p class="text-sm" id="round-display">Roll: 1 | အဆင့်: 1 / 10</p>
-                <div class="text-xs mt-1">
-                    <span id="datetime-display">...</span>
-                    <span class="ml-4 hidden sm:inline" id="game-start-time">စတင်ချိန်: ---</span>
-                </div>
+    <div class="container mx-auto mt-4 sm:mt-8">
+        
+        <div class="text-center mb-6 text-gray-300">
+            <h1 class="text-3xl font-extrabold text-red-400 mb-1">6 ဂဏန်း ခန့်မှန်းစနစ်</h1>
+            <p class="text-sm" id="round-display">Roll: 1 | အဆင့်: 1 / 10</p>
+            <div class="text-xs mt-1">
+                <span id="datetime-display">...</span>
+                <span class="ml-4 hidden sm:inline" id="game-start-time">စတင်ချိန်: ---</span>
             </div>
+        </div>
+        
+        <div class="game-card p-4 rounded-xl">
             
-            <div class="game-card p-4 rounded-xl">
+            <div class="flex justify-between items-center mb-4">
                 
-                <div class="flex justify-between items-center mb-4">
-                    
-                    <div class="text-center w-1/4">
-                        <p class="text-xs font-semibold text-gray-400">ယခင် ဂဏန်း</p>
-                        <div id="current-digit-display" class="large-bubble neon-solid-s mx-auto transition duration-300">
-                            <span id="current-digit" class="text-4xl font-extrabold text-white">...</span>
+                <div class="text-center w-1/4">
+                    <p class="text-xs font-semibold text-gray-400">ယခင် ဂဏန်း</p>
+                    <div id="current-digit-display" class="w-16 h-16 rounded-full flex items-center justify-center bg-gray-600 mx-auto transition duration-300">
+                        <span id="current-digit" class="text-4xl font-extrabold text-white">...</span>
+                    </div>
+                </div>
+
+                <div class="text-center w-1/4" id="app-prediction-display">
+                    <p class="text-xs font-semibold text-gray-400">P ခန့်မှန်းချက်</p>
+                    <div id="app-prediction" class="mt-1">
                         </div>
-                    </div>
-
-                    <div class="text-center w-1/4" id="app-prediction-display">
-                        <p class="text-xs font-semibold text-gray-400">P ခန့်မှန်းချက်</p>
-                        <div id="app-prediction" class="mt-1 large-bubble neon-solid-b mx-auto"></div>
-                    </div>
-
-                    <div class="text-center w-1/4" id="app-extra-prediction-display">
-                        <p class="text-xs font-semibold text-gray-400">E ခန့်မှန်းချက်</p>
-                        <div id="app-extra-prediction" class="mt-1 large-bubble neon-border-s mx-auto"></div>
-                    </div>
                 </div>
 
-                <div id="pattern-warning-box" class="hidden bg-yellow-900/50 text-yellow-300 text-xs font-semibold p-2 rounded-lg mb-4 text-center border border-yellow-600 transition duration-300 opacity-0">Pattern သတိပေးချက်</div>
-
-                <div id="input-area" class="flex space-x-2 relative z-55"> 
-                    <input type="number" id="next-digit-input" oninput="handleInput(event)" onkeydown="checkEnter(event)" placeholder="0-9" class="input-digit flex-grow rounded-lg" maxlength="1" min="0" max="9">
-                    <button id="submit-button" onclick="submitDigit()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" disabled>ထည့်သွင်း</button>
+                <div class="text-center w-1/4" id="app-extra-prediction-display">
+                    <p class="text-xs font-semibold text-gray-400">E ခန့်မှန်းချက်</p>
+                    <div id="app-extra-prediction" class="mt-1">
+                        </div>
                 </div>
-                
-                <div class="flex justify-between mt-4 text-xs font-bold">
-                    <button onclick="showConfirmationModal('မှတ်တမ်းအားလုံး ဖျက်သိမ်းပြီး ဂိမ်းအသစ် စတင်မှာလား။', handleConfirmedReset)" class="text-red-400 hover:text-red-500 transition duration-150">မှတ်တမ်းဖျက်/ပြန်စတင်</button>
-                    <button id="copy-csv-button" onclick="copyCSVToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded transition duration-200">
-                        <i class="fas fa-clipboard"></i> <span id="copy-csv-text">CSV ကူးယူ</span>
-                    </button>
-                </div>
-
-            </div> 
-            <h2 class="text-xl font-bold text-gray-200 mt-6 mb-3 border-b border-gray-700 pb-1">မှတ်တမ်းများ</h2>
-            <div id="history-log-container" class="overflow-x-auto whitespace-nowrap py-2">
-                <p class="text-gray-500 min-w-full text-center" id="initial-history-msg">လေ့ကျင့်ခန်း မှတ်တမ်းများ ဤနေရာတွင် ပေါ်လာမည်။</p>
             </div>
 
-            <h2 class="text-xl font-bold text-gray-200 mt-6 mb-3 border-b border-gray-700 pb-1">ပြီးဆုံး Pattern မှတ်တမ်း</h2>
-            <div id="pattern-records-container" class="space-y-2">
-                <p class="text-gray-500 text-sm text-center py-2">Pattern မှတ်တမ်းများ ဤနေရာတွင် ပေါ်လာမည်။</p>
+            <div id="pattern-warning-box" class="hidden bg-yellow-900/50 text-yellow-300 text-xs font-semibold p-2 rounded-lg mb-4 text-center border border-yellow-600 transition duration-300 opacity-0">
+                Pattern သတိပေးချက်
             </div>
 
+            <div id="input-area" class="flex space-x-2">
+                <input type="number" id="next-digit-input" oninput="handleInput(event)" onkeydown="checkEnter(event)" placeholder="0-9" class="input-digit flex-grow rounded-lg" maxlength="1" min="0" max="9">
+                <button id="submit-button" onclick="submitDigit()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" disabled>
+                    ထည့်သွင်း
+                </button>
+            </div>
+            
+            <div class="flex justify-between mt-4 text-xs font-bold">
+                <button onclick="showConfirmationModal('မှတ်တမ်းအားလုံး ဖျက်သိမ်းပြီး ဂိမ်းအသစ် စတင်မှာလား။', handleConfirmedReset)" class="text-red-400 hover:text-red-500 transition duration-150">
+                    မှတ်တမ်းဖျက်/ပြန်စတင်
+                </button>
+                <button id="copy-csv-button" onclick="copyCSVToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded transition duration-200">
+                    <i class="fas fa-clipboard"></i> <span id="copy-csv-text">CSV ကူးယူ</span>
+                </button>
+            </div>
+
+        </div> 
+        <h2 class="text-xl font-bold text-gray-200 mt-6 mb-3 border-b border-gray-700 pb-1">မှတ်တမ်းများ</h2>
+        <div id="history-log-container" class="overflow-x-auto whitespace-nowrap py-2">
+            <p class="text-gray-500 min-w-full text-center" id="initial-history-msg">လေ့ကျင့်ခန်း မှတ်တမ်းများ ဤနေရာတွင် ပေါ်လာမည်။</p>
         </div>
+
+        <h2 class="text-xl font-bold text-gray-200 mt-6 mb-3 border-b border-gray-700 pb-1">ပြီးဆုံး Pattern မှတ်တမ်း</h2>
+        <div id="pattern-records-container" class="space-y-2">
+             <p class="text-gray-500 text-sm text-center py-2">Pattern မှတ်တမ်းများ ဤနေရာတွင် ပေါ်လာမည်။</p>
+        </div>
+
     </div>
+
     <div id="confirmation-modal-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
         <div class="bg-gray-800 p-6 rounded-lg shadow-2xl text-white max-w-sm mx-4 border-2 border-red-500">
             <h3 class="text-lg font-bold mb-4 text-red-400">အတည်ပြုပါ</h3>
             <p id="confirmation-modal-message" class="mb-6 text-gray-300">မှတ်တမ်းအားလုံး ဖျက်သိမ်းပြီး ဂိမ်းအသစ် စတင်မှာလား။</p>
             <div class="flex justify-end space-x-3">
-                <button id="modal-cancel-button" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-200">မလုပ်တော့ပါ</button>
-                <button id="modal-confirm-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">အတည်ပြုပါ</button>
+                <button id="modal-cancel-button" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    မလုပ်တော့ပါ
+                </button>
+                <button id="modal-confirm-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    အတည်ပြုပါ
+                </button>
             </div>
         </div>
     </div>
     
     <script src="apl.js"></script> 
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </body>
 </html>
