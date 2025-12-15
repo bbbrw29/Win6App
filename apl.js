@@ -266,12 +266,9 @@ function checkAndRecordPatterns() {
 function submitAnswer(userDigit) {
     
     const isFirstEntry = currentDigit === null;
-    const targetGroup = getGroup(userDigit); // G is derived from userDigit
+    const targetGroup = getGroup(userDigit); 
 
-    // P Prediction Correctness Check: P is checked directly against G (targetGroup)
     const isCorrect = appPrediction === targetGroup; 
-    
-    // E Prediction Correctness Check: E is checked directly against G (targetGroup)
     const isExtraCorrect = appExtraPrediction !== null && appExtraPrediction === targetGroup;
 
     const previousRoll = currentRoll;
@@ -286,12 +283,11 @@ function submitAnswer(userDigit) {
         appExtraPrediction: appExtraPrediction, 
         userDigit: userDigit, 
         targetGroup: targetGroup,
-        isCorrect: isFirstEntry ? false : isCorrect, // First entry is always marked false
-        isExtraCorrect: isFirstEntry ? false : isExtraCorrect, // First entry is always marked false
+        isCorrect: isFirstEntry ? false : isCorrect, 
+        isExtraCorrect: isFirstEntry ? false : isExtraCorrect, 
         rollNumber: previousRoll,
         roundInRoll: previousRoundInRoll,
         sumRemainder: sumRemainder, 
-        // Timestamp ကို မြန်မာလို ထားရှိခြင်း
         timestamp: new Date().toLocaleTimeString('my-MM', {
             hour: '2-digit', minute: '2-digit', hour12: true
         })
@@ -329,7 +325,7 @@ function submitAnswer(userDigit) {
 }
 
 function updatePredictionDisplays() {
-    // P (ပုံမှန်/Target Group Prediction)
+    // P (ပုံမှန်/Target Group Prediction) - Class များ မပြောင်းလဲပါ (Neon-Solid-B/S)
     if (appPrediction !== null) {
         const solidClass = appPrediction === 'B' ? 'neon-solid-b' : 'neon-solid-s';
         appPredictionEl.innerHTML = `<span class="large-bubble ${solidClass}">${appPrediction}</span>`;
@@ -339,10 +335,11 @@ function updatePredictionDisplays() {
         appPredictionDisplayEl.classList.add('hidden');
     }
     
-    // E (အထူးစိတ်ကြိုက်/Extra Prediction)
+    // E (အထူးစိတ်ကြိုက်/Extra Prediction) - Class များကို Solid Color Class အသစ်သို့ ပြောင်းလဲခြင်း
     if (appExtraPrediction !== null) {
-        const borderClass = appExtraPrediction === 'B' ? 'neon-border-b' : 'neon-border-s';
-         appExtraPredictionEl.innerHTML = `<span class="large-bubble ${borderClass}">${appExtraPrediction}</span>`;
+        // neon-border-b/s အစား neon-extra-b/s ကို သုံးမည် (index.html တွင် ပြင်ထားသော CSS)
+        const extraClass = appExtraPrediction === 'B' ? 'neon-extra-b' : 'neon-extra-s';
+         appExtraPredictionEl.innerHTML = `<span class="large-bubble ${extraClass}">${appExtraPrediction}</span>`;
          appExtraPredictionDisplayEl.classList.remove('hidden');
     } else {
          appExtraPredictionEl.textContent = '...';
@@ -364,7 +361,6 @@ function updatePatternRecordsUI() {
         return;
     }
     
-    // မှတ်တမ်းများကို နောက်ဆုံး ဝင်လာသည်ကို အပေါ်ဆုံးထားရန် ပြန်စီပါမည်
     const sortedRecords = recordedPatterns.sort((a, b) => {
         if (a.rollNumber !== b.rollNumber) {
             return b.rollNumber - a.rollNumber;
@@ -387,7 +383,6 @@ function updatePatternRecordsUI() {
                         isStreak ? 'bg-green-900/50 border-green-500' : 'bg-gray-900/50 border-gray-500';
 
         const patternEl = document.createElement('div');
-        // နံပါတ်စဉ်အတွက် နေရာချပေးခြင်း
         patternEl.className = `p-2 rounded-lg text-xs font-mono border ${bgColor} flex items-center transition duration-200 hover:shadow-xl`;
         
         patternEl.innerHTML = `
@@ -420,7 +415,6 @@ function updatePatternRecordsUI() {
 
 
 function triggerFlashEffect() {
-    // UNCHANGED
     currentDigitDisplayContainerEl.classList.remove('animate-flash');
     void currentDigitDisplayContainerEl.offsetWidth; 
     currentDigitDisplayContainerEl.classList.add('animate-flash');
@@ -439,21 +433,19 @@ function updateDateTime() {
     const dateOptions = { 
         month: '2-digit', 
         day: '2-digit', 
-        year: '2-digit' // YY format
+        year: '2-digit' 
     };
     const timeOptions = {
         hour: '2-digit', 
         minute: '2-digit', 
         second: '2-digit',
-        hour12: true // AM/PM ဖြင့်ပြသရန်
+        hour12: true 
     };
     
-    // MM/DD/YY ပုံစံ
     const dateString = now.toLocaleDateString('en-US', dateOptions); 
-    // Time String (ဥပမာ: 07:34:27 PM)
     const timeString = now.toLocaleTimeString('en-US', timeOptions);
     
-    datetimeDisplayEl.textContent = `${dateString} | ${timeString}`; // 12/15/25 | 7:34:27 PM
+    datetimeDisplayEl.textContent = `${dateString} | ${timeString}`; 
     // HTML တွင် text-white သတ်မှတ်ထားသည်
 }
 
@@ -496,7 +488,6 @@ function updateHistory() {
     Object.keys(rolls).sort((a, b) => a - b).forEach(rollNumber => {
         const rollData = rolls[rollNumber];
         
-        // Column width ကို ၂၀၀px သို့ သတ်မှတ်ထားသည်
         const rollColumn = document.createElement('div');
         rollColumn.className = 'flex-shrink-0 w-[200px] bg-gray-800 rounded-lg shadow-xl p-2 border border-gray-700';
         
@@ -505,13 +496,13 @@ function updateHistory() {
         rollHeader.textContent = `Roll ${rollNumber}`;
         rollColumn.appendChild(rollHeader);
 
-        // Header 6 နေရာခွဲသည် (အဆင့်, P, P-C, Digit, E, E-C)
+        // Header 6 နေရာခွဲသည် (Stage, P, P-C, Digit, E, E-C)
         const headerRow = document.createElement('div');
         headerRow.className = 'flex justify-between items-center text-[10px] font-bold text-gray-400 mb-1 border-b border-gray-600 pb-0.5 px-0.5';
         
-        // P Column
         headerRow.innerHTML = `
-            <span class="w-[12%] text-left">Stage</span> <span class="w-[15%] text-center">P</span> 
+            <span class="w-[12%] text-left">Stage</span> 
+            <span class="w-[15%] text-center">P</span> 
             <span class="w-[18%] text-center">P-C</span> 
             <span class="w-[18%] text-center">ဂဏန်း</span>  
             <span class="w-[15%] text-center">E</span>
@@ -528,13 +519,12 @@ function updateHistory() {
                 entryBgClass = 'history-entry-correct-p';
             } else if (hasPrediction && !item.isCorrect) {
                 entryBgClass = 'history-entry-incorrect-p';
-                // If P is wrong but E is correct, highlight slightly differently
                 if (item.appExtraPrediction !== null && item.isExtraCorrect) {
-                    entryBgClass = 'history-entry-correct-e'; // Use E's color for visual cue
+                    entryBgClass = 'history-entry-correct-e'; 
                 }
             } 
             
-            // P (Prediction) Bubble Style 
+            // P (Prediction) Bubble Style - High Contrast
             const predictionGroup = item.appPrediction;
             let pBubbleContent = '—';
             if (predictionGroup !== null) {
@@ -545,11 +535,12 @@ function updateHistory() {
             // P Correctness Icon
             const pCorrectnessIcon = hasPrediction ? (item.isCorrect ? '✅' : '❌') : '—';
             
-            // E (Extra Prediction) Bubble Style
+            // E (Extra Prediction) Bubble Style - High Contrast
             const extraPrediction = item.appExtraPrediction;
             let extraBubbleContent = '—';
             if (extraPrediction) {
-                const extraBubbleClass = extraPrediction === 'B' ? 'neon-border-b' : 'neon-border-s';
+                // neon-extra-b/s Class (Violet/Cyan Solid) ကို သုံးခြင်း
+                const extraBubbleClass = extraPrediction === 'B' ? 'neon-extra-b' : 'neon-extra-s';
                  extraBubbleContent = `<span class="history-bubble ${extraBubbleClass}">${extraPrediction}</span>`;
             }
             
@@ -564,7 +555,8 @@ function updateHistory() {
                 <span class="font-semibold text-gray-300 w-[12%] text-left">${item.roundInRoll}</span>
                 
                 <span class="w-[15%] text-center leading-none">
-                    ${pBubbleContent} </span>
+                    ${pBubbleContent} 
+                </span>
 
                 <span class="font-extrabold text-white w-[18%] text-center text-base leading-none">${pCorrectnessIcon}</span>
 
@@ -590,7 +582,6 @@ function updateHistory() {
 function generateCSV() {
     let csv = '';
     if (gameStartTime) {
-        // CSV အတွက် English format ဖြင့်ထုတ်ပါမည်။
         const formattedTime = gameStartTime.toLocaleString('en-US', {
             year: 'numeric', month: 'numeric', day: 'numeric', 
             hour: '2-digit', minute: '2-digit', second: '2-digit',
@@ -604,15 +595,12 @@ function generateCSV() {
     csv += headers.join(',') + '\n';
     
     history.forEach(item => {
-        // P Correctness ကို သင်္ကေတဖြင့် ပြောင်းလဲခြင်း
         const pCorrectSymbol = item.appPrediction !== null ? (item.isCorrect ? '✅' : '❌') : '—';
-        
-        // E Correctness ကို သင်္ကေတဖြင့် ပြောင်းလဲခြင်း
         const eCorrectSymbol = item.appExtraPrediction !== null ? (item.isExtraCorrect ? '✅' : '❌') : '—';
 
         const row = [
             item.rollNumber,
-            item.roundInRoll, // Stage
+            item.roundInRoll, 
             item.targetGroup, 
             item.userDigit, 
             item.appPrediction || '—', 
@@ -640,7 +628,6 @@ async function copyCSVToClipboard() {
     copyButton.disabled = true;
 
     try {
-        // Use the correct encoding for symbols (UTF-8)
         const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvData], {type: "text/csv;charset=utf-8"}); 
         const data = await blob.text(); 
         
@@ -661,7 +648,6 @@ async function copyCSVToClipboard() {
         tempTextArea.select(); 
         
         try {
-            // Fallback using execCommand
             document.execCommand('copy');
             copyTextSpan.textContent = ' ကူးယူပြီးပါပြီ!';
             copyButton.classList.remove('bg-blue-600');
@@ -694,7 +680,6 @@ function alertUserMessage(message) {
     if (!msgBox) {
         msgBox = document.createElement('div');
         msgBox.id = 'user-alert-box';
-        // စာတန်းထိုးနေရာကို အောက်ခြေဗဟို (Bottom Center) တွင် ပြင်ဆင်ထားသည်
         msgBox.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white p-3 rounded-lg shadow-2xl z-50 transition duration-300 opacity-0 pointer-events-none text-center min-w-[200px] sm:min-w-[300px] border-2 border-white/50';
         document.body.appendChild(msgBox);
     }
@@ -709,13 +694,10 @@ function alertUserMessage(message) {
 }
 
 function getPatternWarning() {
-    // 3 ကြိမ်အောက်ဆိုရင် Warning မပြသေးဘူး
     const minCheckLength = 3; 
     
-    // history.length ဟာ 3 ထက်နည်းရင် Warning မလို
     if (history.length < minCheckLength) return { pattern: null, message: null }; 
 
-    // နောက်ဆုံး 20 ခု အထိ ယူပြီး စစ်ဆေးသည်။
     const fullGSequence = history.slice(-20).map(item => item.targetGroup).join('');
     const len = fullGSequence.length;
     
@@ -727,7 +709,6 @@ function getPatternWarning() {
     const checkStreak = (group) => {
         let currentLen = 0;
         
-        // Sequence ရဲ့ အဆုံးကနေ စပြီး တူညီမှုကို စစ်ဆေးမယ်။
         for (let i = len - 1; i >= 0; i--) {
             if (fullGSequence[i] === group) {
                 currentLen++;
@@ -737,7 +718,6 @@ function getPatternWarning() {
         }
         
         if (currentLen >= minCheckLength) {
-            // လက်ရှိ ဖြစ်ပေါ်နေသော Streak Pattern ကို တိကျစွာ ဖြတ်ယူပါ
             const streakPattern = fullGSequence.substring(len - currentLen); 
             return { length: currentLen, pattern: streakPattern }; 
         }
@@ -747,7 +727,6 @@ function getPatternWarning() {
     const bStreak = checkStreak('B');
     const sStreak = checkStreak('S');
 
-    // ပိုရှည်တဲ့ Streak ကို ရွေးချယ်ပြီး bestWarning တွင် ထည့်သွင်းသည်။
     if (bStreak && bStreak.length > bestWarning.length) {
         bestWarning = { pattern: bStreak.pattern, message: `${bStreak.pattern} ပုံစံ (တူညီခြင်း) ဆက်တိုက် ${bStreak.length} ကြိမ်ဖြစ်နေသည်။ သတိထားပါ။`, length: bStreak.length, type: 'Streak' };
     }
@@ -761,7 +740,6 @@ function getPatternWarning() {
     const checkSingleAlternating = () => {
         if (len < minCheckLength) return null;
         
-        // Length 20 အထိ အရှည်ဆုံး Single Alt ကို ရှာဖွေပါ
         for (let l = len; l >= minCheckLength; l--) {
             const subSeq = fullGSequence.slice(l * -1);
             let isAlt = true;
@@ -772,7 +750,7 @@ function getPatternWarning() {
                 }
             }
             if (isAlt) {
-                return { length: l, pattern: subSeq }; // အရှည်ဆုံးကို ချက်ချင်းပြန်ပို့
+                return { length: l, pattern: subSeq }; 
             }
         }
         return null;
@@ -799,9 +777,8 @@ function getPatternWarning() {
         let maxLen = 0;
         let longestPattern = null;
 
-        // Length 20 အထိ (4 ၏ ဆတိုးကိန်းများဖြင့်) စစ်ဆေးပါ
         for (let l = Math.min(len, 20); l >= minDoubleAltLength; l--) {
-             if (l % 4 === 0) { // 4, 8, 12, 16, 20
+             if (l % 4 === 0) { 
                 const subSeq = fullGSequence.slice(l * -1);
                 
                 let isDoubleAltMatch = true;
@@ -817,7 +794,7 @@ function getPatternWarning() {
                 if (isDoubleAltMatch) {
                     maxLen = l;
                     longestPattern = subSeq;
-                    break; // အရှည်ဆုံးကို ချက်ချင်းပြန်ပို့
+                    break; 
                 }
             }
         }
@@ -832,7 +809,6 @@ function getPatternWarning() {
         }
     }
 
-    // နောက်ဆုံး စစ်ဆေးချက်: အရှည်ဆုံး Pattern ကိုသာ ပြန်ပို့မည်။
     if (bestWarning.length > 0) {
         return { pattern: bestWarning.pattern, message: bestWarning.message };
     }
