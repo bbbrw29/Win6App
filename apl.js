@@ -172,7 +172,8 @@ function checkAndRecordPatterns() {
     const terminatorEntry = history[history.length - 1];
     const terminatorGroup = terminatorEntry.targetGroup;
 
-    const lengths = [8, 7, 6]; 
+    // Pattern အရှည်ကို 12, 10, 8, 7, 6 အထိ စစ်ဆေးရန် တိုးချဲ့လိုက်သည်
+    const lengths = [12, 10, 8, 7, 6]; 
     
     for (const len of lengths) {
         if (history.length > len) { 
@@ -184,6 +185,7 @@ function checkAndRecordPatterns() {
             let patternType = null;
             let isTerminated = false;
 
+            // 1. တူညီဆက်တိုက် (Streak) Pattern
             if (new Set(patternSequence).size === 1) {
                 if (terminatorGroup !== patternStartGroup) {
                     patternType = 'တူညီဆက်တိုက် (Streak)';
@@ -191,6 +193,7 @@ function checkAndRecordPatterns() {
                 }
             } 
             
+            // 2. တစ်လှည့်စီ (Single Alt) Pattern
             else { 
                 let isSingleAlt = true;
                 for (let i = 0; i < len - 1; i++) {
@@ -207,9 +210,20 @@ function checkAndRecordPatterns() {
                 }
             }
             
-            if (patternType === null && (len === 6 || len === 8)) {
-                const patterns = (len === 6) ? ['SSBBSS', 'BBSSBB'] : ['SSBBSSBB', 'BBSSBBSS'];
+            // 3. နှစ်ခုပူးတွဲ (Double Alt) Pattern
+            if (patternType === null && (len === 6 || len === 8 || len === 10 || len === 12)) {
                 
+                let patterns = [];
+                if (len === 12) {
+                    patterns = ['SSBBSSBBSSBB', 'BBSSBBSSBBSS'];
+                } else if (len === 10) {
+                     patterns = ['SSBBSSBBSS', 'BBSSBBSSBB'];
+                } else if (len === 8) {
+                    patterns = ['SSBBSSBB', 'BBSSBBSS'];
+                } else if (len === 6) {
+                    patterns = ['SSBBSS', 'BBSSBB'];
+                }
+
                 if (patterns.includes(patternSequence)) {
                     if (terminatorGroup === lastPatternGroup) {
                         patternType = 'နှစ်ခုပူးတွဲ (Double Alt)';
@@ -464,7 +478,7 @@ function updateHistory() {
         const headerRow = document.createElement('div');
         headerRow.className = 'flex justify-between items-center text-[10px] font-bold text-gray-400 mb-1 border-b border-gray-600 pb-0.5 px-0.5';
         
-        // G နေရာကို P ဖြင့် အစားထိုးခြင်း (*** သင်္ကေတများ ဖယ်ရှားပြီး ***)
+        // G နေရာကို P ဖြင့် အစားထိုးခြင်း 
         headerRow.innerHTML = `
             <span class="w-[12%] text-left">အဆင့်</span>
             <span class="w-[15%] text-center">P</span> 
@@ -667,6 +681,8 @@ function alertUserMessage(message) {
 function getPatternWarning() {
     // 3 ကြိမ်အောက်ဆိုရင် Warning မပြသေးဘူး
     const minCheckLength = 3; 
+    
+    // history.length ဟာ 3 ထက်နည်းရင် Warning မလို
     if (history.length < minCheckLength) return { pattern: null, message: null }; 
 
     // နောက်ဆုံး 20 ခု အထိ ယူပြီး စစ်ဆေးသည်။
@@ -715,6 +731,7 @@ function getPatternWarning() {
     const checkSingleAlternating = () => {
         if (len < minCheckLength) return null;
         
+        // Length 20 အထိ အရှည်ဆုံး Single Alt ကို ရှာဖွေပါ
         for (let l = len; l >= minCheckLength; l--) {
             const subSeq = fullGSequence.slice(l * -1);
             let isAlt = true;
@@ -725,7 +742,7 @@ function getPatternWarning() {
                 }
             }
             if (isAlt) {
-                return { length: l, pattern: subSeq };
+                return { length: l, pattern: subSeq }; // အရှည်ဆုံးကို ချက်ချင်းပြန်ပို့
             }
         }
         return null;
@@ -746,15 +763,15 @@ function getPatternWarning() {
     // -----------------------------------------------------
     // 3. နှစ်ခုပူးတွဲ (Double Alternating) Pattern စစ်ဆေးခြင်း 
     // -----------------------------------------------------
-    const doubleAltPatterns = ['SSBB', 'BBSS'];
     const minDoubleAltLength = 4;
     
     if (len >= minDoubleAltLength) {
         let maxLen = 0;
         let longestPattern = null;
 
-        for (let l = Math.min(len, 20); l >= minDoubleAltLength; l -= 4) {
-             if (l % 4 === 0) { 
+        // Length 20 အထိ (4 ၏ ဆတိုးကိန်းများဖြင့်) စစ်ဆေးပါ
+        for (let l = Math.min(len, 20); l >= minDoubleAltLength; l--) {
+             if (l % 4 === 0) { // 4, 8, 12, 16, 20
                 const subSeq = fullGSequence.slice(l * -1);
                 
                 let isDoubleAltMatch = true;
@@ -770,7 +787,7 @@ function getPatternWarning() {
                 if (isDoubleAltMatch) {
                     maxLen = l;
                     longestPattern = subSeq;
-                    break; 
+                    break; // အရှည်ဆုံးကို ချက်ချင်းပြန်ပို့
                 }
             }
         }
