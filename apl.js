@@ -460,12 +460,14 @@ function updateHistory() {
         rollHeader.textContent = `Roll ${rollNumber}`;
         rollColumn.appendChild(rollHeader);
 
-        // Header 6 နေရာခွဲသည် (အဆင့်, G, P-C, Digit, E, E-C)
+        // Header 6 နေရာခွဲသည် (အဆင့်, P, P-C, Digit, E, E-C)
         const headerRow = document.createElement('div');
         headerRow.className = 'flex justify-between items-center text-[10px] font-bold text-gray-400 mb-1 border-b border-gray-600 pb-0.5 px-0.5';
+        
+        // G နေရာကို P ဖြင့် အစားထိုးခြင်း
         headerRow.innerHTML = `
             <span class="w-[12%] text-left">အဆင့်</span>
-            <span class="w-[15%] text-center">G</span> 
+            <span class="w-[15%] text-center">**P**</span> 
             <span class="w-[18%] text-center">P-C</span> 
             <span class="w-[18%] text-center">ဂဏန်း</span>  
             <span class="w-[15%] text-center">E</span>
@@ -488,9 +490,14 @@ function updateHistory() {
                 }
             } 
             
-            // G (Target Group) Bubble Style
-            const targetBubbleClass = item.targetGroup === 'B' ? 'neon-solid-b' : 'neon-solid-s';
-            
+            // P (Prediction) Bubble Style 
+            const predictionGroup = item.appPrediction;
+            let pBubbleContent = '—';
+            if (predictionGroup !== null) {
+                 const predictionBubbleClass = predictionGroup === 'B' ? 'neon-solid-b' : 'neon-solid-s';
+                 pBubbleContent = `<span class="history-bubble ${predictionBubbleClass}">${predictionGroup}</span>`;
+            }
+
             // P Correctness Icon
             const pCorrectnessIcon = hasPrediction ? (item.isCorrect ? '✅' : '❌') : '—';
             
@@ -513,8 +520,7 @@ function updateHistory() {
                 <span class="font-semibold text-gray-300 w-[12%] text-left">${item.roundInRoll}</span>
                 
                 <span class="w-[15%] text-center leading-none">
-                    <span class="history-bubble ${targetBubbleClass}">${item.targetGroup}</span>
-                </span>
+                    ${pBubbleContent} </span>
 
                 <span class="font-extrabold text-white w-[18%] text-center text-base leading-none">${pCorrectnessIcon}</span>
 
@@ -549,6 +555,7 @@ function generateCSV() {
     }
     
     // Header
+    // Note: CSV တွင် Target Group (G) ကို ဆက်လက်ထည့်သွင်းထားပါသည်။
     const headers = ["Roll", "Round", "Target Group (G)", "User Digit", "P Prediction", "P Correct", "E Prediction", "E Correct"]; 
     csv += headers.join(',') + '\n';
     
@@ -562,11 +569,11 @@ function generateCSV() {
         const row = [
             item.rollNumber,
             item.roundInRoll,
-            item.targetGroup, 
+            item.targetGroup, // CSV တွင် G ကို ဆက်လက်ထည့်ထားသည်
             item.userDigit, 
-            item.appPrediction || '—', // B/S ကို '—' ဖြင့်အစားထိုး
+            item.appPrediction || '—', 
             pCorrectSymbol,
-            item.appExtraPrediction || '—', // B/S ကို '—' ဖြင့်အစားထိုး
+            item.appExtraPrediction || '—', 
             eCorrectSymbol
         ];
         csv += row.join(',') + '\n';
