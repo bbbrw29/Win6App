@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>အကောင့်ဝင်ရန်</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white; }
+        .box { background: #1e293b; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #msg { margin-top: 15px; color: #ef4444; font-size: 14px; }
+        .toggle { margin-top: 15px; font-size: 13px; color: #94a3b8; }
+        .toggle span { color: #38bdf8; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2 id="title">အကောင့်ဝင်ရန်</h2>
+    <form id="auth-form">
+        <input type="email" id="email" placeholder="အီးမေးလ်" required>
+        <input type="password" id="password" placeholder="လျှို့ဝှက်နံပါတ်" required>
+        <button type="submit" id="btn">ဝင်မည်</button>
+    </form>
+    <p id="msg"></p>
+    <div class="toggle"><span id="toggle-link" onclick="toggle()">အကောင့်အသစ်ဖွင့်ရန်</span></div>
+</div>
+<script>
+    const client = supabase.createClient('https://qqyabwiknxdypxcdoxev.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeWFid2lrbnhkeXB4Y2RveGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjQ5MzIsImV4cCI6MjA4MTQ0MDkzMn0.HOXs3rh3Qs0JdgnI3O3hE6p4sBDRSGK_DrChgQiQUHE');
+    let isLogin = true;
+    function toggle() {
+        isLogin = !isLogin;
+        document.getElementById('title').innerText = isLogin ? 'အကောင့်ဝင်ရန်' : 'အကောင့်ဖွင့်ရန်';
+        document.getElementById('btn').innerText = isLogin ? 'ဝင်မည်' : 'ဖွင့်မည်';
+        document.getElementById('toggle-link').innerText = isLogin ? 'အကောင့်အသစ်ဖွင့်ရန်' : 'အကောင့်ရှိပြီးသားလား?';
+    }
+    document.getElementById('auth-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        document.getElementById('msg').innerText = "လုပ်ဆောင်နေသည်...";
+        const { error } = isLogin ? await client.auth.signInWithPassword({email, password}) : await client.auth.signUp({email, password});
+        if (error) document.getElementById('msg').innerText = error.message;
+        else window.location.href = 'app.html';
+    };
+</script>
+</body>
+</html>
