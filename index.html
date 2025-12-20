@@ -3,135 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro - Master Pattern Analyzer</title>
+    <title>Win6 Pro - Premium Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background: #020617; color: #f1f5f9; }
-        .pred-group-box { border: 2px solid #334155; background: #0f172a; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .box-p { border: 3px solid #f87171; color: #f87171; border-radius: 50%; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 10px rgba(248, 113, 113, 0.4); }
-        .box-e { border: 3px solid #c084fc; color: #c084fc; border-radius: 12px; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 10px rgba(192, 132, 252, 0.4); }
-        .box-s { border: 3px solid #34d399; color: #34d399; border-radius: 6px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); box-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background: linear-gradient(to bottom, #1e3a8a, #0f172a); /* ပိုလင်းပြီး Eye-catching ဖြစ်သော အရောင် */
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .box-p { border: 4px solid #f87171; color: #f87171; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 15px rgba(248, 113, 113, 0.5); }
+        .box-e { border: 4px solid #c084fc; color: #c084fc; border-radius: 12px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 15px rgba(192, 132, 252, 0.5); }
+        .box-s { border: 4px solid #34d399; color: #34d399; border-radius: 8px; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); box-shadow: 0 0 15px rgba(52, 211, 153, 0.5); }
         .box-s span { transform: rotate(-45deg); }
-        .compact-input-area { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); }
-        .g-highlight { background-color: #fbbf24; color: #000; font-weight: 900; border-radius: 4px; padding: 0 6px; }
-        .history-table-container { min-height: 380px; background: rgba(15, 23, 42, 0.8); }
-        .custom-scroll::-webkit-scrollbar { height: 6px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .g-highlight { background: #fbbf24; color: #000; font-weight: 900; border-radius: 4px; padding: 2px 6px; }
     </style>
 </head>
-<body class="p-3 pb-10">
-    <div class="max-w-xl mx-auto space-y-4">
+<body class="p-4 pb-10">
+    <div class="max-w-xl mx-auto space-y-5">
         
-        <div class="pred-group-box p-6 rounded-[2.5rem] grid grid-cols-3 gap-2 text-center shadow-inner">
-            <div><p class="text-[9px] font-bold text-red-400 mb-2">PRED P</p><div class="box-p"><span id="pred-p" class="text-2xl font-black">-</span></div></div>
-            <div class="border-x border-slate-800">
-                <p class="text-[9px] font-bold text-purple-400 mb-2">PRED E</p><div class="box-e"><span id="pred-e" class="text-2xl font-black">-</span></div>
+        <div class="glass p-6 rounded-[2.5rem] grid grid-cols-3 gap-3 text-center shadow-2xl">
+            <div><p class="text-[10px] font-bold text-red-300 mb-2">PRED P</p><div class="box-p"><span id="pred-p" class="text-3xl font-black">-</span></div></div>
+            <div class="border-x border-white/10">
+                <p class="text-[10px] font-bold text-purple-300 mb-2">PRED E</p><div class="box-e"><span id="pred-e" class="text-3xl font-black">-</span></div>
             </div>
-            <div><p class="text-[9px] font-bold text-emerald-400 mb-2">PRED S</p><div class="box-s"><span id="pred-s" class="text-2xl font-black">-</span></div></div>
+            <div><p class="text-[10px] font-bold text-emerald-300 mb-2">PRED S</p><div class="box-s"><span id="pred-s" class="text-3xl font-black">-</span></div></div>
         </div>
 
-        <div class="compact-input-area p-4 rounded-[2.5rem] flex items-center justify-around shadow-xl">
+        <div class="glass p-5 rounded-[2rem] flex items-center justify-around shadow-xl">
             <div class="text-center">
-                <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Digital Result</p>
+                <p class="text-[9px] text-slate-300 font-bold uppercase mb-1">Result</p>
                 <div id="highlight-g" class="text-6xl font-black text-white">-</div>
             </div>
             <div class="flex flex-col gap-2 w-36">
-                <input type="number" id="digit-input" class="w-full bg-slate-900 border border-slate-700 rounded-xl text-center text-4xl font-bold p-2 text-yellow-400 focus:border-yellow-500 outline-none" placeholder="?" oninput="validate(this)">
-                <button id="btn-submit" class="w-full py-2 bg-yellow-500 rounded-xl text-slate-950 font-black text-xs uppercase disabled:opacity-20 shadow-lg" onclick="submit()" disabled>Submit</button>
+                <input type="number" id="digit-input" class="w-full bg-slate-900/50 border border-white/30 rounded-xl text-center text-4xl font-bold p-2 text-yellow-400 outline-none" placeholder="?" oninput="validate(this)">
+                <button id="btn-submit" class="w-full py-3 bg-yellow-400 rounded-xl text-slate-900 font-black text-xs uppercase shadow-lg disabled:opacity-20" onclick="submit()" disabled>Submit</button>
             </div>
         </div>
 
         <div id="alert-box" class="hidden">
-            <div class="bg-red-600 text-white p-3 rounded-2xl text-center text-[11px] font-black animate-pulse shadow-xl border-2 border-white/20">
+            <div class="bg-red-500 text-white p-4 rounded-2xl text-center text-xs font-black animate-pulse shadow-2xl border-2 border-white/50">
                 ⚠️ <span id="alert-msg"></span>
             </div>
         </div>
 
-        <div class="history-table-container rounded-[2rem] border border-white/5 p-4 shadow-2xl overflow-hidden">
-            <h3 class="text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-widest flex justify-between">
-                <span>Record Logs</span>
-                <span id="total-stg" class="text-yellow-500">0 Stages</span>
-            </h3>
-            <div id="history-container" class="flex overflow-x-auto gap-4 pb-4 custom-scroll"></div>
+        <div class="glass rounded-[2rem] p-5">
+            <h3 class="text-[11px] font-bold text-slate-200 mb-3 uppercase tracking-widest">Record Logs</h3>
+            <div id="history-container" class="flex overflow-x-auto gap-4 pb-4"></div>
         </div>
 
-        <div class="bg-slate-900/60 p-5 rounded-[2rem] border-t-2 border-red-500/30">
-            <h3 class="text-[10px] font-black text-red-500 mb-3 uppercase tracking-widest">⚠️ Pattern Analysis Logs</h3>
-            <div id="warning-history" class="max-h-40 overflow-y-auto space-y-2 text-[11px] text-slate-400 custom-scroll font-bold">
-                <div class="italic text-slate-600">No patterns detected yet.</div>
+        <div class="glass p-6 rounded-[2rem] border-t-4 border-yellow-500">
+            <h3 class="text-[11px] font-black text-yellow-400 mb-3 uppercase tracking-widest">📊 Pattern Analysis History</h3>
+            <div id="warning-history" class="max-h-48 overflow-y-auto space-y-2 text-[11px] text-white font-bold">
+                <div class="italic text-white/50">မှတ်တမ်းမရှိသေးပါ။</div>
             </div>
         </div>
 
-        <div class="flex gap-2">
-            <button onclick="copy()" class="flex-1 py-4 bg-slate-800 rounded-2xl font-bold text-white text-[10px] uppercase border border-white/10">📋 Copy Data</button>
-            <button onclick="reset()" class="px-5 py-2 text-slate-600 text-[10px] font-bold">Reset</button>
-        </div>
+        <button onclick="reset()" class="w-full py-3 text-white/30 text-xs font-bold uppercase">Reset System</button>
     </div>
 
     <script>
         let history = []; let warnings = []; let roll = 1, stage = 1;
         let pNext, eNext, sNext;
-        let currentAlert = null;
+        let currentPattern = null;
 
         function submit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
             const entry = { val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null };
-            
             history.push(entry);
-            checkAllPatterns();
+            
+            analyzePattern();
             
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePred(val); renderTable(); save();
             input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
-        function checkAllPatterns() {
+        function analyzePattern() {
             const seq = history.map(h => h.grp).join('');
-            const alertBox = document.getElementById('alert-box');
-            let foundPattern = null;
+            let found = null;
 
-            // 1. Streak Check (B/S 5+)
-            let last = seq.slice(-1), streakCount = 0;
-            for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) streakCount++; else break; }
-            if(streakCount >= 5) foundPattern = { type: last === 'B' ? 'အကြီး' : 'အသေး', count: streakCount, startIdx: history.length - streakCount };
+            // Streak (B or S)
+            let last = seq.slice(-1), count = 0;
+            for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) count++; else break; }
+            if(count >= 5) found = { type: last==='B'?'အကြီး':'အသေး', count, start: history.length - count };
 
-            // 2. Ping-Pong Check (BSBSBS 6+)
-            if(!foundPattern && seq.length >= 6) {
-                const last6 = seq.slice(-6);
-                if(last6 === "BSBSBS" || last6 === "SBSBSB") {
-                    let ppCount = 6;
-                    for(let i=seq.length-7; i>=0; i--) {
-                        if(seq[i] !== seq[i+1]) ppCount++; else break;
-                    }
-                    foundPattern = { type: 'တစ်လှည့်စီ', count: ppCount, startIdx: history.length - ppCount };
-                }
+            // PingPong (BSBSBS)
+            if(!found && seq.length >= 6) {
+                let pp = 1;
+                for(let i=seq.length-1; i>0; i--) { if(seq[i] !== seq[i-1]) pp++; else break; }
+                if(pp >= 6) found = { type: 'တစ်လှည့်စီ', count: pp, start: history.length - pp };
             }
 
-            // 3. Double Pair Check (BBSSBB 6+)
-            if(!foundPattern && seq.length >= 6) {
+            // Double Pair (BBSSBB)
+            if(!found && seq.length >= 6) {
                 const last6 = seq.slice(-6);
-                if(last6 === "BBSSBB" || last6 === "SSBBSS") {
-                    foundPattern = { type: 'အတွဲလိုက်', count: 6, startIdx: history.length - 6 };
-                }
+                if(last6==="BBSSBB" || last6==="SSBBSS") found = { type: 'အတွဲလိုက် (BBSS)', count: 6, start: history.length - 6 };
             }
 
-            // Logic: Manage Alert and History
-            if (foundPattern) {
-                currentAlert = foundPattern;
-                document.getElementById('alert-msg').innerText = `${foundPattern.type} ${foundPattern.count} ကြိမ် ဖြစ်နေသည်`;
-                alertBox.classList.remove('hidden');
+            const box = document.getElementById('alert-box');
+            if(found) {
+                currentPattern = found;
+                document.getElementById('alert-msg').innerText = `${found.type} ${found.count} ကြိမ် ဖြစ်နေသည်`;
+                box.classList.remove('hidden');
             } else {
-                if (currentAlert) {
-                    const start = history[currentAlert.startIdx];
-                    const end = history[history.length - 2];
-                    const msg = `[${currentAlert.type}] ${currentAlert.count} ကြိမ် (R${start.roll}-S${start.stage} မှ R${end.roll}-S${end.stage} ထိ)`;
-                    warnings.unshift({ text: msg });
-                    renderWarningHistory();
-                    currentAlert = null;
+                if(currentPattern) {
+                    const s = history[currentPattern.start];
+                    const e = history[history.length - 2];
+                    warnings.unshift({ text: `[${currentPattern.type}] ${currentPattern.count} ကြိမ် (R${s.roll}-S${s.stage} မှ R${e.roll}-S${e.stage} ထိ)` });
+                    renderWarnings();
+                    currentPattern = null;
                 }
-                alertBox.classList.add('hidden');
+                box.classList.add('hidden');
             }
         }
 
@@ -148,51 +134,41 @@
             document.getElementById('pred-p').innerText = pNext || '-';
             document.getElementById('pred-e').innerText = eNext || '-';
             document.getElementById('pred-s').innerText = sNext || '-';
-            document.getElementById('highlight-g').innerText = last !== null ? last : '-';
+            document.getElementById('highlight-g').innerText = last;
         }
 
         function renderTable() {
             const container = document.getElementById('history-container'); container.innerHTML = '';
-            document.getElementById('total-stg').innerText = `${history.length} Stages`;
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
-                const block = document.createElement('div');
-                block.className = 'flex-shrink-0 w-64 bg-slate-800/40 rounded-3xl p-4 border border-white/5 shadow-lg';
-                block.innerHTML = `<div class="text-[10px] text-center font-black text-slate-500 mb-3 border-b border-white/10 pb-2 uppercase tracking-widest">Roll ${r}</div>
-                    <div class="grid grid-cols-8 gap-1 text-[7px] text-slate-400 font-bold mb-2 text-center uppercase">
+                const b = document.createElement('div'); b.className = 'flex-shrink-0 w-64 glass rounded-3xl p-4';
+                b.innerHTML = `<div class="text-[10px] text-center font-bold mb-2 border-b border-white/20 pb-1">Roll ${r}</div>
+                    <div class="grid grid-cols-8 gap-1 text-[7px] text-white/50 font-bold mb-1 text-center italic">
                         <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
                     </div>`;
                 rolls[r].forEach(i => {
-                    block.innerHTML += `<div class="grid grid-cols-8 gap-1 py-2 border-b border-white/5 text-center text-[11px] font-bold items-center">
-                        <span class="text-slate-500">${i.stage}</span><span class="text-red-400 font-black">${i.p||'-'}</span><span>${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
-                        <span class="text-purple-400 font-black">${i.e||'-'}</span><span>${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span><span class="text-emerald-400 font-black">${i.s||'-'}</span>
+                    b.innerHTML += `<div class="grid grid-cols-8 gap-1 py-1.5 border-b border-white/5 text-center text-[11px] font-bold">
+                        <span class="opacity-50">${i.stage}</span><span class="text-red-400">${i.p||'-'}</span><span>${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <span class="text-purple-400">${i.e||'-'}</span><span>${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span><span class="text-emerald-400">${i.s||'-'}</span>
                         <span>${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span><span class="g-highlight">${i.val}</span></div>`;
                 });
-                container.appendChild(block);
+                container.appendChild(b);
             });
             container.scrollLeft = container.scrollWidth;
         }
 
-        function renderWarningHistory() {
+        function renderWarnings() {
             const container = document.getElementById('warning-history');
-            if(!warnings.length) { container.innerHTML = '<div class="italic text-slate-600">No patterns detected yet.</div>'; return; }
-            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-slate-800 rounded-xl border-l-4 border-red-500 shadow-md">${warnings.length - idx}. ${w.text}</div>`).join('');
-        }
-
-        async function copy() {
-            if(!history.length) return;
-            let t = "WIN6 PRO REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n========================\n";
-            history.forEach(i => { t += `${i.stage}|${i.p||'-'}|${i.pOk===null?'-':(i.pOk?'✅':'❌')}|${i.e||'-'}|${i.eOk===null?'-':(i.eOk?'✅':'❌')}|${i.s||'-'}|${i.sOk===null?'-':(i.sOk?'✅':'❌')}|[${i.val}]\n`; if(i.stage === 10) t += "------------------------\n"; });
-            await navigator.clipboard.writeText(t); alert("Copy Success!");
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 glass rounded-xl border-l-4 border-yellow-500">${warnings.length - idx}. ${w.text}</div>`).join('');
         }
 
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_MASTER_V5', JSON.stringify({ history, warnings, roll, stage, currentAlert })); }
+        function save() { localStorage.setItem('WIN6_P_V7', JSON.stringify({ history, warnings, roll, stage, currentPattern })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_MASTER_V5'));
-            if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; currentAlert = data.currentAlert || null; renderTable(); renderWarningHistory(); if(history.length) updatePred(history[history.length-1].val); }
+            const data = JSON.parse(localStorage.getItem('WIN6_P_V7'));
+            if(data) { history = data.history; warnings = data.warnings; roll = data.roll; stage = data.stage; currentPattern = data.currentPattern; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Clear All Data?")) { localStorage.clear(); location.reload(); } }
+        function reset() { if(confirm("Data တွေအကုန်ဖြတ်မလား?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
