@@ -3,24 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro Premium - Activation System</title>
+    <title>Win6 Pro Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #001f3f; color: white; overflow-x: hidden; }
-        
-        /* UI Enhancements */
         .login-bg { background: radial-gradient(circle at center, #003366 0%, #001f3f 100%); }
         .g-display { font-size: 85px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
-        
-        /* Prediction Shapes */
-        .box-p { border: 5px solid #ff4136; border-radius: 50%; width: 75px; height: 75px; font-size: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #ff4136; font-weight: 900; margin: 0 auto; box-shadow: 0 0 15px rgba(255, 65, 54, 0.4); }
-        .box-e { border: 5px solid #b10dc9; border-radius: 15px; width: 75px; height: 75px; font-size: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #b10dc9; font-weight: 900; margin: 0 auto; box-shadow: 0 0 15px rgba(177, 13, 201, 0.4); }
-        .box-s { border: 5px solid #2ecc40; border-radius: 10px; width: 68px; height: 68px; font-size: 38px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); background: white; color: #2ecc40; font-weight: 900; margin: 0 auto; box-shadow: 0 0 15px rgba(46, 204, 64, 0.4); }
+        .box-p { border: 5px solid #ff4136; border-radius: 50%; width: 75px; height: 75px; font-size: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #ff4136; font-weight: 900; margin: 0 auto; }
+        .box-e { border: 5px solid #b10dc9; border-radius: 15px; width: 75px; height: 75px; font-size: 38px; display: flex; align-items: center; justify-content: center; background: white; color: #b10dc9; font-weight: 900; margin: 0 auto; }
+        .box-s { border: 5px solid #2ecc40; border-radius: 10px; width: 68px; height: 68px; font-size: 38px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); background: white; color: #2ecc40; font-weight: 900; margin: 0 auto; }
         .box-s span { transform: rotate(-45deg); }
-
-        /* Log Styling */
         .log-card { background: white; color: black; border-radius: 25px; padding: 15px; min-height: 400px; }
         .g-num { background: #ffdc00; padding: 4px 12px; border-radius: 8px; border: 2px solid black; font-weight: 900; }
     </style>
@@ -29,26 +23,15 @@
 
     <div id="login-screen" class="fixed inset-0 z-[100] login-bg flex items-center justify-center p-6">
         <div class="w-full max-w-sm bg-[#003366] rounded-[2.5rem] p-8 border-t-8 border-yellow-400 shadow-2xl text-center">
-            <div class="mb-8">
-                <h1 class="text-4xl font-black text-yellow-400 tracking-tighter italic">WIN6 PRO</h1>
-                <p class="text-cyan-400 text-[10px] font-bold uppercase tracking-widest mt-1">Activation System</p>
-            </div>
-            <div class="space-y-6">
-                <input type="text" id="activation-input" 
-                    class="w-full bg-[#001f3f] border-2 border-white/10 rounded-2xl py-5 text-center text-2xl font-black text-yellow-400 outline-none focus:border-yellow-400"
-                    placeholder="ENTER CODE">
-                <button onclick="checkSubscription()" id="login-btn"
-                    class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl text-xl shadow-xl active:scale-95 transition-all">
-                    ACTIVATE NOW
-                </button>
-            </div>
-            <p id="status-msg" class="mt-6 text-sm font-bold text-red-500 hidden italic"></p>
+            <h1 class="text-4xl font-black text-yellow-400 italic mb-6">WIN6 PRO</h1>
+            <input type="text" id="activation-input" class="w-full bg-[#001f3f] border-2 border-white/10 rounded-2xl py-5 text-center text-2xl font-black text-yellow-400 mb-4 outline-none focus:border-yellow-400 uppercase" placeholder="ENTER CODE">
+            <button onclick="checkSubscription()" id="login-btn" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl text-xl shadow-xl active:scale-95 transition-all">ACTIVATE NOW</button>
+            <p id="status-msg" class="mt-4 text-sm font-bold text-red-500 hidden"></p>
         </div>
     </div>
 
     <div id="main-app" class="hidden p-3">
         <div class="max-w-2xl mx-auto space-y-4">
-            
             <div class="bg-[#003366] p-6 grid grid-cols-3 gap-2 text-center rounded-[35px] border-b-8 border-cyan-500 shadow-2xl">
                 <div><p class="font-black text-white text-[11px] mb-2 uppercase">Pred P</p><div class="box-p" id="pred-p">-</div></div>
                 <div><p class="font-black text-white text-[11px] mb-2 uppercase">Pred E</p><div class="box-e" id="pred-e">-</div></div>
@@ -56,78 +39,70 @@
             </div>
 
             <div class="bg-blue-900/60 p-5 rounded-[2rem] flex items-center justify-between border-2 border-white/20">
-                <div class="text-center flex-1">
-                    <div id="highlight-g" class="g-display">-</div>
-                </div>
-                <div class="flex flex-col gap-3 w-48">
+                <div id="highlight-g" class="g-display" class="flex-1 text-center">-</div>
+                <div class="w-48 space-y-3">
                     <input type="number" id="digit-input" class="w-full rounded-2xl text-center text-5xl font-black p-3 border-4 border-yellow-400 text-black bg-white" placeholder="?" oninput="if(this.value.length>1)this.value=this.value.slice(-1)">
                     <button class="w-full py-5 bg-yellow-400 text-black font-black rounded-2xl text-2xl uppercase shadow-lg" onclick="submitData()">ENTER</button>
                 </div>
             </div>
 
             <div class="log-card shadow-2xl">
-                <h3 class="font-black text-blue-900 text-xl uppercase italic mb-4 border-b-2 pb-2">Recent Logs</h3>
-                <div id="history-list" class="space-y-3 max-h-[400px] overflow-y-auto"></div>
+                <h3 class="font-black text-blue-900 text-xl uppercase italic mb-4 border-b-2 pb-2 text-center">Live History</h3>
+                <div id="history-list" class="space-y-2 max-h-[400px] overflow-y-auto px-2"></div>
             </div>
 
-            <button onclick="logout()" class="w-full bg-red-500 py-5 text-white font-black rounded-2xl text-xl shadow-xl uppercase border-b-8 border-red-800">Logout & Reset</button>
+            <button onclick="logout()" class="w-full bg-red-600 py-5 text-white font-black rounded-2xl text-xl shadow-xl uppercase border-b-8 border-red-800">Logout & Reset</button>
         </div>
     </div>
 
     <script>
-        // Supabase Initialization
         const SB_URL = "https://fbhmrpsvunllixcpikmh.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiaG1ycHN2dW5sbGl4Y3Bpa21oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjA3NzEsImV4cCI6MjA4MTQzNjc3MX0._ulaGqnNm8KK9abLlI2Pvjc_OU4PuPibwKd9PmpvDwk";
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // 1. Activation Logic
         async function checkSubscription() {
-            const codeInput = document.getElementById('activation-input').value.trim();
+            const input = document.getElementById('activation-input').value.trim();
             const btn = document.getElementById('login-btn');
             const msg = document.getElementById('status-msg');
             
-            if(!codeInput) return;
+            if(!input) return;
             msg.classList.add('hidden');
-            btn.disabled = true; btn.innerText = "စစ်ဆေးနေသည်...";
+            btn.disabled = true; btn.innerText = "Checking...";
 
             try {
                 const { data, error } = await supabaseClient
                     .from('subscription_codes')
                     .select('*')
-                    .eq('code', codeInput)
-                    .single();
+                    .eq('code', input)
+                    .maybeSingle();
 
                 if (error || !data) {
                     msg.innerText = "Code မမှန်ပါ။";
                     msg.classList.remove('hidden');
-                } else {
-                    // Code တွေ့ပြီ - အသုံးပြုပြီးသားလား စစ်မည်
-                    if (data.is_used === true) {
-                        if (localStorage.getItem('active_win6_code') === codeInput) {
-                            enterApp();
-                        } else {
-                            msg.innerText = "ဤကုဒ်ကို အသုံးပြုပြီးသားဖြစ်ပါသည်။";
-                            msg.classList.remove('hidden');
-                        }
+                } else if (data.is_used === true) {
+                    if (localStorage.getItem('win6_code') === input) {
+                        enterApp();
                     } else {
-                        // အသစ်စသုံးခြင်း (False -> True)
-                        const { updateError } = await supabaseClient
-                            .from('subscription_codes')
-                            .update({ is_used: true, used_at: new Date().toISOString() })
-                            .eq('code', codeInput);
+                        msg.innerText = "ဤကုဒ်ကို အသုံးပြုပြီးသားဖြစ်ပါသည်။";
+                        msg.classList.remove('hidden');
+                    }
+                } else {
+                    const { updateError } = await supabaseClient
+                        .from('subscription_codes')
+                        .update({ is_used: true, used_at: new Date().toISOString() })
+                        .eq('code', input);
 
-                        if (!updateError) {
-                            localStorage.setItem('win6_auth', 'true');
-                            localStorage.setItem('active_win6_code', codeInput);
-                            enterApp();
-                        } else {
-                            msg.innerText = "Update လုပ်၍မရပါ။ Policy ကိုစစ်ပါ။";
-                            msg.classList.remove('hidden');
-                        }
+                    if (!updateError) {
+                        localStorage.setItem('win6_auth', 'true');
+                        localStorage.setItem('win6_code', input);
+                        enterApp();
+                    } else {
+                        msg.innerText = "System Error! Policy ကို စစ်ဆေးပါ။";
+                        msg.classList.remove('hidden');
                     }
                 }
             } catch (e) {
-                alert("Database ချိတ်ဆက်မှု မရပါ။");
+                alert("Database Error!");
             } finally {
                 btn.disabled = false; btn.innerText = "ACTIVATE NOW";
             }
@@ -139,7 +114,6 @@
             loadLogs();
         }
 
-        // 2. Prediction & Data Logic
         let logs = [];
         let pNext, eNext, sNext;
 
@@ -155,14 +129,13 @@
             calculateNext(val);
             updateUI(val);
             saveLogs();
-            
             input.value = ""; input.focus();
         }
 
         function calculateNext(last) {
             pNext = last % 2 === 0 ? 'S' : 'B';
             eNext = logs.length >= 3 ? (logs.slice(0,3).reduce((a,b)=>a+b.val, 0) % 2 === 0 ? 'S' : 'B') : '-';
-            sNext = logs.length >= 5 ? (logs[0].grp === logs[1].grp ? (logs[0].grp === 'B' ? 'S' : 'B') : logs[0].grp) : '-';
+            sNext = logs.length >= 2 ? (logs[0].grp === logs[1].grp ? (logs[0].grp === 'B' ? 'S' : 'B') : logs[0].grp) : '-';
         }
 
         function updateUI(last) {
@@ -170,26 +143,24 @@
             document.getElementById('pred-p').innerText = pNext;
             document.getElementById('pred-e').innerText = eNext;
             document.getElementById('pred-s').innerText = sNext;
-
             const list = document.getElementById('history-list');
             list.innerHTML = logs.map(l => `
-                <div class="flex justify-between items-center p-3 border-b border-gray-100">
-                    <span class="text-xs font-bold text-gray-400">${l.time}</span>
-                    <span class="font-black text-lg ${l.grp === 'B' ? 'text-blue-600' : 'text-red-600'}">${l.grp}</span>
-                    <span class="g-num">${l.val}</span>
+                <div class="flex justify-between items-center p-3 border-b">
+                    <span class="text-[10px] text-gray-400">${l.time}</span>
+                    <span class="font-black text-xl ${l.grp === 'B' ? 'text-blue-600' : 'text-red-600'}">${l.grp}</span>
+                    <span class="g-num text-sm">${l.val}</span>
                 </div>
             `).join('');
         }
 
-        function saveLogs() { localStorage.setItem('win6_v18_logs', JSON.stringify(logs)); }
+        function saveLogs() { localStorage.setItem('win6_logs_v18', JSON.stringify(logs)); }
         function loadLogs() {
-            const saved = localStorage.getItem('win6_v18_logs');
+            const saved = localStorage.getItem('win6_logs_v18');
             if(saved) { logs = JSON.parse(saved); if(logs.length) updateUI(logs[0].val); }
         }
 
-        function logout() { if(confirm("Data များဖျက်ပြီး ထွက်မှာလား?")) { localStorage.clear(); location.reload(); } }
+        function logout() { if(confirm("ထွက်မှာ သေချာပါသလား?")) { localStorage.clear(); location.reload(); } }
 
-        // Auto Login
         if (localStorage.getItem('win6_auth') === 'true') enterApp();
     </script>
 </body>
