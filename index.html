@@ -3,76 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro - Design Master</title>
+    <title>Win6 Pro - Bold Status Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #001f3f; color: white; }
         
-        /* Prediction Boxes Design */
-        .box-p { border: 5px solid #ff4136; color: #ff4136; border-radius: 50%; width: 70px; height: 70px; font-size: 35px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-e { border: 5px solid #b10dc9; color: #b10dc9; border-radius: 15px; width: 70px; height: 70px; font-size: 35px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-s { border: 5px solid #2ecc40; color: #2ecc40; border-radius: 10px; width: 65px; height: 65px; font-size: 35px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
+        /* Prediction Boxes */
+        .box-p { border: 5px solid #ff4136; color: #ff4136; border-radius: 50%; width: 75px; height: 75px; font-size: 38px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; box-shadow: 0 0 15px rgba(255, 65, 54, 0.4); }
+        .box-e { border: 5px solid #b10dc9; color: #b10dc9; border-radius: 15px; width: 75px; height: 75px; font-size: 38px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; box-shadow: 0 0 15px rgba(177, 13, 201, 0.4); }
+        .box-s { border: 5px solid #2ecc40; color: #2ecc40; border-radius: 10px; width: 68px; height: 68px; font-size: 38px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; box-shadow: 0 0 15px rgba(46, 204, 64, 0.4); }
         .box-s span { transform: rotate(-45deg); }
 
-        /* Record Log Shapes (Mini Version) */
-        .mini-p { border: 2px solid #ff4136; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: #fff5f5; color: #ff4136; font-weight: 900; font-size: 14px; }
-        .mini-e { border: 2px solid #b10dc9; border-radius: 6px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: #fdf4ff; color: #b10dc9; font-weight: 900; font-size: 14px; }
-        .mini-s { border: 2px solid #2ecc40; border-radius: 5px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; transform: rotate(45deg); background: #f0fff4; color: #2ecc40; font-weight: 900; font-size: 14px; margin: 2px; }
+        /* Record Log Symbols - Ultra BOLD */
+        .status-ok { color: #00c853; font-size: 32px; font-weight: 900; filter: drop-shadow(0px 2px 1px rgba(0,0,0,0.2)); line-height: 1; }
+        .status-no { color: #d50000; font-size: 32px; font-weight: 900; filter: drop-shadow(0px 2px 1px rgba(0,0,0,0.2)); line-height: 1; }
+
+        /* Shapes in Log */
+        .mini-p { border: 3px solid #ff4136; border-radius: 50%; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background: white; color: #ff4136; font-weight: 900; font-size: 16px; }
+        .mini-e { border: 3px solid #b10dc9; border-radius: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background: white; color: #b10dc9; font-weight: 900; font-size: 16px; }
+        .mini-s { border: 3px solid #2ecc40; border-radius: 6px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; transform: rotate(45deg); background: white; color: #2ecc40; font-weight: 900; font-size: 16px; margin: 2px; }
         .mini-s span { transform: rotate(-45deg); }
 
-        /* General Styles */
-        .g-display { font-size: 80px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
-        .log-card { background: white; color: black; border-radius: 25px; padding: 15px; min-height: 480px; }
-        .log-item { border-bottom: 2px solid #eee; padding: 8px 0; font-size: 16px; font-weight: 800; }
-        .status-ok { color: #2ecc40; font-size: 22px; font-weight: 900; }
-        .status-no { color: #ff4136; font-size: 22px; font-weight: 900; }
-        .g-num { background: #ffdc00; padding: 4px 12px; border-radius: 8px; border: 2px solid black; color: black; font-size: 20px; }
+        .g-display { font-size: 85px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
+        .log-card { background: white; color: black; border-radius: 25px; padding: 15px; min-height: 500px; }
+        .log-item { border-bottom: 3px solid #f1f1f1; padding: 12px 0; font-size: 18px; font-weight: 800; }
+        .g-num { background: #ffdc00; padding: 4px 14px; border-radius: 10px; border: 3px solid black; color: black; font-size: 22px; font-weight: 900; }
     </style>
 </head>
 <body class="p-3">
     <div class="max-w-2xl mx-auto space-y-4">
         
-        <div class="bg-[#003366] p-5 grid grid-cols-3 gap-2 text-center rounded-[30px] border-b-4 border-cyan-400 shadow-2xl">
-            <div><p class="font-black text-white text-[10px] mb-2 uppercase">Pred P</p><div class="box-p"><span id="pred-p">-</span></div></div>
-            <div><p class="font-black text-white text-[10px] mb-2 uppercase">Pred E</p><div class="box-e"><span id="pred-e">-</span></div></div>
-            <div><p class="font-black text-white text-[10px] mb-2 uppercase">Pred S</p><div class="box-s"><span id="pred-s"></span></div></div>
+        <div class="bg-[#003366] p-6 grid grid-cols-3 gap-2 text-center rounded-[35px] border-b-8 border-cyan-500 shadow-2xl">
+            <div><p class="font-black text-white text-[11px] mb-2 uppercase tracking-widest">Pred P</p><div class="box-p"><span id="pred-p">-</span></div></div>
+            <div><p class="font-black text-white text-[11px] mb-2 uppercase tracking-widest">Pred E</p><div class="box-e"><span id="pred-e">-</span></div></div>
+            <div><p class="font-black text-white text-[11px] mb-2 uppercase tracking-widest">Pred S</p><div class="box-s"><span id="pred-s"></span></div></div>
         </div>
 
-        <div class="bg-blue-900/50 p-4 rounded-3xl flex items-center justify-between border-2 border-white/20">
+        <div class="bg-blue-900/60 p-5 rounded-[2rem] flex items-center justify-between border-2 border-white/20 shadow-inner">
             <div class="text-center flex-1">
-                <p class="text-[10px] font-bold text-yellow-400 italic">LAST RESULT</p>
+                <p class="text-[10px] font-bold text-yellow-400 italic mb-1 uppercase">Current Result</p>
                 <div id="highlight-g" class="g-display">-</div>
             </div>
-            <div class="flex flex-col gap-2 w-44">
-                <input type="number" id="digit-input" class="w-full rounded-2xl text-center text-4xl font-bold p-2 outline-none border-4 border-yellow-400 text-black bg-white" placeholder="?" oninput="validate(this)">
-                <button id="btn-submit" class="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-xl uppercase shadow-lg disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+            <div class="flex flex-col gap-3 w-48">
+                <input type="number" id="digit-input" class="w-full rounded-2xl text-center text-5xl font-black p-3 outline-none border-4 border-yellow-400 text-black bg-white shadow-xl" placeholder="?" oninput="validate(this)">
+                <button id="btn-submit" class="w-full py-5 bg-yellow-400 text-black font-black rounded-2xl text-2xl uppercase shadow-lg active:scale-95 disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
             </div>
         </div>
 
         <div id="alert-box" class="hidden">
-            <div class="bg-red-600 border-4 border-white text-white p-5 rounded-2xl text-center animate-pulse shadow-2xl">
-                <span id="alert-msg" class="text-2xl font-black"></span>
+            <div class="bg-red-600 border-4 border-white text-white p-6 rounded-[2rem] text-center animate-pulse shadow-2xl">
+                <span id="alert-msg" class="text-3xl font-black"></span>
             </div>
         </div>
 
-        <div class="log-card shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b-4 border-blue-900 pb-2">
-                <h3 class="font-black text-blue-900 text-xl uppercase italic">Record Table Logs</h3>
-                <span id="total-stg" class="bg-blue-900 text-white px-5 py-1 rounded-full font-bold">0 STG</span>
+        <div class="log-card shadow-2xl border-t-8 border-blue-900">
+            <div class="flex justify-between items-center mb-5 border-b-4 border-gray-100 pb-3">
+                <h3 class="font-black text-blue-900 text-2xl uppercase italic tracking-tighter">Live Record Logs</h3>
+                <span id="total-stg" class="bg-blue-900 text-white px-6 py-1.5 rounded-full font-black text-sm shadow-md">0 STG</span>
             </div>
-            <div id="history-container" class="flex overflow-x-auto gap-4 pb-4"></div>
+            <div id="history-container" class="flex overflow-x-auto gap-6 pb-6"></div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="copy()" class="bg-green-600 py-6 text-white font-black rounded-2xl text-xl shadow-xl uppercase border-b-4 border-green-800">📋 Copy Data</button>
-            <button onclick="reset()" class="bg-red-500 py-6 text-white font-black rounded-2xl text-xl shadow-xl uppercase border-b-4 border-red-800">🔄 Reset App</button>
+            <button onclick="copy()" class="bg-green-600 py-6 text-white font-black rounded-[1.5rem] text-xl shadow-xl uppercase border-b-8 border-green-800 active:translate-y-1">📋 Copy Data</button>
+            <button onclick="reset()" class="bg-red-500 py-6 text-white font-black rounded-[1.5rem] text-xl shadow-xl uppercase border-b-8 border-red-800 active:translate-y-1">🔄 Reset</button>
         </div>
 
-        <div class="bg-blue-950 p-6 rounded-3xl border-2 border-white/20 mb-10">
-            <h3 class="font-black text-yellow-400 mb-4 text-sm uppercase tracking-widest italic border-b border-white/10 pb-2 text-center">Pattern History Analysis</h3>
-            <div id="warning-history" class="max-h-64 overflow-y-auto space-y-3 text-white font-bold text-sm">
-                <div id="no-history-msg" class="italic opacity-30 text-xs text-center py-4">No patterns broken yet.</div>
+        <div class="bg-blue-950 p-6 rounded-[2rem] border-2 border-white/10 mb-12 shadow-2xl">
+            <h3 class="font-black text-yellow-400 mb-4 text-sm uppercase tracking-widest italic border-b border-white/10 pb-3 text-center">Final Pattern Analysis</h3>
+            <div id="warning-history" class="max-h-72 overflow-y-auto space-y-4 text-white font-bold text-sm">
+                <div id="no-history-msg" class="italic opacity-30 text-xs text-center py-6">No records yet. Pattern must break to show here.</div>
             </div>
         </div>
     </div>
@@ -109,7 +110,7 @@
                 if(pp >= 6) current = { type: 'တစ်လှည့်စီ', count: pp, start: history.length - pp };
             }
             const box = document.getElementById('alert-box');
-            if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} ${current.count} ကြိမ် ဖြစ်နေသည်`; box.classList.remove('hidden'); }
+            if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} ${current.count} ကြိမ်`; box.classList.remove('hidden'); }
             else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} ကြိမ် (R${s.roll}-S${s.stage} မှ R${e.roll}-S${e.stage} ထိ)` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
         }
 
@@ -128,18 +129,18 @@
             document.getElementById('total-stg').innerText = `${history.length} STG`;
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
-                const b = document.createElement('div'); b.className = 'flex-shrink-0 w-80 bg-blue-50 rounded-3xl p-4 border-2 border-blue-200';
-                b.innerHTML = `<div class="text-2xl text-center font-black text-blue-900 mb-2 border-b-2 border-blue-200 pb-1 italic uppercase tracking-tighter">Roll ${r}</div>
-                    <div class="grid grid-cols-8 gap-1 text-[11px] text-blue-400 font-black mb-2 text-center">
-                        <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
+                const b = document.createElement('div'); b.className = 'flex-shrink-0 w-80 bg-gray-50 rounded-[2rem] p-5 border-2 border-gray-200 shadow-lg';
+                b.innerHTML = `<div class="text-3xl text-center font-black text-blue-900 mb-4 border-b-4 border-blue-100 pb-2 italic uppercase">Roll ${r}</div>
+                    <div class="grid grid-cols-8 gap-1 text-[11px] text-gray-400 font-black mb-3 text-center uppercase tracking-tighter">
+                        <span>STG</span><span>P</span><span>OK</span><span>E</span><span>OK</span><span>S</span><span>OK</span><span>G</span>
                     </div>`;
                 rolls[r].forEach(i => {
                     b.innerHTML += `<div class="log-item grid grid-cols-8 gap-1 items-center text-center">
-                        <span class="text-gray-400 text-xs">${i.stage}</span>
-                        <span class="mini-p">${i.p||'-'}</span><span class="${i.pOk?'status-ok':'status-no'}">${i.pOk===null?'-':(i.pOk?'✓':'✕')}</span>
-                        <span class="mini-e">${i.e||'-'}</span><span class="${i.eOk?'status-ok':'status-no'}">${i.eOk===null?'-':(i.eOk?'✓':'✕')}</span>
-                        <div class="mini-s"><span>${i.s||'-'}</span></div><span class="${i.sOk?'status-ok':'status-no'}">${i.sOk===null?'-':(i.sOk?'✓':'✕')}</span>
-                        <span class="g-num font-black">${i.val}</span></div>`;
+                        <span class="text-gray-400 text-sm font-bold">${i.stage}</span>
+                        <span class="mini-p">${i.p||'-'}</span><span class="${i.pOk?'status-ok':'status-no'}">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <span class="mini-e">${i.e||'-'}</span><span class="${i.eOk?'status-ok':'status-no'}">${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span>
+                        <div class="mini-s"><span>${i.s||'-'}</span></div><span class="${i.sOk?'status-ok':'status-no'}">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span>
+                        <span class="g-num">${i.val}</span></div>`;
                 });
                 container.appendChild(b);
             });
@@ -149,22 +150,22 @@
         function renderWarnings() {
             const container = document.getElementById('warning-history');
             if(document.getElementById('no-history-msg')) document.getElementById('no-history-msg').remove();
-            container.innerHTML = warnings.map((w, idx) => `<div class="p-4 bg-white/10 rounded-2xl border-l-8 border-yellow-400 font-black text-sm">${warnings.length - idx}. ${w.text}</div>`).join('');
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-5 bg-white/10 rounded-2xl border-l-[10px] border-yellow-400 font-black text-sm shadow-xl">${warnings.length - idx}. ${w.text}</div>`).join('');
         }
 
         async function copy() {
             let t = "WIN6 PRO REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n========================\n";
-            history.forEach(i => { t += `${i.stage}|${i.p}|${i.pOk?'✓':'✕'}|${i.e}|${i.eOk?'✓':'✕'}|${i.s}|${i.sOk?'✓':'✕'}|[${i.val}]\n`; });
-            await navigator.clipboard.writeText(t); alert("Report Copied!");
+            history.forEach(i => { t += `${i.stage}|${i.p}|${i.pOk?'✅':'❌'}|${i.e}|${i.eOk?'✅':'❌'}|${i.s}|${i.sOk?'✅':'❌'}|[${i.val}]\n`; });
+            await navigator.clipboard.writeText(t); alert("Record Copied!");
         }
 
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_V12_DESIGN', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
+        function save() { localStorage.setItem('WIN6_V13_BOLD', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_V12_DESIGN'));
+            const data = JSON.parse(localStorage.getItem('WIN6_V13_BOLD'));
             if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; activePattern = data.activePattern || null; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
+        function reset() { if(confirm("Data တွေအကုန်လုံးကို ရှင်းထုတ်လိုက်တော့မလား?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
