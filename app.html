@@ -3,104 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>6 Lottery Predictor</title>
+    <title>Win6 Pro Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .neon-solid-b { background-color: #ef4444; color: white; box-shadow: 0 0 5px #ef4444, 0 0 10px #ef4444; }
-        .neon-solid-s { background-color: #10b981; color: white; box-shadow: 0 0 5px #10b981, 0 0 10px #10b981; }
-        .neon-extra-b { background-color: #a855f7; color: white; box-shadow: 0 0 5px #a855f7; }
-        .neon-extra-s { background-color: #06b6d4; color: white; box-shadow: 0 0 5px #06b6d4; }
-        .large-bubble { display: inline-flex; width: 40px; height: 40px; border-radius: 50%; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: bold; }
-        .history-bubble { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
-        
-        /* History Section Fixed Height & Horizontal Scroll */
-        #history-log-container {
-            display: flex;
-            overflow-x: auto;
-            overflow-y: hidden;
-            gap: 12px;
-            padding: 10px;
-            min-height: 380px; 
-            max-height: 420px;
-            scroll-behavior: smooth;
-        }
-        /* Scrollbar styling */
-        #history-log-container::-webkit-scrollbar { height: 8px; }
-        #history-log-container::-webkit-scrollbar-track { background: #1f2937; }
-        #history-log-container::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
-        
-        #subscription-overlay { background: #111827; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .hidden { display: none !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu&display=swap');
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .neon-p { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; }
+        .neon-e { background-color: #a855f7; box-shadow: 0 0 15px #a855f7; }
+        .neon-s { background-color: #10b981; box-shadow: 0 0 15px #10b981; }
+        .large-bubble { display: inline-flex; width: 50px; height: 50px; border-radius: 12px; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; color: white; }
+        #history-log-container { display: flex; overflow-x: auto; gap: 15px; padding: 10px; min-height: 420px; }
+        .g-highlight { background-color: #fbbf24; color: #0f172a; font-weight: 900; border-radius: 4px; padding: 0 4px; }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
+<body class="p-4">
 
-    <div id="subscription-overlay">
-        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-md text-center">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-6">Win6 Subscription</h2>
-            <div id="status-box" class="p-4 rounded-lg mb-6 bg-gray-900 text-gray-400 border border-gray-700 font-mono text-xs">Checking Access...</div>
-            <div id="activation-area" class="hidden">
-                <input type="text" id="code-input" placeholder="Enter Activation Code" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 mb-4 text-center text-white outline-none">
-                <button onclick="activate()" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 rounded-lg">Activate Now</button>
-            </div>
-            <button id="play-btn" class="hidden w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-lg shadow-lg" onclick="showGame()">START PREDICTOR ➔</button>
-            <button onclick="logout()" class="mt-8 text-gray-500 hover:text-white text-sm underline">Sign Out</button>
-        </div>
-    </div>
-
-    <div id="game-container" class="container mx-auto p-4 sm:p-6 max-w-4xl hidden">
-        <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-yellow-400 mb-1">6 Lottery Predictor</h1>
-            <p id="datetime-display" class="text-white text-sm font-mono"></p> 
-            <p id="expiry-display" class="text-emerald-400 text-xs font-bold mt-1"></p>
-            <p id="game-start-time" class="text-gray-400 text-[10px] mt-1 italic">Start Time: ---</p>
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-4">
+            <h1 class="text-3xl font-black text-yellow-400">WIN6 PRO PREDICTOR</h1>
+            <p id="clock" class="text-[10px] text-slate-500 font-mono"></p>
         </header>
 
-        <div class="text-center mb-6">
-            <p id="round-display" class="text-xl font-bold text-red-400 bg-gray-800 px-4 py-2 rounded-full border border-gray-700 inline-block">Roll: 1 | Stage: 1 / 10</p>
+        <div class="grid grid-cols-3 gap-3 mb-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+            <div class="text-center">
+                <p class="text-[9px] text-slate-400 mb-1">PRED P</p>
+                <div id="pred-p" class="large-bubble bg-slate-700">?</div>
+            </div>
+            <div class="text-center border-x border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-1">PRED E (S3)</p>
+                <div id="pred-e" class="large-bubble bg-slate-700">?</div>
+            </div>
+            <div class="text-center">
+                <p class="text-[9px] text-slate-400 mb-1">PRED S (S10)</p>
+                <div id="pred-s" class="large-bubble bg-slate-700">?</div>
+            </div>
         </div>
 
-        <div class="bg-gray-800 p-4 sm:p-6 rounded-xl shadow-2xl border border-gray-700 mb-6">
-            <div class="flex justify-between items-center mb-6 text-center">
-                <div class="w-1/3"><p class="text-[10px] text-gray-400 uppercase mb-1">Current</p><span id="current-digit" class="text-5xl font-black text-red-500">...</span></div>
-                <div class="w-1/3"><p class="text-[10px] text-gray-400 uppercase mb-1">Pred P</p><span id="app-prediction" class="text-2xl">...</span></div>
-                <div class="w-1/3"><p class="text-[10px] text-gray-400 uppercase mb-1">Pred E</p><span id="app-extra-prediction" class="text-2xl">...</span></div>
-            </div>
-            <div class="flex justify-center items-center space-x-3 mt-4">
-                <input type="number" id="next-digit-input" class="w-20 text-center text-3xl p-2 rounded-lg bg-gray-900 text-white border border-gray-600 focus:border-yellow-500 outline-none" oninput="handleInput(event)" onkeydown="checkEnter(event)">
-                <button id="submit-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg disabled:opacity-30" onclick="submitDigit()" disabled>SUBMIT</button>
-            </div>
+        <div class="bg-slate-900 border-2 border-yellow-500/50 rounded-2xl p-4 mb-4 text-center">
+            <p class="text-[10px] text-yellow-500 font-bold uppercase tracking-widest">Last Input (G)</p>
+            <div id="highlight-g" class="text-7xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">-</div>
         </div>
-        
-        <div id="pattern-warning-box" class="hidden text-center bg-yellow-900/40 text-yellow-300 p-3 rounded-lg border border-yellow-600/50 mb-6 font-bold animate-pulse"></div>
-        
-        <section class="mb-6 bg-gray-900/50 rounded-xl border border-gray-700 p-2">
-            <h2 class="text-sm font-bold text-blue-400 mb-2 ml-2">📊 မှတ်တမ်းများ (Side by Side)</h2>
-            <div id="history-log-container">
-                <p class="text-gray-500 w-full text-center py-10">No records yet.</p>
+
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 mb-6 text-center">
+            <div class="flex justify-center gap-4">
+                <input type="number" id="digit-input" class="w-24 text-center text-4xl font-bold bg-slate-900 border-2 border-slate-600 rounded-xl p-2 outline-none focus:border-yellow-500" oninput="handleInput(event)" onkeydown="checkEnter(event)">
+                <button id="btn-submit" class="bg-yellow-500 text-slate-900 font-black px-8 py-2 rounded-xl disabled:opacity-20" onclick="submitDigit()" disabled>SUBMIT</button>
             </div>
-        </section>
-
-        <section class="mb-6 bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-            <h2 class="text-sm font-bold text-teal-400 mb-2 border-b border-gray-700 pb-1">ပြီးဆုံး Pattern မှတ်တမ်း</h2>
-            <div id="pattern-records-container" class="space-y-2 max-h-[150px] overflow-y-auto pr-1 text-xs"></div>
-        </section>
-
-        <div class="flex flex-col sm:flex-row gap-4">
-            <button class="flex-1 bg-blue-600/80 hover:bg-blue-600 text-white font-bold py-3 rounded-lg" onclick="copyCSVToClipboard()">Export CSV</button>
-            <button class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-lg" onclick="showConfirmationModal('ဂိမ်းမှတ်တမ်းအားလုံးဖျက်မှာ သေချာပါသလား?', handleConfirmedReset)">Reset Game</button>
+            <div id="pattern-warning" class="mt-4 hidden p-3 bg-red-900/30 border border-red-500 rounded-lg text-red-400 text-xs font-bold animate-pulse"></div>
         </div>
-    </div>
 
-    <div id="confirmation-modal-overlay" class="fixed inset-0 bg-black/80 flex justify-center items-center z-50 hidden">
-        <div class="bg-gray-800 p-6 rounded-xl border border-red-500 max-w-sm mx-4 text-center">
-            <p id="confirmation-modal-message" class="text-white mb-6 font-medium"></p>
-            <div class="flex gap-4">
-                <button onclick="closeConfirmationModal()" class="flex-1 bg-gray-600 py-2 rounded-lg">ပယ်ဖျက်</button>
-                <button id="modal-confirm-button" class="flex-1 bg-red-600 py-2 rounded-lg font-bold">အတည်ပြု</button>
-            </div>
+        <div class="bg-slate-900/80 rounded-2xl border border-slate-700 p-3 mb-6">
+            <h2 class="text-xs font-bold text-blue-400 mb-2 px-2">📊 ROLL ဇယားမှတ်တမ်းများ</h2>
+            <div id="history-log-container" class="custom-scrollbar"></div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+            <button class="bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg" onclick="copyHistoryToClipboard()">📋 ဇယားမှတ်တမ်းအားလုံးကို Copy ယူရန်</button>
+            <button class="bg-slate-700 text-slate-400 py-2 rounded-lg text-xs" onclick="resetGame()">🔄 Reset Game (အကုန်ဖျက်ရန်)</button>
         </div>
     </div>
 
