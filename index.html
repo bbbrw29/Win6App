@@ -3,65 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro - Premium Edition</title>
+    <title>Win6 Pro - Max Visibility</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { 
-            font-family: 'Pyidaungsu', sans-serif; 
-            background: linear-gradient(to bottom, #1e3a8a, #0f172a); /* ပိုလင်းပြီး Eye-catching ဖြစ်သော အရောင် */
-            color: #ffffff;
-            min-height: 100vh;
-        }
-        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .box-p { border: 4px solid #f87171; color: #f87171; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 15px rgba(248, 113, 113, 0.5); }
-        .box-e { border: 4px solid #c084fc; color: #c084fc; border-radius: 12px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 0 15px rgba(192, 132, 252, 0.5); }
-        .box-s { border: 4px solid #34d399; color: #34d399; border-radius: 8px; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); box-shadow: 0 0 15px rgba(52, 211, 153, 0.5); }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #001f3f; color: white; }
+        
+        /* Prediction Group */
+        .pred-section { background-color: #003366; border: 3px solid #00d4ff; border-radius: 30px; }
+        .box-p { border: 5px solid #ff4136; color: #ff4136; border-radius: 50%; width: 70px; height: 70px; font-size: 35px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
+        .box-e { border: 5px solid #b10dc9; color: #b10dc9; border-radius: 15px; width: 70px; height: 70px; font-size: 35px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
+        .box-s { border: 5px solid #2ecc40; color: #2ecc40; border-radius: 10px; width: 65px; height: 65px; font-size: 35px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); }
-        .g-highlight { background: #fbbf24; color: #000; font-weight: 900; border-radius: 4px; padding: 2px 6px; }
+
+        /* Input Display */
+        .g-display { font-size: 80px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
+        .input-box { font-size: 40px !important; border: 4px solid #ffdc00 !important; background: white !important; color: black !important; }
+
+        /* Record Log Section (Huge) */
+        .log-card { background: white; color: black; border-radius: 25px; padding: 15px; min-height: 480px; }
+        .log-item { border-bottom: 2px solid #eee; padding: 10px 0; font-size: 20px; font-weight: 800; }
+        .symbol { font-size: 24px; }
+        .g-num { background: #ffdc00; padding: 2px 12px; border-radius: 6px; border: 2px solid black; }
+
+        /* Action Buttons */
+        .btn-copy { background: #2ecc40; border-bottom: 5px solid #25a234; }
+        .btn-reset { background: #ff4136; border-bottom: 5px solid #b12b24; }
     </style>
 </head>
-<body class="p-4 pb-10">
-    <div class="max-w-xl mx-auto space-y-5">
+<body class="p-3">
+    <div class="max-w-2xl mx-auto space-y-4">
         
-        <div class="glass p-6 rounded-[2.5rem] grid grid-cols-3 gap-3 text-center shadow-2xl">
-            <div><p class="text-[10px] font-bold text-red-300 mb-2">PRED P</p><div class="box-p"><span id="pred-p" class="text-3xl font-black">-</span></div></div>
-            <div class="border-x border-white/10">
-                <p class="text-[10px] font-bold text-purple-300 mb-2">PRED E</p><div class="box-e"><span id="pred-e" class="text-3xl font-black">-</span></div>
-            </div>
-            <div><p class="text-[10px] font-bold text-emerald-300 mb-2">PRED S</p><div class="box-s"><span id="pred-s" class="text-3xl font-black">-</span></div></div>
+        <div class="pred-section p-5 grid grid-cols-3 gap-2 text-center shadow-2xl">
+            <div><p class="font-black text-white text-[10px] mb-2">PRED P</p><div class="box-p"><span id="pred-p">-</span></div></div>
+            <div><p class="font-black text-white text-[10px] mb-2">PRED E</p><div class="box-e"><span id="pred-e">-</span></div></div>
+            <div><p class="font-black text-white text-[10px] mb-2">PRED S</p><div class="box-s"><span id="pred-s"></span></div></div>
         </div>
 
-        <div class="glass p-5 rounded-[2rem] flex items-center justify-around shadow-xl">
-            <div class="text-center">
-                <p class="text-[9px] text-slate-300 font-bold uppercase mb-1">Result</p>
-                <div id="highlight-g" class="text-6xl font-black text-white">-</div>
+        <div class="bg-blue-900/50 p-4 rounded-3xl flex items-center justify-between border-2 border-white/20">
+            <div class="text-center flex-1">
+                <p class="text-[10px] font-bold text-yellow-400 italic">LAST RESULT</p>
+                <div id="highlight-g" class="g-display">-</div>
             </div>
-            <div class="flex flex-col gap-2 w-36">
-                <input type="number" id="digit-input" class="w-full bg-slate-900/50 border border-white/30 rounded-xl text-center text-4xl font-bold p-2 text-yellow-400 outline-none" placeholder="?" oninput="validate(this)">
-                <button id="btn-submit" class="w-full py-3 bg-yellow-400 rounded-xl text-slate-900 font-black text-xs uppercase shadow-lg disabled:opacity-20" onclick="submit()" disabled>Submit</button>
+            <div class="flex flex-col gap-2 w-44">
+                <input type="number" id="digit-input" class="input-box w-full rounded-2xl text-center outline-none shadow-inner" placeholder="?" oninput="validate(this)">
+                <button id="btn-submit" class="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-xl uppercase disabled:opacity-30 shadow-lg active:scale-95" onclick="submit()" disabled>ENTER</button>
             </div>
         </div>
 
         <div id="alert-box" class="hidden">
-            <div class="bg-red-500 text-white p-4 rounded-2xl text-center text-xs font-black animate-pulse shadow-2xl border-2 border-white/50">
-                ⚠️ <span id="alert-msg"></span>
+            <div class="bg-red-600 border-4 border-white text-white p-5 rounded-2xl text-center animate-pulse shadow-2xl">
+                <span id="alert-msg" class="text-2xl font-black"></span>
             </div>
         </div>
 
-        <div class="glass rounded-[2rem] p-5">
-            <h3 class="text-[11px] font-bold text-slate-200 mb-3 uppercase tracking-widest">Record Logs</h3>
+        <div class="log-card shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center mb-4 border-b-4 border-blue-900 pb-2">
+                <h3 class="font-black text-blue-900 text-xl uppercase italic">Record Logs</h3>
+                <span id="total-stg" class="bg-blue-900 text-white px-5 py-1 rounded-full font-bold">0 STG</span>
+            </div>
             <div id="history-container" class="flex overflow-x-auto gap-4 pb-4"></div>
         </div>
 
-        <div class="glass p-6 rounded-[2rem] border-t-4 border-yellow-500">
-            <h3 class="text-[11px] font-black text-yellow-400 mb-3 uppercase tracking-widest">📊 Pattern Analysis History</h3>
-            <div id="warning-history" class="max-h-48 overflow-y-auto space-y-2 text-[11px] text-white font-bold">
-                <div class="italic text-white/50">မှတ်တမ်းမရှိသေးပါ။</div>
+        <div class="grid grid-cols-2 gap-4 pb-10">
+            <button onclick="copy()" class="btn-copy py-6 text-white font-black rounded-2xl text-xl shadow-xl uppercase active:translate-y-1 transition-all">
+                📋 Copy Data
+            </button>
+            <button onclick="reset()" class="btn-reset py-6 text-white font-black rounded-2xl text-xl shadow-xl uppercase active:translate-y-1 transition-all">
+                🔄 Reset App
+            </button>
+        </div>
+
+        <div class="bg-blue-950 p-5 rounded-3xl border-2 border-white/20">
+            <h3 class="font-black text-yellow-400 mb-3 text-xs uppercase tracking-widest italic border-b border-white/10 pb-2">Pattern History Logs</h3>
+            <div id="warning-history" class="max-h-48 overflow-y-auto space-y-2 text-white font-bold text-sm">
+                <div class="italic opacity-30 text-xs text-center">No patterns recorded.</div>
             </div>
         </div>
 
-        <button onclick="reset()" class="w-full py-3 text-white/30 text-xs font-bold uppercase">Reset System</button>
     </div>
 
     <script>
@@ -74,40 +93,44 @@
             const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
             const entry = { val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null };
             history.push(entry);
-            
-            analyzePattern();
-            
+            analyze();
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePred(val); renderTable(); save();
             input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
-        function analyzePattern() {
+        function analyze() {
             const seq = history.map(h => h.grp).join('');
             let found = null;
 
-            // Streak (B or S)
+            // 1. Streak (B/S) 5+
             let last = seq.slice(-1), count = 0;
             for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) count++; else break; }
             if(count >= 5) found = { type: last==='B'?'အကြီး':'အသေး', count, start: history.length - count };
 
-            // PingPong (BSBSBS)
+            // 2. Ping-Pong (BSBS) 6+
             if(!found && seq.length >= 6) {
                 let pp = 1;
                 for(let i=seq.length-1; i>0; i--) { if(seq[i] !== seq[i-1]) pp++; else break; }
                 if(pp >= 6) found = { type: 'တစ်လှည့်စီ', count: pp, start: history.length - pp };
             }
 
-            // Double Pair (BBSSBB)
-            if(!found && seq.length >= 6) {
-                const last6 = seq.slice(-6);
-                if(last6==="BBSSBB" || last6==="SSBBSS") found = { type: 'အတွဲလိုက် (BBSS)', count: 6, start: history.length - 6 };
+            // 3. Double Pair (BBSS) - Continuous
+            if(!found && seq.length >= 4) {
+                let dp = 0;
+                for(let i=seq.length-1; i>=3; i-=2) {
+                    if(seq[i]===seq[i-1] && seq[i-2]===seq[i-3] && seq[i]!==seq[i-2]) dp += 2; else break;
+                }
+                if(dp >= 4) {
+                    if(seq.length % 2 !== 0 && seq[seq.length-1] === seq[seq.length-2]) dp += 1;
+                    found = { type: 'အတွဲလိုက် (BBSS)', count: dp, start: history.length - dp };
+                }
             }
 
             const box = document.getElementById('alert-box');
             if(found) {
                 currentPattern = found;
-                document.getElementById('alert-msg').innerText = `${found.type} ${found.count} ကြိမ် ဖြစ်နေသည်`;
+                document.getElementById('alert-msg').innerText = `⚠️ ${found.type} ${found.count} ကြိမ် ဖြစ်နေသည်`;
                 box.classList.remove('hidden');
             } else {
                 if(currentPattern) {
@@ -133,24 +156,25 @@
             }
             document.getElementById('pred-p').innerText = pNext || '-';
             document.getElementById('pred-e').innerText = eNext || '-';
-            document.getElementById('pred-s').innerText = sNext || '-';
+            document.getElementById('pred-s').innerHTML = sNext ? `<span>${sNext}</span>` : '-';
             document.getElementById('highlight-g').innerText = last;
         }
 
         function renderTable() {
             const container = document.getElementById('history-container'); container.innerHTML = '';
+            document.getElementById('total-stg').innerText = `${history.length} STG`;
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
-                const b = document.createElement('div'); b.className = 'flex-shrink-0 w-64 glass rounded-3xl p-4';
-                b.innerHTML = `<div class="text-[10px] text-center font-bold mb-2 border-b border-white/20 pb-1">Roll ${r}</div>
-                    <div class="grid grid-cols-8 gap-1 text-[7px] text-white/50 font-bold mb-1 text-center italic">
+                const b = document.createElement('div'); b.className = 'flex-shrink-0 w-80 bg-blue-50 rounded-3xl p-4 border-2 border-blue-200';
+                b.innerHTML = `<div class="text-2xl text-center font-black text-blue-900 mb-2 border-b-2 border-blue-200 pb-1 italic uppercase tracking-tighter">Roll ${r}</div>
+                    <div class="grid grid-cols-8 gap-1 text-[11px] text-blue-400 font-black mb-2 text-center uppercase">
                         <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
                     </div>`;
                 rolls[r].forEach(i => {
-                    b.innerHTML += `<div class="grid grid-cols-8 gap-1 py-1.5 border-b border-white/5 text-center text-[11px] font-bold">
-                        <span class="opacity-50">${i.stage}</span><span class="text-red-400">${i.p||'-'}</span><span>${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
-                        <span class="text-purple-400">${i.e||'-'}</span><span>${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span><span class="text-emerald-400">${i.s||'-'}</span>
-                        <span>${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span><span class="g-highlight">${i.val}</span></div>`;
+                    b.innerHTML += `<div class="log-item grid grid-cols-8 gap-1 items-center text-center">
+                        <span class="text-gray-400 text-xs">${i.stage}</span><span class="text-red-600 font-black">${i.p||'-'}</span><span class="symbol">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <span class="text-purple-600 font-black">${i.e||'-'}</span><span class="symbol">${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span><span class="text-green-600 font-black">${i.s||'-'}</span>
+                        <span class="symbol">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span><span class="g-num font-black">${i.val}</span></div>`;
                 });
                 container.appendChild(b);
             });
@@ -159,16 +183,23 @@
 
         function renderWarnings() {
             const container = document.getElementById('warning-history');
-            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 glass rounded-xl border-l-4 border-yellow-500">${warnings.length - idx}. ${w.text}</div>`).join('');
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/10 rounded-xl border-l-8 border-yellow-400 font-black text-sm">${warnings.length - idx}. ${w.text}</div>`).join('');
+        }
+
+        async function copy() {
+            if(!history.length) return;
+            let t = "WIN6 PRO REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n========================\n";
+            history.forEach(i => { t += `${i.stage}|${i.p||'-'}|${i.pOk===null?'-':(i.pOk?'✅':'❌')}|${i.e||'-'}|${i.eOk===null?'-':(i.eOk?'✅':'❌')}|${i.s||'-'}|${i.sOk===null?'-':(i.sOk?'✅':'❌')}|[${i.val}]\n`; if(i.stage === 10) t += "------------------------\n"; });
+            await navigator.clipboard.writeText(t); alert("Report Copied!");
         }
 
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_P_V7', JSON.stringify({ history, warnings, roll, stage, currentPattern })); }
+        function save() { localStorage.setItem('WIN6_V9_MAX', JSON.stringify({ history, warnings, roll, stage, currentPattern })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_P_V7'));
+            const data = JSON.parse(localStorage.getItem('WIN6_V9_MAX'));
             if(data) { history = data.history; warnings = data.warnings; roll = data.roll; stage = data.stage; currentPattern = data.currentPattern; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Data တွေအကုန်ဖြတ်မလား?")) { localStorage.clear(); location.reload(); } }
+        function reset() { if(confirm("Data တွေအကုန်လုံးကို ရှင်းပစ်မှာ သေချာပါသလား?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
