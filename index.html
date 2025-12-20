@@ -3,75 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro - Premium Analyzer</title>
+    <title>Win6 Pro - Premium Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        .box-p { border: 2px solid #ef4444; color: #ef4444; box-shadow: 0 0 10px #ef4444; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
-        .box-e { border: 2px solid #a855f7; color: #a855f7; box-shadow: 0 0 10px #a855f7; border-radius: 12px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
-        .box-s { border: 2px solid #10b981; color: #10b981; box-shadow: 0 0 10px #10b981; border-radius: 4px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); }
+        body { font-family: 'Pyidaungsu', sans-serif; background: radial-gradient(circle at center, #1e293b, #0f172a); color: #f1f5f9; min-height: 100vh; }
+        
+        /* Eye Catching Headers */
+        .premium-border { border: 3px solid rgba(255, 255, 255, 0.1); transition: 0.3s; }
+        .box-p { border: 4px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: rgba(239, 68, 68, 0.1); }
+        .box-e { border: 4px solid #a855f7; box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); border-radius: 15px; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: rgba(168, 85, 247, 0.1); }
+        .box-s { border: 4px solid #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); border-radius: 8px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: rgba(16, 185, 129, 0.1); }
         .box-s span { transform: rotate(-45deg); }
-        .txt-p { color: #f87171; } .txt-e { color: #c084fc; } .txt-s { color: #34d399; }
-        .g-highlight { background-color: #fbbf24; color: #0f172a; font-weight: 900; border-radius: 4px; padding: 0 6px; }
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* Highlight Input Section */
+        .input-glow { border: 3px solid #fbbf24; box-shadow: 0 0 25px rgba(251, 191, 36, 0.3); background: rgba(15, 23, 42, 0.8); }
+        .g-highlight { background-color: #fbbf24; color: #000; font-weight: 900; border-radius: 4px; padding: 0 6px; }
+        
+        /* Scrollable History Section */
+        .pattern-scroll { max-height: 150px; overflow-y: auto; scrollbar-width: thin; }
+        .pattern-scroll::-webkit-scrollbar { width: 4px; }
+        .pattern-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4 pb-10">
     <div class="max-w-xl mx-auto space-y-6">
-        <header class="text-center">
-            <h1 class="text-3xl font-black text-yellow-400 italic">WIN6 PRO ANALYZER</h1>
+        <header class="text-center py-2">
+            <h1 class="text-4xl font-black text-yellow-400 italic tracking-tighter drop-shadow-md">WIN6 PRO</h1>
             <p id="clock" class="text-[10px] text-slate-500 font-mono"></p>
         </header>
 
-        <div class="grid grid-cols-3 gap-4 bg-slate-800/40 p-6 rounded-[2rem] border border-white/5">
+        <div class="grid grid-cols-3 gap-2 bg-slate-900/80 p-6 rounded-[2.5rem] border-2 border-white/10 shadow-2xl">
             <div class="text-center">
-                <p class="text-[8px] text-slate-400 mb-2 uppercase">Pred P (S/M)</p>
-                <div class="box-p"><span id="pred-p" class="text-2xl font-black">-</span></div>
-            </div>
-            <div class="text-center border-x border-white/10">
-                <p class="text-[8px] text-slate-400 mb-2 uppercase">Pred E (S3)</p>
-                <div class="box-e"><span id="pred-e" class="text-2xl font-black">-</span></div>
+                <p class="text-[10px] text-red-400 font-bold mb-3 uppercase">PRED P</p>
+                <div class="box-p"><span id="pred-p" class="text-3xl font-black text-red-400">-</span></div>
             </div>
             <div class="text-center">
-                <p class="text-[8px] text-slate-400 mb-2 uppercase">Pred S (S10)</p>
-                <div class="box-s"><span id="pred-s" class="text-2xl font-black">-</span></div>
+                <p class="text-[10px] text-purple-400 font-bold mb-3 uppercase">PRED E</p>
+                <div class="box-e"><span id="pred-e" class="text-3xl font-black text-purple-400">-</span></div>
+            </div>
+            <div class="text-center">
+                <p class="text-[10px] text-emerald-400 font-bold mb-3 uppercase">PRED S</p>
+                <div class="box-s"><span id="pred-s" class="text-3xl font-black text-emerald-400">-</span></div>
             </div>
         </div>
 
-        <div class="bg-slate-900/60 p-6 rounded-[2.5rem] border border-white/5 text-center shadow-2xl">
-            <p class="text-[9px] text-yellow-500/50 font-bold mb-1 uppercase tracking-widest">Digital Input (G)</p>
-            <div id="highlight-g" class="text-8xl font-black text-white">-</div>
-            
-            <div class="w-full max-w-[140px] mx-auto mt-4 space-y-3">
-                <input type="number" id="digit-input" class="w-full bg-slate-950 border-2 border-slate-700 rounded-2xl text-center text-5xl font-bold p-2 text-yellow-400 focus:border-yellow-500 outline-none" placeholder="?" oninput="validate(this)">
-                <button id="btn-submit" class="w-full py-2 bg-yellow-500 rounded-xl text-slate-900 font-black text-xs uppercase tracking-wider disabled:opacity-20 active:scale-95 transition-all" onclick="submit()" disabled>Submit</button>
+        <div class="input-glow p-8 rounded-[3rem] text-center space-y-4">
+            <div>
+                <p class="text-xs text-yellow-500 font-bold tracking-[0.3em] uppercase mb-2">Digital Result (G)</p>
+                <div id="highlight-g" class="text-8xl font-black text-white drop-shadow-lg leading-none">-</div>
+            </div>
+            <div class="max-w-[160px] mx-auto space-y-4">
+                <input type="number" id="digit-input" class="w-full bg-slate-950 border-2 border-slate-600 rounded-2xl text-center text-5xl font-bold p-3 text-yellow-400 focus:border-yellow-400 outline-none shadow-inner" placeholder="?" oninput="validate(this)">
+                <button id="btn-submit" class="w-full py-3 bg-yellow-500 rounded-xl text-slate-950 font-black text-sm uppercase shadow-lg disabled:opacity-10 active:scale-95 transition-all" onclick="submit()" disabled>Submit Digit</button>
             </div>
         </div>
 
         <div id="alert-box" class="hidden">
-            <div class="bg-red-500/20 border border-red-500 text-red-400 p-3 rounded-2xl text-center text-xs font-bold animate-pulse">
+            <div class="bg-red-600 text-white p-3 rounded-2xl text-center text-xs font-bold animate-pulse shadow-xl">
                 <span id="alert-msg"></span>
             </div>
         </div>
 
-        <div class="bg-slate-950/80 rounded-[2rem] border border-white/5 p-4 overflow-hidden">
-            <h3 class="text-[9px] font-bold text-slate-500 mb-3 uppercase tracking-widest">Analysis Logs (STG | P | PC | E | EC | S | SC | G)</h3>
-            <div id="history-container" class="flex overflow-x-auto gap-4 pb-2 custom-scrollbar"></div>
+        <div class="bg-slate-950/90 rounded-[2rem] border border-white/5 p-4 overflow-hidden shadow-inner">
+            <h3 class="text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-widest text-center">Record Table Logs</h3>
+            <div id="history-container" class="flex overflow-x-auto gap-4 pb-2"></div>
         </div>
 
-        <div class="space-y-3">
-            <button onclick="copy()" class="w-full py-4 bg-indigo-600 rounded-2xl font-black text-white text-sm shadow-xl active:scale-95 transition-all">📋 COPY FULL ANALYSIS</button>
-            <button onclick="reset()" class="w-full py-2 text-slate-600 text-[10px] font-bold uppercase">Clear Data</button>
+        <div class="bg-slate-900/90 p-5 rounded-[2rem] border border-red-500/20 shadow-2xl">
+            <h3 class="text-[11px] font-black text-red-500 mb-3 uppercase tracking-widest border-b border-red-500/20 pb-2">⚠️ Pattern History (Analysis)</h3>
+            <div id="warning-history" class="pattern-scroll space-y-2 text-[11px] text-slate-300 font-bold">
+                <div class="text-slate-600 italic">မှတ်တမ်းမရှိသေးပါ။</div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <button onclick="copy()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 rounded-2xl font-bold text-white text-xs transition-all uppercase tracking-widest border border-white/5">📋 Copy All Data</button>
+            <button onclick="reset()" class="w-full py-2 text-slate-700 text-[10px] font-bold uppercase hover:text-red-500 transition-colors">Full Reset System</button>
         </div>
     </div>
 
     <script>
-        let history = []; let roll = 1, stage = 1;
-        let pNext = null, eNext = null, sNext = null;
-
-        const getEl = id => document.getElementById(id);
+        let history = []; let warnings = []; let roll = 1, stage = 1;
+        let pNext, eNext, sNext;
 
         function updatePred(last) {
             pNext = last % 2 === 0 ? 'S' : 'B';
@@ -83,60 +97,78 @@
                 const s10 = history.slice(-10).reduce((a,b) => a+b.val, 0);
                 if(s10 > 45) sNext = 'S'; else if(s10 < 45) sNext = 'B'; else sNext = (last >= 5 ? 'B' : 'S');
             }
-            getEl('pred-p').innerText = pNext || '-';
-            getEl('pred-e').innerText = eNext || '-';
-            getEl('pred-s').innerText = sNext || '-';
-            getEl('highlight-g').innerText = last !== null ? last : '-';
-        }
-
-        function submit() {
-            const input = getEl('digit-input');
-            const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
-            history.push({
-                val, grp, roll, stage,
-                p: pNext, pOk: pNext ? pNext === grp : null,
-                e: eNext, eOk: eNext ? eNext === grp : null,
-                s: sNext, sOk: sNext ? sNext === grp : null
-            });
-            if(stage === 10) { roll++; stage = 1; } else { stage++; }
-            updatePred(val); checkPatterns(); renderTable(); save();
-            input.value = ''; input.focus(); getEl('btn-submit').disabled = true;
+            document.getElementById('pred-p').innerText = pNext || '-';
+            document.getElementById('pred-e').innerText = eNext || '-';
+            document.getElementById('pred-s').innerText = sNext || '-';
+            document.getElementById('highlight-g').innerText = last !== null ? last : '-';
         }
 
         function checkPatterns() {
-            if(history.length < 6) return;
+            if(history.length < 5) return;
             const seq = history.map(h => h.grp).join('');
-            let last = seq.slice(-1), streak = 0;
-            for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) streak++; else break; }
-            const box = getEl('alert-box');
-            if(streak >= 6) {
-                getEl('alert-msg').innerText = `⚠️ ${last==='B'?'အကြီး':'အသေး'} ${streak} ကြိမ် ဆက်တိုက် ကျနေပါသည်။`;
-                box.classList.remove('hidden');
-            } else { box.classList.add('hidden'); }
+            const lastGrp = seq.slice(-1);
+            let msg = ""; let type = "";
+            
+            // Streak Check
+            let streak = 0; for(let i=seq.length-1; i>=0; i--) { if(seq[i]===lastGrp) streak++; else break; }
+            if(streak >= 5) {
+                type = lastGrp === 'B' ? 'အကြီး' : 'အသေး';
+                msg = `[${type}] ${streak} ကြိမ်ဆက်တိုက် (R${history[history.length-streak].roll}-S${history[history.length-streak].stage} မှ R${history[history.length-1].roll}-S${history[history.length-1].stage} ထိ)`;
+            }
+
+            // PingPong Check
+            const last6 = seq.slice(-6);
+            if(last6 === "BSBSBS" || last6 === "SBSBSB") {
+                msg = `[BS တစ်လှည့်စီ] ၆ ကြိမ် (R${history[history.length-6].roll}-S${history[history.length-6].stage} မှ R${history[history.length-1].roll}-S${history[history.length-1].stage} ထိ)`;
+            }
+
+            if(msg) {
+                document.getElementById('alert-msg').innerText = "သတိပေးချက်: " + msg;
+                document.getElementById('alert-box').classList.remove('hidden');
+                addWarningHistory(msg);
+            } else {
+                document.getElementById('alert-box').classList.add('hidden');
+            }
+        }
+
+        function addWarningHistory(msg) {
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if(warnings.length > 0 && warnings[0].text.split('(')[0] === msg.split('(')[0]) warnings.shift(); 
+            warnings.unshift({ id: warnings.length + 1, text: msg, time });
+            renderWarningHistory();
+        }
+
+        function renderWarningHistory() {
+            const container = document.getElementById('warning-history');
+            if(!warnings.length) { container.innerHTML = '<div class="text-slate-600 italic">မှတ်တမ်းမရှိသေးပါ။</div>'; return; }
+            container.innerHTML = warnings.map((w, index) => `<div class="p-2 bg-slate-800/50 rounded-lg border-l-4 border-red-500">${warnings.length - index}. [${w.time}] ${w.text}</div>`).join('');
+            save();
+        }
+
+        function submit() {
+            const input = document.getElementById('digit-input');
+            const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
+            history.push({ val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null });
+            if(stage === 10) { roll++; stage = 1; } else { stage++; }
+            updatePred(val); checkPatterns(); renderTable(); save();
+            input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
         function renderTable() {
-            const container = getEl('history-container'); container.innerHTML = '';
+            const container = document.getElementById('history-container'); container.innerHTML = '';
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
                 const block = document.createElement('div');
-                block.className = 'flex-shrink-0 w-64 bg-slate-900/60 rounded-2xl p-3 border border-white/5';
-                block.innerHTML = `<div class="text-[9px] text-center font-bold text-slate-600 mb-2 border-b border-white/5 pb-1">ROLL ${r}</div>
-                    <div class="grid grid-cols-8 gap-0.5 text-[7px] text-slate-500 font-bold mb-1 text-center italic">
+                block.className = 'flex-shrink-0 w-64 bg-slate-900/60 rounded-2xl p-3 border border-white/5 shadow-lg';
+                block.innerHTML = `<div class="text-[9px] text-center font-bold text-slate-500 mb-2 border-b border-white/5 pb-1 uppercase italic">Roll ${r}</div>
+                    <div class="grid grid-cols-8 gap-0.5 text-[7px] text-slate-600 font-black mb-1 text-center">
                         <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
                     </div>`;
                 rolls[r].forEach(i => {
-                    const pc = i.pOk === null ? '-' : (i.pOk ? '✅' : '❌');
-                    const ec = i.eOk === null ? '-' : (i.eOk ? '✅' : '❌');
-                    const sc = i.sOk === null ? '-' : (i.sOk ? '✅' : '❌');
-                    block.innerHTML += `
-                        <div class="grid grid-cols-8 gap-0.5 py-1 border-b border-white/5 text-center text-[10px] font-bold items-center">
-                            <span class="text-slate-600">${i.stage}</span>
-                            <span class="txt-p">${i.p||'-'}</span><span>${pc}</span>
-                            <span class="txt-e">${i.e||'-'}</span><span>${ec}</span>
-                            <span class="txt-s">${i.s||'-'}</span><span>${sc}</span>
-                            <span class="g-highlight">${i.val}</span>
-                        </div>`;
+                    block.innerHTML += `<div class="grid grid-cols-8 gap-0.5 py-1 border-b border-white/5 text-center text-[10px] font-bold items-center">
+                        <span class="text-slate-600">${i.stage}</span><span class="text-red-400">${i.p||'-'}</span><span>${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <span class="text-purple-400">${i.e||'-'}</span><span>${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span><span class="text-emerald-400">${i.s||'-'}</span>
+                        <span>${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span><span class="g-highlight">${i.val}</span></div>`;
                 });
                 container.appendChild(block);
             });
@@ -145,25 +177,19 @@
 
         async function copy() {
             if(!history.length) return;
-            let t = "WIN6 PRO ANALYSIS REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n========================\n";
-            history.forEach(i => {
-                const pc = i.pOk === null ? '-' : (i.pOk ? '✅' : '❌');
-                const ec = i.eOk === null ? '-' : (i.eOk ? '✅' : '❌');
-                const sc = i.sOk === null ? '-' : (i.sOk ? '✅' : '❌');
-                t += `${i.stage}|${i.p||'-'}|${pc}|${i.e||'-'}|${ec}|${i.s||'-'}|${sc}|[${i.val}]\n`;
-                if(i.stage === 10) t += "------------------------\n";
-            });
-            await navigator.clipboard.writeText(t); alert("Analysis Copied!");
+            let t = "WIN6 PRO PREMIUM DATA\nSTG|P|PC|E|EC|S|SC|[G]\n========================\n";
+            history.forEach(i => { t += `${i.stage}|${i.p||'-'}|${i.pOk===null?'-':(i.pOk?'✅':'❌')}|${i.e||'-'}|${i.eOk===null?'-':(i.eOk?'✅':'❌')}|${i.s||'-'}|${i.sOk===null?'-':(i.sOk?'✅':'❌')}|[${i.val}]\n`; if(i.stage === 10) t += "------------------------\n"; });
+            await navigator.clipboard.writeText(t); alert("All Data Copied!");
         }
 
-        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); getEl('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_PRO_FINAL_V2', JSON.stringify({ history, roll, stage })); }
+        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
+        function save() { localStorage.setItem('WIN6_ULTRA_V3', JSON.stringify({ history, warnings, roll, stage })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_PRO_FINAL_V2'));
-            if(data) { history = data.history; roll = data.roll; stage = data.stage; renderTable(); if(history.length) updatePred(history[history.length-1].val); }
+            const data = JSON.parse(localStorage.getItem('WIN6_ULTRA_V3'));
+            if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; renderTable(); renderWarningHistory(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
-        setInterval(() => getEl('clock').innerText = new Date().toLocaleString(), 1000);
+        function reset() { if(confirm("Reset Everything?")) { localStorage.clear(); location.reload(); } }
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleString(), 1000);
         load();
     </script>
 </body>
