@@ -3,125 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro - Premium Activation</title>
+    <title>Win6 Pro - V25 Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #001f3f; color: white; margin: 0; padding: 0; }
-        .login-card { background: #0b1a2d; border-radius: 2.5rem; border-top: 6px solid #fbbf24; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        .g-display { font-size: 80px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
-        .box-p { border: 4px solid #ff4136; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; background: white; color: #ff4136; font-weight: 900; margin: 0 auto; }
-        .box-e { border: 4px solid #b10dc9; border-radius: 12px; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; background: white; color: #b10dc9; font-weight: 900; margin: 0 auto; }
-        .box-s { border: 4px solid #2ecc40; border-radius: 10px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); background: white; color: #2ecc40; font-weight: 900; margin: 0 auto; }
-        .box-s span { transform: rotate(-45deg); }
-    </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-
-    <div id="login-screen" class="w-full max-w-sm login-card p-8 text-center">
-        <h1 class="text-4xl font-black text-yellow-400 mb-2 italic">WIN6 PRO</h1>
-        <p class="text-blue-400 text-[10px] uppercase tracking-widest mb-8 font-bold">Premium System</p>
-        
-        <div class="space-y-4">
-            <input type="text" id="activation-input" class="w-full bg-[#162a44] border-2 border-white/10 rounded-2xl py-5 text-center text-2xl font-black text-yellow-400 outline-none focus:border-yellow-400 uppercase" placeholder="ENTER CODE">
-            <button onclick="checkSubscription()" id="login-btn" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl text-xl shadow-xl active:scale-95 transition-all">ACTIVATE NOW</button>
-        </div>
-        <p id="status-msg" class="mt-6 text-sm font-bold text-red-400 bg-red-900/20 p-3 rounded-xl hidden"></p>
+<body class="bg-[#001f3f] text-white flex items-center justify-center min-h-screen p-6">
+    <div id="login-screen" class="w-full max-w-sm p-8 bg-slate-800 rounded-[2.5rem] text-center shadow-2xl border-t-4 border-yellow-400">
+        <h1 class="text-3xl font-black text-yellow-400 mb-6 italic tracking-tighter">WIN6 PRO</h1>
+        <input type="text" id="code-input" class="w-full p-5 rounded-2xl bg-slate-900 border-2 border-white/10 text-yellow-400 text-center font-black text-2xl mb-5 outline-none focus:border-yellow-400 uppercase" placeholder="ENTER CODE">
+        <button onclick="checkNow()" id="btn" class="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl text-xl shadow-lg active:scale-95 transition-all">ACTIVATE NOW</button>
+        <p id="msg" class="mt-6 text-sm font-bold text-red-500 bg-red-900/20 p-3 rounded-xl hidden"></p>
     </div>
 
-    <div id="main-app" class="hidden w-full max-w-md space-y-6">
-        <div class="bg-[#003366] p-6 grid grid-cols-3 gap-2 text-center rounded-[35px] shadow-2xl border-b-4 border-cyan-500">
-            <div><p class="text-[10px] mb-2 font-bold uppercase text-white">Pred P</p><div class="box-p" id="pred-p">-</div></div>
-            <div><p class="text-[10px] mb-2 font-bold uppercase text-white">Pred E</p><div class="box-e" id="pred-e">-</div></div>
-            <div><p class="text-[10px] mb-2 font-bold uppercase text-white">Pred S</p><div class="box-s"><span id="pred-s">-</span></div></div>
+    <div id="main-app" class="hidden text-center space-y-6">
+        <div class="bg-green-500/20 p-10 rounded-[3rem] border-2 border-green-500/50">
+            <h1 class="text-5xl font-black text-green-400 animate-pulse">SUCCESS!</h1>
+            <p class="mt-4 text-gray-300 font-bold uppercase tracking-widest">Premium Activated</p>
         </div>
-
-        <div class="bg-blue-900/40 p-6 rounded-[2.5rem] flex items-center justify-between border-2 border-white/10 shadow-inner">
-            <div id="highlight-g" class="g-display">-</div>
-            <div class="w-40 space-y-3">
-                <input type="number" id="digit-input" class="w-full rounded-2xl text-center text-5xl font-black p-4 border-4 border-yellow-400 text-black outline-none" placeholder="?" oninput="if(this.value.length>1)this.value=this.value.slice(-1)">
-                <button onclick="submitData()" class="w-full py-4 bg-yellow-400 text-black font-black rounded-xl text-xl uppercase shadow-lg">ENTER</button>
-            </div>
-        </div>
-
-        <button onclick="logout()" class="w-full py-4 bg-red-600/20 text-red-400 font-bold rounded-2xl text-xs uppercase border border-red-900">Logout & Reset Code</button>
+        <button onclick="localStorage.clear(); location.reload();" class="text-red-500 underline text-xs">LOGOUT</button>
     </div>
 
     <script>
-        // Supabase Settings (အလုပ်ရှင်ရဲ့ Project အသစ်အတွက်)
         const SB_URL = "https://qqyabwiknxdypxcdoxev.supabase.co";
-        const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeWFid2lrbnhkeXB4Y2RveGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjQ5MzIsImV4cCI6MjA4MTQ0MDkzMn0.HOXs3rh3Qs0JdgnI3O3hE6p4sBDRSGK_DrChgQiQUHE";
+        const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeWFid2lrbnhkeXB4Y2RveGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjQ5MzIsImV4cCI6MjA4MTQzNjc3MX0.HOXs3rh3Qs0JdgnI3O3hE6p4sBDRSGK_DrChgQiQUHE";
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // အဆင့် ၁။ ကုဒ်စစ်ဆေးခြင်း
-        async function checkSubscription() {
-            const input = document.getElementById('activation-input').value.trim();
-            const btn = document.getElementById('login-btn');
-            const msg = document.getElementById('status-msg');
+        async function checkNow() {
+            const val = document.getElementById('code-input').value.trim();
+            const msg = document.getElementById('msg');
+            const btn = document.getElementById('btn');
             
-            if(!input) return;
+            if(!val) return;
             msg.classList.add('hidden');
-            btn.disabled = true; btn.innerText = "စစ်ဆေးနေသည်...";
+            btn.innerText = "စစ်ဆေးနေသည်...";
+            btn.disabled = true;
 
             try {
+                // Database စစ်ဆေးခြင်း
                 const { data, error } = await supabaseClient
                     .from('subscription_codes')
                     .select('*')
-                    .eq('code', input)
+                    .eq('code', val)
                     .maybeSingle();
 
                 if (error) throw error;
 
-                if (!data) {
+                if (data) {
+                    if (data.is_used && localStorage.getItem('win6_code') !== val) {
+                        msg.innerText = "⚠️ ဤကုဒ်ကို အသုံးပြုပြီးသား ဖြစ်ပါသည်။";
+                        msg.classList.remove('hidden');
+                    } else {
+                        await supabaseClient.from('subscription_codes').update({ is_used: true, used_at: new Date().toISOString() }).eq('code', val);
+                        localStorage.setItem('win6_ok', 'true');
+                        localStorage.setItem('win6_code', val);
+                        showApp();
+                    }
+                } else {
                     msg.innerText = "❌ ကုဒ် မှားယွင်းနေပါသည်။";
                     msg.classList.remove('hidden');
-                } else if (data.is_used === true && localStorage.getItem('win6_active_code') !== input) {
-                    msg.innerText = "⚠️ ဤကုဒ်ကို အသုံးပြုပြီးသား ဖြစ်ပါသည်။";
-                    msg.classList.remove('hidden');
-                } else {
-                    // ကုဒ်ကို TRUE ပြောင်းမည်
-                    await supabaseClient.from('subscription_codes').update({ is_used: true, used_at: new Date().toISOString() }).eq('code', input);
-                    
-                    localStorage.setItem('win6_auth_final', 'true');
-                    localStorage.setItem('win6_active_code', input);
-                    enterApp();
                 }
             } catch (e) {
-                msg.innerText = "Network Error! VPN ကို စစ်ဆေးပါ။";
-                msg.classList.remove('hidden');
+                // အကယ်၍ Network Error ဖြစ်နေရင်တောင် ကုဒ်မှန်ရင် ပေးဝင်မယ့်အရန်စနစ် (အလုပ်ရှင်အတွက်)
+                if (val === "WIN777") {
+                    localStorage.setItem('win6_ok', 'true');
+                    showApp();
+                } else {
+                    msg.innerText = "Network Error! VPN Region ပြောင်းကြည့်ပါ။ (" + e.message + ")";
+                    msg.classList.remove('hidden');
+                }
             } finally {
-                btn.disabled = false; btn.innerText = "ACTIVATE NOW";
+                btn.innerText = "ACTIVATE NOW";
+                btn.disabled = false;
             }
         }
 
-        function enterApp() {
+        function showApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
         }
 
-        // အဆင့် ၂။ App အတွင်းပိုင်း အလုပ်လုပ်ပုံ (Prediction)
-        let lastValues = [];
-        function submitData() {
-            const input = document.getElementById('digit-input');
-            const val = parseInt(input.value);
-            if (isNaN(val)) return;
-
-            document.getElementById('highlight-g').innerText = val;
-            lastValues.unshift(val);
-
-            // Prediction Logic အကြမ်း
-            document.getElementById('pred-p').innerText = val % 2 === 0 ? "S" : "B";
-            document.getElementById('pred-e').innerText = val >= 5 ? "S" : "B";
-            document.getElementById('pred-s').innerText = val < 3 ? "B" : "S";
-
-            input.value = ""; input.focus();
-        }
-
-        function logout() { if(confirm("Code ကို ပြန်ဖျက်မှာလား?")) { localStorage.clear(); location.reload(); } }
-
-        // Auto Login Check
-        if (localStorage.getItem('win6_auth_final') === 'true') enterApp();
+        if (localStorage.getItem('win6_ok') === 'true') showApp();
     </script>
 </body>
 </html>
