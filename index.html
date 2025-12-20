@@ -3,209 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro Predictor</title>
+    <title>Win6 Premium - Full Analysis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        .neon-p { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; }
-        .neon-e { background-color: #a855f7; box-shadow: 0 0 15px #a855f7; }
-        .neon-s { background-color: #10b981; box-shadow: 0 0 15px #10b981; }
-        .large-bubble { display: inline-flex; width: 50px; height: 50px; border-radius: 12px; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; color: white; transition: all 0.3s; }
-        #history-log-container { display: flex; overflow-x: auto; gap: 15px; padding: 10px; min-height: 420px; scroll-behavior: smooth; }
-        .g-highlight { background-color: #fbbf24; color: #0f172a; font-weight: 900; border-radius: 4px; padding: 0 6px; box-shadow: 0 0 5px #fbbf24; }
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
+        body { font-family: 'Pyidaungsu', sans-serif; background: #0f172a; color: #f8fafc; }
+        .neon-box { border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .g-highlight { background: #fbbf24; color: #000; font-weight: 900; border-radius: 4px; padding: 1px 6px; box-shadow: 0 0 8px #fbbf24; }
+        .table-header { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .row-text { font-size: 10px; font-weight: bold; }
         .custom-scrollbar::-webkit-scrollbar { height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-4xl mx-auto">
-        <header class="text-center mb-4">
-            <h1 class="text-3xl font-black text-yellow-400 tracking-tighter">WIN6 PRO PREDICTOR</h1>
-            <p id="clock" class="text-[10px] text-slate-500 font-mono"></p>
-        </header>
+    <div class="max-w-4xl mx-auto space-y-6">
+        <div class="text-center">
+            <h1 class="text-3xl font-black text-yellow-400 italic">WIN6 PREMIUM ANALYZER</h1>
+            <p id="clock" class="text-[10px] font-mono text-slate-500"></p>
+        </div>
 
-        <div class="grid grid-cols-3 gap-3 mb-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+        <div class="grid grid-cols-3 gap-3 bg-slate-800/50 p-4 rounded-3xl border border-slate-700">
             <div class="text-center">
                 <p class="text-[9px] text-slate-400 mb-1">PRED P</p>
-                <div id="pred-p" class="large-bubble bg-slate-700">?</div>
+                <div id="pred-p" class="text-2xl font-black">-</div>
             </div>
             <div class="text-center border-x border-slate-700">
-                <p class="text-[9px] text-slate-400 mb-1">PRED E (S3)</p>
-                <div id="pred-e" class="large-bubble bg-slate-700">?</div>
+                <p class="text-[9px] text-slate-400 mb-1">PRED E</p>
+                <div id="pred-e" class="text-2xl font-black">-</div>
             </div>
             <div class="text-center">
-                <p class="text-[9px] text-slate-400 mb-1">PRED S (S10)</p>
-                <div id="pred-s" class="large-bubble bg-slate-700">?</div>
+                <p class="text-[9px] text-slate-400 mb-1">PRED S</p>
+                <div id="pred-s" class="text-2xl font-black">-</div>
             </div>
         </div>
 
-        <div class="bg-slate-900 border-2 border-yellow-500/50 rounded-2xl p-4 mb-4 text-center">
-            <p class="text-[10px] text-yellow-500 font-bold uppercase tracking-widest">Last Input (G)</p>
-            <div id="highlight-g" class="text-7xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">-</div>
+        <div class="bg-slate-900 border-2 border-yellow-500/30 rounded-3xl p-6 text-center shadow-2xl">
+            <p class="text-[10px] text-yellow-500/70 font-bold mb-2">LAST INPUT (G)</p>
+            <div id="highlight-g" class="text-8xl font-black text-white">-</div>
         </div>
 
-        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 mb-6 text-center shadow-xl">
-            <div class="flex justify-center gap-4">
-                <input type="number" id="digit-input" class="w-24 text-center text-4xl font-bold bg-slate-950 border-2 border-slate-600 rounded-xl p-2 outline-none focus:border-yellow-500 text-yellow-400" oninput="handleInput(event)" onkeydown="checkEnter(event)" placeholder="?">
-                <button id="btn-submit" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-8 py-2 rounded-xl disabled:opacity-20 transition-all active:scale-95" onclick="submitDigit()" disabled>SUBMIT</button>
+        <div id="alert-box" class="hidden">
+            <div class="bg-red-500/20 border border-red-500 text-red-400 p-3 rounded-2xl text-center text-xs font-bold animate-pulse">
+                <span id="alert-msg"></span>
             </div>
-            <div id="pattern-warning" class="mt-4 hidden p-3 bg-red-900/40 border border-red-500 rounded-lg text-red-400 text-xs font-bold animate-pulse"></div>
         </div>
 
-        <div class="bg-slate-900/80 rounded-2xl border border-slate-700 p-3 mb-6">
-            <h2 class="text-xs font-bold text-blue-400 mb-2 px-2 flex justify-between">
-                <span>📊 ROLL ဇယားမှတ်တမ်းများ</span>
-                <span class="text-[10px] text-slate-500 italic">P | E | S | G</span>
-            </h2>
-            <div id="history-log-container" class="custom-scrollbar"></div>
+        <div class="bg-slate-800/60 p-5 rounded-[2rem] border border-white/5">
+            <div class="flex gap-3">
+                <input type="number" id="digit-input" class="flex-1 bg-slate-950 border-2 border-slate-700 rounded-2xl text-center text-4xl font-bold p-3 text-yellow-400 outline-none focus:border-yellow-500" placeholder="?" oninput="validate(this)">
+                <button id="btn-submit" class="bg-yellow-500 px-8 rounded-2xl text-slate-900 font-black text-lg disabled:opacity-30 active:scale-95 transition-all" onclick="submit()" disabled>SUBMIT</button>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-3">
-            <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg transition active:scale-95" onclick="copyHistoryToClipboard()">📋 ဇယားမှတ်တမ်းအားလုံးကို Copy ယူရန်</button>
-            <button class="bg-slate-700 hover:bg-red-600 text-slate-400 hover:text-white py-2 rounded-lg text-xs transition-colors" onclick="resetGame()">🔄 Reset Game (အကုန်ဖျက်ရန်)</button>
+        <div class="bg-slate-950/80 rounded-[2rem] border border-white/5 p-4">
+            <h3 class="text-[10px] font-bold text-slate-500 mb-3 px-1 uppercase tracking-widest">Roll Analysis (STG | P | P.C | E | E.C | S | S.C | G)</h3>
+            <div id="history-container" class="flex overflow-x-auto gap-4 pb-4 custom-scrollbar"></div>
+        </div>
+
+        <div class="space-y-3">
+            <button onclick="copy()" class="w-full py-4 bg-indigo-600 rounded-2xl font-black text-white shadow-xl active:scale-95 transition-all">📋 COPY FULL REVIEW</button>
+            <button onclick="reset()" class="w-full py-2 text-slate-600 text-[10px] font-bold">RESET ALL DATA</button>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'WIN6_PRO_STATE_FINAL';
-        let history = [];
-        let currentRoll = 1, roundInRoll = 1;
-        let predP = null, predE = null, predS = null;
+        let history = []; let roll = 1, stage = 1;
+        let pNext = null, eNext = null, sNext = null;
 
-        const getEl = (id) => document.getElementById(id);
+        function getGrp(v) { return v >= 5 ? 'B' : 'S'; }
 
-        function getGrp(d) { return d >= 5 ? 'B' : 'S'; }
-
-        function updatePredictions(lastVal) {
-            predP = lastVal % 2 === 0 ? 'S' : 'B';
-
-            if (history.length >= 3) {
-                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
-                predE = s3 % 2 === 0 ? 'S' : 'B';
+        function updatePred(last) {
+            pNext = last % 2 === 0 ? 'S' : 'B';
+            if(history.length >= 3) {
+                const s3 = history.slice(-3).reduce((a,b) => a+b.val, 0);
+                eNext = s3 % 2 === 0 ? 'S' : 'B';
             }
-
-            if (history.length >= 10) {
-                const s10 = history.slice(-10).reduce((a, b) => a + b.val, 0);
-                if (s10 > 45) predS = 'S';
-                else if (s10 < 45) predS = 'B';
-                else predS = getGrp(lastVal);
+            if(history.length >= 10) {
+                const s10 = history.slice(-10).reduce((a,b) => a+b.val, 0);
+                if(s10 > 45) sNext = 'S';
+                else if(s10 < 45) sNext = 'B';
+                else sNext = getGrp(last);
             }
-            renderTopUI(lastVal);
+            document.getElementById('pred-p').innerText = pNext || '-';
+            document.getElementById('pred-e').innerText = eNext || '-';
+            document.getElementById('pred-s').innerText = sNext || '-';
+            document.getElementById('highlight-g').innerText = last !== null ? last : '-';
         }
 
-        function renderTopUI(lastVal) {
-            getEl('pred-p').textContent = predP || '?';
-            getEl('pred-p').className = `large-bubble ${predP ? 'neon-p' : 'bg-slate-700'}`;
-            getEl('pred-e').textContent = predE || '?';
-            getEl('pred-e').className = `large-bubble ${predE ? 'neon-e' : 'bg-slate-700'}`;
-            getEl('pred-s').textContent = predS || '?';
-            getEl('pred-s').className = `large-bubble ${predS ? 'neon-s' : 'bg-slate-700'}`;
-            getEl('highlight-g').textContent = lastVal !== null ? lastVal : '-';
-        }
-
-        window.submitDigit = () => {
-            const input = getEl('digit-input');
-            const val = parseInt(input.value);
-            const grp = getGrp(val);
+        function submit() {
+            const input = document.getElementById('digit-input');
+            const val = parseInt(input.value); const grp = getGrp(val);
 
             history.push({
-                val, grp, roll: currentRoll, stage: roundInRoll,
-                p: predP, pOk: predP ? (predP === grp) : null,
-                e: predE, eOk: predE ? (predE === grp) : null,
-                s: predS, sOk: predS ? (predS === grp) : null
+                val, grp, roll, stage,
+                p: pNext, pOk: pNext ? pNext === grp : null,
+                e: eNext, eOk: eNext ? eNext === grp : null,
+                s: sNext, sOk: sNext ? sNext === grp : null
             });
 
-            if (roundInRoll === 10) { currentRoll++; roundInRoll = 1; } else { roundInRoll++; }
-
-            updatePredictions(val);
-            checkPatterns();
-            updateTableUI();
-            saveState();
-            input.value = ''; input.focus(); getEl('btn-submit').disabled = true;
-        };
-
-        function checkPatterns() {
-            if (history.length < 6) return;
-            const seq = history.map(i => i.grp).join('');
-            let msg = "";
-            let last = seq.slice(-1), s = 0;
-            for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) s++; else break; }
-            if(s >= 6) msg = `⚠️ ${last==='B'?'အကြီး':'အသေး'} ${s} ကြိမ် ဆက်တိုက် ကျနေပါသည်။`;
-            
-            const box = getEl('pattern-warning');
-            if(msg) { box.innerHTML = msg; box.classList.remove('hidden'); }
-            else box.classList.add('hidden');
+            if(stage === 10) { roll++; stage = 1; } else { stage++; }
+            updatePred(val); checkPatterns(); renderTable(); save();
+            input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
-        window.copyHistoryToClipboard = async () => {
-            if (history.length === 0) return alert("မှတ်တမ်းမရှိပါ။");
-            let text = "--- Win6 Pro Predictor (Full Review) ---\n\n";
-            text += "STG | P | P.C | E | E.C | S | S.C | [G]\n";
-            text += "========================================\n";
+        function checkPatterns() {
+            if(history.length < 6) return;
+            const seq = history.map(h => h.grp).join('');
+            let last = seq.slice(-1), streak = 0;
+            for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) streak++; else break; }
+            const box = document.getElementById('alert-box');
+            if(streak >= 6) {
+                document.getElementById('alert-msg').innerText = `⚠️ ${last==='B'?'အကြီး':'အသေး'} ${streak} ကြိမ် ဆက်တိုက် ကျနေပါသည်။`;
+                box.classList.remove('hidden');
+            } else { box.classList.add('hidden'); }
+        }
 
-            const rolls = history.reduce((acc, i) => { if(!acc[i.roll]) acc[i.roll] = []; acc[i.roll].push(i); return acc; }, {});
-
-            Object.keys(rolls).forEach(r => {
-                text += `[Roll ${r}]\n----------------------------------------\n`;
-                rolls[r].forEach(i => {
-                    const pc = i.pOk === null ? "-" : (i.pOk ? "✅" : "❌");
-                    const ec = i.eOk === null ? "-" : (i.eOk ? "✅" : "❌");
-                    const sc = i.sOk === null ? "-" : (i.sOk ? "✅" : "❌");
-                    text += `${i.stage.toString().padEnd(3)} | ${i.p||'-'} | ${pc.padEnd(3)} | ${i.e||'-'} | ${ec.padEnd(3)} | ${i.s||'-'} | ${sc.padEnd(3)} | [${i.val}]\n`;
-                });
-                text += `----------------------------------------\n`;
-            });
-
-            await navigator.clipboard.writeText(text);
-            alert("✅ Copy ယူပြီးပါပြီ။");
-        };
-
-        function updateTableUI() {
-            const container = getEl('history-log-container');
+        function renderTable() {
+            const container = document.getElementById('history-container');
             container.innerHTML = '';
-            const rolls = history.reduce((acc, i) => { if(!acc[i.roll]) acc[i.roll] = []; acc[i.roll].push(i); return acc; }, {});
-
+            const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
+            
             Object.keys(rolls).forEach(r => {
-                const div = document.createElement('div');
-                div.className = 'flex-shrink-0 w-44 bg-slate-800 rounded-xl p-2 border border-slate-700 h-fit';
-                div.innerHTML = `<h3 class="text-[10px] font-bold text-center text-slate-400 border-b border-slate-700 mb-2 pb-1 uppercase">Roll ${r}</h3>`;
+                const block = document.createElement('div');
+                block.className = 'flex-shrink-0 w-64 bg-slate-900/60 rounded-2xl p-3 border border-white/5';
+                block.innerHTML = `<div class="text-[9px] text-center font-bold text-slate-500 mb-2 border-b border-white/5 pb-1 uppercase">ROLL ${r}</div>`;
+                
+                // Header inside block
+                block.innerHTML += `<div class="grid grid-cols-8 gap-0.5 text-[7px] text-slate-600 font-bold mb-1 text-center">
+                    <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
+                </div>`;
+
                 rolls[r].forEach(i => {
-                    div.innerHTML += `
-                        <div class="grid grid-cols-4 gap-1 text-[10px] py-1 border-b border-slate-700/30 items-center text-center">
-                            <span class="text-slate-500 text-left font-mono">${i.stage}</span>
-                            <span class="font-bold ${i.pOk?'text-green-400':'text-red-400'}">${i.p||'-'}</span>
-                            <span class="font-bold ${i.eOk?'text-green-400':'text-red-400'}">${i.e||'-'}</span>
+                    const pc = i.pOk === null ? '-' : (i.pOk ? '✅' : '❌');
+                    const ec = i.eOk === null ? '-' : (i.eOk ? '✅' : '❌');
+                    const sc = i.sOk === null ? '-' : (i.sOk ? '✅' : '❌');
+                    block.innerHTML += `
+                        <div class="grid grid-cols-8 gap-0.5 py-1 border-b border-white/5 items-center text-center row-text">
+                            <span class="text-slate-600">${i.stage}</span>
+                            <span class="text-red-400">${i.p||'-'}</span>
+                            <span>${pc}</span>
+                            <span class="text-purple-400">${i.e||'-'}</span>
+                            <span>${ec}</span>
+                            <span class="text-emerald-400">${i.s||'-'}</span>
+                            <span>${sc}</span>
                             <span class="g-highlight">${i.val}</span>
                         </div>`;
                 });
-                container.appendChild(div);
+                container.appendChild(block);
             });
             container.scrollLeft = container.scrollWidth;
         }
 
-        function saveState() { 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ history, currentRoll, roundInRoll })); 
+        async function copy() {
+            if(!history.length) return;
+            let t = "WIN6 PREMIUM FULL REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n============================\n";
+            history.forEach(i => {
+                const pc = i.pOk === null ? '-' : (i.pOk ? '✅' : '❌');
+                const ec = i.eOk === null ? '-' : (i.eOk ? '✅' : '❌');
+                const sc = i.sOk === null ? '-' : (i.sOk ? '✅' : '❌');
+                t += `${i.stage}|${i.p||'-'}|${pc}|${i.e||'-'}|${ec}|${i.s||'-'}|${sc}|[${i.val}]\n`;
+                if(i.stage === 10) t += "----------------------------\n";
+            });
+            await navigator.clipboard.writeText(t); alert("FULL REVIEW COPIED!");
         }
 
-        function loadState() {
-            const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            if (!d) return;
-            history = d.history; currentRoll = d.currentRoll; roundInRoll = d.roundInRoll;
-            if (history.length) updatePredictions(history[history.length-1].val);
-            updateTableUI();
+        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
+        function save() { localStorage.setItem('WIN6_FULL_V3', JSON.stringify({ history, roll, stage })); }
+        function load() {
+            const data = JSON.parse(localStorage.getItem('WIN6_FULL_V3'));
+            if(data) { history = data.history; roll = data.roll; stage = data.stage; renderTable(); if(history.length) updatePred(history[history.length-1].val); }
         }
-
-        window.resetGame = () => { if(confirm("အကုန်ဖျက်ရန် သေချာပါသလား?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } };
-        window.handleInput = (e) => { 
-            if(e.target.value.length > 1) e.target.value = e.target.value.slice(-1);
-            getEl('btn-submit').disabled = e.target.value === ""; 
-        };
-        window.checkEnter = (e) => { if(e.key === 'Enter' && !getEl('btn-submit').disabled) window.submitDigit(); };
-
-        setInterval(() => getEl('clock').textContent = new Date().toLocaleString(), 1000);
-        loadState();
+        function reset() { if(confirm("RESET ALL?")) { localStorage.clear(); location.reload(); } }
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleString(), 1000);
+        load();
     </script>
 </body>
 </html>
