@@ -3,47 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>အကောင့်ဝင်ရန်</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Win6 Pro Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white; }
-        .box { background: #1e293b; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        #msg { margin-top: 15px; color: #ef4444; font-size: 14px; }
-        .toggle { margin-top: 15px; font-size: 13px; color: #94a3b8; }
-        .toggle span { color: #38bdf8; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu&display=swap');
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .neon-p { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; }
+        .neon-e { background-color: #a855f7; box-shadow: 0 0 15px #a855f7; }
+        .neon-s { background-color: #10b981; box-shadow: 0 0 15px #10b981; }
+        .large-bubble { display: inline-flex; width: 50px; height: 50px; border-radius: 12px; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; color: white; transition: all 0.3s; }
+        #history-log-container { display: flex; overflow-x: auto; gap: 15px; padding: 10px; min-height: 420px; scroll-behavior: smooth; }
+        .g-highlight { background-color: #fbbf24; color: #0f172a; font-weight: 900; border-radius: 4px; padding: 0 6px; box-shadow: 0 0 5px #fbbf24; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body>
-<div class="box">
-    <h2 id="title">အကောင့်ဝင်ရန်</h2>
-    <form id="auth-form">
-        <input type="email" id="email" placeholder="အီးမေးလ်" required>
-        <input type="password" id="password" placeholder="လျှို့ဝှက်နံပါတ်" required>
-        <button type="submit" id="btn">ဝင်မည်</button>
-    </form>
-    <p id="msg"></p>
-    <div class="toggle"><span id="toggle-link" onclick="toggle()">အကောင့်အသစ်ဖွင့်ရန်</span></div>
-</div>
-<script>
-    const client = supabase.createClient('https://qqyabwiknxdypxcdoxev.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeWFid2lrbnhkeXB4Y2RveGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjQ5MzIsImV4cCI6MjA4MTQ0MDkzMn0.HOXs3rh3Qs0JdgnI3O3hE6p4sBDRSGK_DrChgQiQUHE');
-    let isLogin = true;
-    function toggle() {
-        isLogin = !isLogin;
-        document.getElementById('title').innerText = isLogin ? 'အကောင့်ဝင်ရန်' : 'အကောင့်ဖွင့်ရန်';
-        document.getElementById('btn').innerText = isLogin ? 'ဝင်မည်' : 'ဖွင့်မည်';
-        document.getElementById('toggle-link').innerText = isLogin ? 'အကောင့်အသစ်ဖွင့်ရန်' : 'အကောင့်ရှိပြီးသားလား?';
-    }
-    document.getElementById('auth-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        document.getElementById('msg').innerText = "လုပ်ဆောင်နေသည်...";
-        const { error } = isLogin ? await client.auth.signInWithPassword({email, password}) : await client.auth.signUp({email, password});
-        if (error) document.getElementById('msg').innerText = error.message;
-        else window.location.href = 'app.html';
-    };
-</script>
+<body class="p-4">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-4">
+            <h1 class="text-3xl font-black text-yellow-400 tracking-tighter">WIN6 PRO PREDICTOR</h1>
+            <p id="clock" class="text-[10px] text-slate-500 font-mono"></p>
+        </header>
+
+        <div class="grid grid-cols-3 gap-3 mb-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+            <div class="text-center">
+                <p class="text-[9px] text-slate-400 mb-1">PRED P</p>
+                <div id="pred-p" class="large-bubble bg-slate-700">?</div>
+            </div>
+            <div class="text-center border-x border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-1">PRED E (S3)</p>
+                <div id="pred-e" class="large-bubble bg-slate-700">?</div>
+            </div>
+            <div class="text-center">
+                <p class="text-[9px] text-slate-400 mb-1">PRED S (S10)</p>
+                <div id="pred-s" class="large-bubble bg-slate-700">?</div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border-2 border-yellow-500/50 rounded-2xl p-4 mb-4 text-center">
+            <p class="text-[10px] text-yellow-500 font-bold uppercase tracking-widest">Last Input (G)</p>
+            <div id="highlight-g" class="text-7xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">-</div>
+        </div>
+
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 mb-6 text-center shadow-xl">
+            <div class="flex justify-center gap-4">
+                <input type="number" id="digit-input" class="w-24 text-center text-4xl font-bold bg-slate-950 border-2 border-slate-600 rounded-xl p-2 outline-none focus:border-yellow-500 text-yellow-400" oninput="handleInput(event)" onkeydown="checkEnter(event)" placeholder="?">
+                <button id="btn-submit" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-8 py-2 rounded-xl disabled:opacity-20 transition-all active:scale-95" onclick="submitDigit()" disabled>SUBMIT</button>
+            </div>
+            <div id="pattern-warning" class="mt-4 hidden p-3 bg-red-900/40 border border-red-500 rounded-lg text-red-400 text-xs font-bold animate-pulse"></div>
+        </div>
+
+        <div class="bg-slate-900/80 rounded-2xl border border-slate-700 p-3 mb-6">
+            <h2 class="text-xs font-bold text-blue-400 mb-2 px-2 flex justify-between">
+                <span>📊 ROLL ဇယားမှတ်တမ်းများ</span>
+                <span class="text-[10px] text-slate-500 italic">P | E | S | G</span>
+            </h2>
+            <div id="history-log-container" class="custom-scrollbar"></div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+            <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg transition active:scale-95" onclick="copyHistoryToClipboard()">📋 ဇယားမှတ်တမ်းအားလုံးကို Copy ယူရန်</button>
+            <button class="bg-slate-700 hover:bg-red-600 text-slate-400 hover:text-white py-2 rounded-lg text-xs transition-colors" onclick="resetGame()">🔄 Reset Game (အကုန်ဖျက်ရန်)</button>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'WIN6_PRO_STATE_FINAL';
+        let history = [];
+        let currentRoll = 1, roundInRoll = 1;
+        let predP = null, predE = null, predS = null;
+
+        const getEl = (id) => document.getElementById(id);
+
+        function getGrp(d) { return d >= 5 ? 'B' : 'S'; }
+
+        function updatePredictions(lastVal) {
+            predP = lastVal % 2 === 0 ? 'S' : 'B';
+
+            if (history.length >= 3) {
+                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
+                predE = s3 % 2 === 0 ? 'S' : 'B';
+            }
+
+            if (history.length >= 10) {
+                const s10 = history.slice(-10).reduce((a, b) => a + b.val, 0);
+                if (s10 > 45) predS = 'S';
+                else if (s10 < 45) predS = 'B';
+                else predS = getGrp(lastVal);
+            }
+            renderTopUI(lastVal);
+        }
+
+        function renderTopUI(lastVal) {
+            getEl('pred-p').textContent = predP || '?';
+            getEl('pred-p').className = `large-bubble ${predP ? 'neon-p' : 'bg-slate-700'}`;
+            getEl('pred-e').textContent = predE || '?';
+            getEl('pred-e').className = `large-bubble ${predE ? 'neon-e' : 'bg-slate-700'}`;
+            getEl('pred-s').textContent = predS || '?';
+            getEl('pred-s').className = `large-bubble ${predS ? 'neon-s' : 'bg-slate-700'}`;
+            getEl('highlight-g').textContent = lastVal !== null ? lastVal : '-';
+        }
+
+        window.submitDigit = () => {
+            const input = getEl('digit-input');
+            const val = parseInt(input.value);
+            const grp = getGrp(val);
+
+            history.push({
+                val, grp, roll: currentRoll, stage: roundInRoll,
+                p: predP, pOk: predP ? (predP === grp) : null,
+                e: predE, eOk: predE ? (predE === grp) : null,
+                s: predS, sOk: predS ? (predS === grp) : null
+            });
+
+            if (roundInRoll === 10) { currentRoll++; roundInRoll = 1; } else { roundInRoll++; }
+
+            updatePredictions(val);
+            checkPatterns();
+            updateTableUI();
+            saveState();
+            input.value = ''; input.focus(); getEl('btn-submit').disabled = true;
+        };
+
+        function checkPatterns() {
+            if (history.length < 6) return;
+            const seq = history.map(i => i.grp).join('');
+            let msg = "";
+            let last = seq.slice(-1), s = 0;
+            for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) s++; else break; }
+            if(s >= 6) msg = `⚠️ ${last==='B'?'အကြီး':'အသေး'} ${s} ကြိမ် ဆက်တိုက် ကျနေပါသည်။`;
+            
+            const box = getEl('pattern-warning');
+            if(msg) { box.innerHTML = msg; box.classList.remove('hidden'); }
+            else box.classList.add('hidden');
+        }
+
+        window.copyHistoryToClipboard = async () => {
+            if (history.length === 0) return alert("မှတ်တမ်းမရှိပါ။");
+            let text = "--- Win6 Pro Predictor (Full Review) ---\n\n";
+            text += "STG | P | P.C | E | E.C | S | S.C | [G]\n";
+            text += "========================================\n";
+
+            const rolls = history.reduce((acc, i) => { if(!acc[i.roll]) acc[i.roll] = []; acc[i.roll].push(i); return acc; }, {});
+
+            Object.keys(rolls).forEach(r => {
+                text += `[Roll ${r}]\n----------------------------------------\n`;
+                rolls[r].forEach(i => {
+                    const pc = i.pOk === null ? "-" : (i.pOk ? "✅" : "❌");
+                    const ec = i.eOk === null ? "-" : (i.eOk ? "✅" : "❌");
+                    const sc = i.sOk === null ? "-" : (i.sOk ? "✅" : "❌");
+                    text += `${i.stage.toString().padEnd(3)} | ${i.p||'-'} | ${pc.padEnd(3)} | ${i.e||'-'} | ${ec.padEnd(3)} | ${i.s||'-'} | ${sc.padEnd(3)} | [${i.val}]\n`;
+                });
+                text += `----------------------------------------\n`;
+            });
+
+            await navigator.clipboard.writeText(text);
+            alert("✅ Copy ယူပြီးပါပြီ။");
+        };
+
+        function updateTableUI() {
+            const container = getEl('history-log-container');
+            container.innerHTML = '';
+            const rolls = history.reduce((acc, i) => { if(!acc[i.roll]) acc[i.roll] = []; acc[i.roll].push(i); return acc; }, {});
+
+            Object.keys(rolls).forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'flex-shrink-0 w-44 bg-slate-800 rounded-xl p-2 border border-slate-700 h-fit';
+                div.innerHTML = `<h3 class="text-[10px] font-bold text-center text-slate-400 border-b border-slate-700 mb-2 pb-1 uppercase">Roll ${r}</h3>`;
+                rolls[r].forEach(i => {
+                    div.innerHTML += `
+                        <div class="grid grid-cols-4 gap-1 text-[10px] py-1 border-b border-slate-700/30 items-center text-center">
+                            <span class="text-slate-500 text-left font-mono">${i.stage}</span>
+                            <span class="font-bold ${i.pOk?'text-green-400':'text-red-400'}">${i.p||'-'}</span>
+                            <span class="font-bold ${i.eOk?'text-green-400':'text-red-400'}">${i.e||'-'}</span>
+                            <span class="g-highlight">${i.val}</span>
+                        </div>`;
+                });
+                container.appendChild(div);
+            });
+            container.scrollLeft = container.scrollWidth;
+        }
+
+        function saveState() { 
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ history, currentRoll, roundInRoll })); 
+        }
+
+        function loadState() {
+            const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (!d) return;
+            history = d.history; currentRoll = d.currentRoll; roundInRoll = d.roundInRoll;
+            if (history.length) updatePredictions(history[history.length-1].val);
+            updateTableUI();
+        }
+
+        window.resetGame = () => { if(confirm("အကုန်ဖျက်ရန် သေချာပါသလား?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } };
+        window.handleInput = (e) => { 
+            if(e.target.value.length > 1) e.target.value = e.target.value.slice(-1);
+            getEl('btn-submit').disabled = e.target.value === ""; 
+        };
+        window.checkEnter = (e) => { if(e.key === 'Enter' && !getEl('btn-submit').disabled) window.submitDigit(); };
+
+        setInterval(() => getEl('clock').textContent = new Date().toLocaleString(), 1000);
+        loadState();
+    </script>
 </body>
 </html>
