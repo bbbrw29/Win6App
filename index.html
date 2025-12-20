@@ -3,45 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Premium - Full Analysis</title>
+    <title>Win6 Pro - Premium Analyzer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background: #0f172a; color: #f8fafc; }
-        .neon-box { border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
-        .g-highlight { background: #fbbf24; color: #000; font-weight: 900; border-radius: 4px; padding: 1px 6px; box-shadow: 0 0 8px #fbbf24; }
-        .table-header { font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
-        .row-text { font-size: 10px; font-weight: bold; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .box-p { border: 2px solid #ef4444; color: #ef4444; box-shadow: 0 0 10px #ef4444; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        .box-e { border: 2px solid #a855f7; color: #a855f7; box-shadow: 0 0 10px #a855f7; border-radius: 12px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        .box-s { border: 2px solid #10b981; color: #10b981; box-shadow: 0 0 10px #10b981; border-radius: 4px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); }
+        .box-s span { transform: rotate(-45deg); }
+        .txt-p { color: #f87171; } .txt-e { color: #c084fc; } .txt-s { color: #34d399; }
+        .g-highlight { background-color: #fbbf24; color: #0f172a; font-weight: 900; border-radius: 4px; padding: 0 6px; }
         .custom-scrollbar::-webkit-scrollbar { height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="p-4">
+    <div class="max-w-xl mx-auto space-y-6">
+        <header class="text-center">
+            <h1 class="text-3xl font-black text-yellow-400 italic">WIN6 PRO ANALYZER</h1>
+            <p id="clock" class="text-[10px] text-slate-500 font-mono"></p>
+        </header>
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        <div class="text-center">
-            <h1 class="text-3xl font-black text-yellow-400 italic">WIN6 PREMIUM ANALYZER</h1>
-            <p id="clock" class="text-[10px] font-mono text-slate-500"></p>
+        <div class="grid grid-cols-3 gap-4 bg-slate-800/40 p-6 rounded-[2rem] border border-white/5">
+            <div class="text-center">
+                <p class="text-[8px] text-slate-400 mb-2 uppercase">Pred P (S/M)</p>
+                <div class="box-p"><span id="pred-p" class="text-2xl font-black">-</span></div>
+            </div>
+            <div class="text-center border-x border-white/10">
+                <p class="text-[8px] text-slate-400 mb-2 uppercase">Pred E (S3)</p>
+                <div class="box-e"><span id="pred-e" class="text-2xl font-black">-</span></div>
+            </div>
+            <div class="text-center">
+                <p class="text-[8px] text-slate-400 mb-2 uppercase">Pred S (S10)</p>
+                <div class="box-s"><span id="pred-s" class="text-2xl font-black">-</span></div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 bg-slate-800/50 p-4 rounded-3xl border border-slate-700">
-            <div class="text-center">
-                <p class="text-[9px] text-slate-400 mb-1">PRED P</p>
-                <div id="pred-p" class="text-2xl font-black">-</div>
-            </div>
-            <div class="text-center border-x border-slate-700">
-                <p class="text-[9px] text-slate-400 mb-1">PRED E</p>
-                <div id="pred-e" class="text-2xl font-black">-</div>
-            </div>
-            <div class="text-center">
-                <p class="text-[9px] text-slate-400 mb-1">PRED S</p>
-                <div id="pred-s" class="text-2xl font-black">-</div>
-            </div>
-        </div>
-
-        <div class="bg-slate-900 border-2 border-yellow-500/30 rounded-3xl p-6 text-center shadow-2xl">
-            <p class="text-[10px] text-yellow-500/70 font-bold mb-2">LAST INPUT (G)</p>
+        <div class="bg-slate-900/60 p-6 rounded-[2.5rem] border border-white/5 text-center shadow-2xl">
+            <p class="text-[9px] text-yellow-500/50 font-bold mb-1 uppercase tracking-widest">Digital Input (G)</p>
             <div id="highlight-g" class="text-8xl font-black text-white">-</div>
+            
+            <div class="w-full max-w-[140px] mx-auto mt-4 space-y-3">
+                <input type="number" id="digit-input" class="w-full bg-slate-950 border-2 border-slate-700 rounded-2xl text-center text-5xl font-bold p-2 text-yellow-400 focus:border-yellow-500 outline-none" placeholder="?" oninput="validate(this)">
+                <button id="btn-submit" class="w-full py-2 bg-yellow-500 rounded-xl text-slate-900 font-black text-xs uppercase tracking-wider disabled:opacity-20 active:scale-95 transition-all" onclick="submit()" disabled>Submit</button>
+            </div>
         </div>
 
         <div id="alert-box" class="hidden">
@@ -50,21 +56,14 @@
             </div>
         </div>
 
-        <div class="bg-slate-800/60 p-5 rounded-[2rem] border border-white/5">
-            <div class="flex gap-3">
-                <input type="number" id="digit-input" class="flex-1 bg-slate-950 border-2 border-slate-700 rounded-2xl text-center text-4xl font-bold p-3 text-yellow-400 outline-none focus:border-yellow-500" placeholder="?" oninput="validate(this)">
-                <button id="btn-submit" class="bg-yellow-500 px-8 rounded-2xl text-slate-900 font-black text-lg disabled:opacity-30 active:scale-95 transition-all" onclick="submit()" disabled>SUBMIT</button>
-            </div>
-        </div>
-
-        <div class="bg-slate-950/80 rounded-[2rem] border border-white/5 p-4">
-            <h3 class="text-[10px] font-bold text-slate-500 mb-3 px-1 uppercase tracking-widest">Roll Analysis (STG | P | P.C | E | E.C | S | S.C | G)</h3>
-            <div id="history-container" class="flex overflow-x-auto gap-4 pb-4 custom-scrollbar"></div>
+        <div class="bg-slate-950/80 rounded-[2rem] border border-white/5 p-4 overflow-hidden">
+            <h3 class="text-[9px] font-bold text-slate-500 mb-3 uppercase tracking-widest">Analysis Logs (STG | P | PC | E | EC | S | SC | G)</h3>
+            <div id="history-container" class="flex overflow-x-auto gap-4 pb-2 custom-scrollbar"></div>
         </div>
 
         <div class="space-y-3">
-            <button onclick="copy()" class="w-full py-4 bg-indigo-600 rounded-2xl font-black text-white shadow-xl active:scale-95 transition-all">📋 COPY FULL REVIEW</button>
-            <button onclick="reset()" class="w-full py-2 text-slate-600 text-[10px] font-bold">RESET ALL DATA</button>
+            <button onclick="copy()" class="w-full py-4 bg-indigo-600 rounded-2xl font-black text-white text-sm shadow-xl active:scale-95 transition-all">📋 COPY FULL ANALYSIS</button>
+            <button onclick="reset()" class="w-full py-2 text-slate-600 text-[10px] font-bold uppercase">Clear Data</button>
         </div>
     </div>
 
@@ -72,7 +71,7 @@
         let history = []; let roll = 1, stage = 1;
         let pNext = null, eNext = null, sNext = null;
 
-        function getGrp(v) { return v >= 5 ? 'B' : 'S'; }
+        const getEl = id => document.getElementById(id);
 
         function updatePred(last) {
             pNext = last % 2 === 0 ? 'S' : 'B';
@@ -82,30 +81,26 @@
             }
             if(history.length >= 10) {
                 const s10 = history.slice(-10).reduce((a,b) => a+b.val, 0);
-                if(s10 > 45) sNext = 'S';
-                else if(s10 < 45) sNext = 'B';
-                else sNext = getGrp(last);
+                if(s10 > 45) sNext = 'S'; else if(s10 < 45) sNext = 'B'; else sNext = (last >= 5 ? 'B' : 'S');
             }
-            document.getElementById('pred-p').innerText = pNext || '-';
-            document.getElementById('pred-e').innerText = eNext || '-';
-            document.getElementById('pred-s').innerText = sNext || '-';
-            document.getElementById('highlight-g').innerText = last !== null ? last : '-';
+            getEl('pred-p').innerText = pNext || '-';
+            getEl('pred-e').innerText = eNext || '-';
+            getEl('pred-s').innerText = sNext || '-';
+            getEl('highlight-g').innerText = last !== null ? last : '-';
         }
 
         function submit() {
-            const input = document.getElementById('digit-input');
-            const val = parseInt(input.value); const grp = getGrp(val);
-
+            const input = getEl('digit-input');
+            const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
             history.push({
                 val, grp, roll, stage,
                 p: pNext, pOk: pNext ? pNext === grp : null,
                 e: eNext, eOk: eNext ? eNext === grp : null,
                 s: sNext, sOk: sNext ? sNext === grp : null
             });
-
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePred(val); checkPatterns(); renderTable(); save();
-            input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
+            input.value = ''; input.focus(); getEl('btn-submit').disabled = true;
         }
 
         function checkPatterns() {
@@ -113,41 +108,33 @@
             const seq = history.map(h => h.grp).join('');
             let last = seq.slice(-1), streak = 0;
             for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) streak++; else break; }
-            const box = document.getElementById('alert-box');
+            const box = getEl('alert-box');
             if(streak >= 6) {
-                document.getElementById('alert-msg').innerText = `⚠️ ${last==='B'?'အကြီး':'အသေး'} ${streak} ကြိမ် ဆက်တိုက် ကျနေပါသည်။`;
+                getEl('alert-msg').innerText = `⚠️ ${last==='B'?'အကြီး':'အသေး'} ${streak} ကြိမ် ဆက်တိုက် ကျနေပါသည်။`;
                 box.classList.remove('hidden');
             } else { box.classList.add('hidden'); }
         }
 
         function renderTable() {
-            const container = document.getElementById('history-container');
-            container.innerHTML = '';
+            const container = getEl('history-container'); container.innerHTML = '';
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
-            
             Object.keys(rolls).forEach(r => {
                 const block = document.createElement('div');
                 block.className = 'flex-shrink-0 w-64 bg-slate-900/60 rounded-2xl p-3 border border-white/5';
-                block.innerHTML = `<div class="text-[9px] text-center font-bold text-slate-500 mb-2 border-b border-white/5 pb-1 uppercase">ROLL ${r}</div>`;
-                
-                // Header inside block
-                block.innerHTML += `<div class="grid grid-cols-8 gap-0.5 text-[7px] text-slate-600 font-bold mb-1 text-center">
-                    <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
-                </div>`;
-
+                block.innerHTML = `<div class="text-[9px] text-center font-bold text-slate-600 mb-2 border-b border-white/5 pb-1">ROLL ${r}</div>
+                    <div class="grid grid-cols-8 gap-0.5 text-[7px] text-slate-500 font-bold mb-1 text-center italic">
+                        <span>STG</span><span>P</span><span>PC</span><span>E</span><span>EC</span><span>S</span><span>SC</span><span>G</span>
+                    </div>`;
                 rolls[r].forEach(i => {
                     const pc = i.pOk === null ? '-' : (i.pOk ? '✅' : '❌');
                     const ec = i.eOk === null ? '-' : (i.eOk ? '✅' : '❌');
                     const sc = i.sOk === null ? '-' : (i.sOk ? '✅' : '❌');
                     block.innerHTML += `
-                        <div class="grid grid-cols-8 gap-0.5 py-1 border-b border-white/5 items-center text-center row-text">
+                        <div class="grid grid-cols-8 gap-0.5 py-1 border-b border-white/5 text-center text-[10px] font-bold items-center">
                             <span class="text-slate-600">${i.stage}</span>
-                            <span class="text-red-400">${i.p||'-'}</span>
-                            <span>${pc}</span>
-                            <span class="text-purple-400">${i.e||'-'}</span>
-                            <span>${ec}</span>
-                            <span class="text-emerald-400">${i.s||'-'}</span>
-                            <span>${sc}</span>
+                            <span class="txt-p">${i.p||'-'}</span><span>${pc}</span>
+                            <span class="txt-e">${i.e||'-'}</span><span>${ec}</span>
+                            <span class="txt-s">${i.s||'-'}</span><span>${sc}</span>
                             <span class="g-highlight">${i.val}</span>
                         </div>`;
                 });
@@ -158,25 +145,25 @@
 
         async function copy() {
             if(!history.length) return;
-            let t = "WIN6 PREMIUM FULL REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n============================\n";
+            let t = "WIN6 PRO ANALYSIS REVIEW\nSTG|P|PC|E|EC|S|SC|[G]\n========================\n";
             history.forEach(i => {
                 const pc = i.pOk === null ? '-' : (i.pOk ? '✅' : '❌');
                 const ec = i.eOk === null ? '-' : (i.eOk ? '✅' : '❌');
                 const sc = i.sOk === null ? '-' : (i.sOk ? '✅' : '❌');
                 t += `${i.stage}|${i.p||'-'}|${pc}|${i.e||'-'}|${ec}|${i.s||'-'}|${sc}|[${i.val}]\n`;
-                if(i.stage === 10) t += "----------------------------\n";
+                if(i.stage === 10) t += "------------------------\n";
             });
-            await navigator.clipboard.writeText(t); alert("FULL REVIEW COPIED!");
+            await navigator.clipboard.writeText(t); alert("Analysis Copied!");
         }
 
-        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_FULL_V3', JSON.stringify({ history, roll, stage })); }
+        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); getEl('btn-submit').disabled = el.value === ""; }
+        function save() { localStorage.setItem('WIN6_PRO_FINAL_V2', JSON.stringify({ history, roll, stage })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_FULL_V3'));
+            const data = JSON.parse(localStorage.getItem('WIN6_PRO_FINAL_V2'));
             if(data) { history = data.history; roll = data.roll; stage = data.stage; renderTable(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("RESET ALL?")) { localStorage.clear(); location.reload(); } }
-        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleString(), 1000);
+        function reset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
+        setInterval(() => getEl('clock').innerText = new Date().toLocaleString(), 1000);
         load();
     </script>
 </body>
