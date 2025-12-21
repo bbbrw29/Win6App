@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Win6 Pro - Dark Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #000d1a; color: white; }
@@ -28,53 +29,112 @@
 
         .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; box-shadow: 0 0 10px rgba(255,220,0,0.4); }
         .g-display { font-size: 75px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
+        
+        /* Lock Screen Overlay */
+        #lock-screen { position: fixed; inset: 0; background: #000d1a; z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
     </style>
 </head>
 <body class="p-2 pb-10">
-    <div class="max-w-md mx-auto space-y-4">
-        
-        <div class="bg-[#001f3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
-            <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">P Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
-            <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">E Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
-            <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">S Double</p><div class="box-s"><span id="pred-s"></span></div></div>
-        </div>
 
-        <div class="bg-[#002b52] p-5 rounded-[2rem] flex items-center justify-between border border-white/10 shadow-inner">
-            <div class="text-center flex-1"><div id="highlight-g" class="g-display">-</div></div>
-            <div class="flex flex-col gap-2 w-36">
-                <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 outline-none border-4 border-yellow-400 text-black bg-white" placeholder="?" oninput="validate(this)">
-                <button id="btn-submit" class="w-full py-4 bg-yellow-400 text-black font-black rounded-xl text-xl shadow-lg active:scale-95 disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+    <div id="lock-screen">
+        <h1 class="text-yellow-400 text-5xl font-black mb-2 uppercase italic tracking-tighter">Win 6 Pro</h1>
+        <p class="text-cyan-400 text-xs mb-8 tracking-[0.3em] font-bold">PREMIUM PREDICTION SYSTEM</p>
+        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2rem] mb-8 w-full max-w-sm">
+            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Checking Status...</p>
+        </div>
+        <div class="w-full max-w-sm space-y-4">
+            <input type="text" id="license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl outline-none" placeholder="ENTER CODE">
+            <button onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg">ACTIVATE PRO</button>
+            <p class="text-gray-500 text-[10px] mt-4 font-mono" id="device-id-display"></p>
+        </div>
+    </div>
+
+    <div id="app-main" style="display: none;">
+        <div class="max-w-md mx-auto space-y-4">
+            <div class="bg-[#001f3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
+                <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">P Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
+                <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">E Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
+                <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">S Double</p><div class="box-s"><span id="pred-s"></span></div></div>
             </div>
-        </div>
 
-        <div id="alert-box" class="hidden">
-            <div class="bg-red-600 border-4 border-white text-white p-4 rounded-2xl text-center animate-pulse shadow-2xl">
-                <span id="alert-msg" class="text-2xl font-black uppercase"></span>
+            <div class="bg-[#002b52] p-5 rounded-[2rem] flex items-center justify-between border border-white/10 shadow-inner">
+                <div class="text-center flex-1"><div id="highlight-g" class="g-display">-</div></div>
+                <div class="flex flex-col gap-2 w-36">
+                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 outline-none border-4 border-yellow-400 text-black bg-white" placeholder="?" oninput="validate(this)">
+                    <button id="btn-submit" class="w-full py-4 bg-yellow-400 text-black font-black rounded-xl text-xl shadow-lg active:scale-95 disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+                </div>
             </div>
-        </div>
 
-        <div class="space-y-2">
-            <div class="flex justify-between items-center px-2">
-                <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
-                <span id="total-stg" class="text-xs font-bold opacity-50">0 STG</span>
+            <div id="alert-box" class="hidden">
+                <div class="bg-red-600 border-4 border-white text-white p-4 rounded-2xl text-center animate-pulse shadow-2xl">
+                    <span id="alert-msg" class="text-2xl font-black uppercase"></span>
+                </div>
             </div>
-            <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
-        </div>
 
-        <div class="grid grid-cols-2 gap-3">
-            <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-800">📋 Copy Data</button>
-            <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-900">🔄 Reset All</button>
-        </div>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
+                    <span id="total-stg" class="text-xs font-bold opacity-50">0 STG</span>
+                </div>
+                <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
+            </div>
 
-        <div class="bg-slate-900/80 p-5 rounded-[2rem] border border-white/10">
-            <h3 class="font-black text-yellow-400 mb-3 text-xs uppercase tracking-widest text-center border-b border-white/5 pb-2 italic">Pattern History Analysis</h3>
-            <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto">
-                <div id="no-history-msg" class="text-center py-4 opacity-20 text-xs italic">No broken patterns recorded yet.</div>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-800">📋 Copy Data</button>
+                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-900">🔄 Reset All</button>
+            </div>
+
+            <div class="bg-slate-900/80 p-5 rounded-[2rem] border border-white/10">
+                <h3 class="font-black text-yellow-400 mb-3 text-xs uppercase tracking-widest text-center border-b border-white/5 pb-2 italic">Pattern History Analysis</h3>
+                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto">
+                    <div id="no-history-msg" class="text-center py-4 opacity-20 text-xs italic">No broken patterns recorded yet.</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- [SUPABASE INTEGRATION SECTION] ---
+        const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let deviceId = localStorage.getItem('win6pro_device_id');
+        if (!deviceId) {
+            deviceId = 'WEB-' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('win6pro_device_id', deviceId);
+        }
+        document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
+
+        async function checkAccess() {
+            try {
+                await supabaseClient.rpc('init_user', { input_id: deviceId });
+                const { data, error } = await supabaseClient.rpc('check_access', { input_device_id: deviceId });
+                
+                if (error || (data && !data.can_access)) {
+                    document.getElementById('lock-screen').style.display = 'flex';
+                    document.getElementById('lock-msg').innerText = data ? data.status_message : 'Access Denied';
+                } else {
+                    document.getElementById('lock-screen').style.display = 'none';
+                    document.getElementById('app-main').style.display = 'block';
+                    startHeartbeat();
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function activateCode() {
+            const code = document.getElementById('license-input').value;
+            const { data } = await supabaseClient.rpc('activate_pro', { input_device_id: deviceId, input_code: code });
+            if (data && data.success) { alert("Success!"); location.reload(); } else { alert(data ? data.message : "Error"); }
+        }
+
+        function startHeartbeat() {
+            setInterval(() => supabaseClient.rpc('update_usage', { input_device_id: deviceId, minutes: 5 }), 5 * 60 * 1000);
+        }
+
+        checkAccess();
+
+        // --- [ORIGINAL APP LOGIC SECTION] ---
         let history = []; let warnings = []; let roll = 1, stage = 1;
         let pNext, eNext, sNext; let activePattern = null;
 
