@@ -3,71 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win6 Pro - Premium Prediction</title>
+    <title>Win6 Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        body { background: #0a0a0c; color: #e2e8f0; font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .status-badge { font-[9px]; padding: 8px 20px; border-radius: 9999px; font-weight: 800; font-style: italic; text-transform: uppercase; border-width: 1px; }
+        body { background: #000; color: #fff; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        input { background: #111; border: 1px solid #333; color: #fff; }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center min-h-screen">
+<body class="p-4 flex flex-col items-center">
 
-    <div id="lock-screen" class="fixed inset-0 bg-black/95 z-50 flex-col items-center justify-center p-6 text-center hidden">
-        <h1 class="text-3xl font-black text-red-600 mb-2 italic tracking-tighter">WIN6 PRO</h1>
-        <p id="lock-msg" class="text-gray-500 mb-8 font-bold uppercase tracking-[0.2em] text-xs">Access Denied</p>
-        <div class="glass p-8 rounded-[2rem] w-full max-w-sm border-white/10 shadow-2xl">
-            <input id="premium-code" type="text" placeholder="ENTER LICENSE KEY" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 text-center text-yellow-500 font-bold placeholder:text-gray-700 focus:outline-none focus:border-yellow-500/50">
-            <button onclick="activateCode()" class="w-full bg-yellow-500 text-black font-black py-4 rounded-xl hover:bg-yellow-400 transition active:scale-95 shadow-lg shadow-yellow-500/30">ACTIVATE PREMIUM</button>
-        </div>
-        <p class="mt-8 text-[10px] text-gray-600 font-bold tracking-widest uppercase">Secured by Supabase Cloud</p>
+    <div id="lock-screen" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center p-6 hidden">
+        <h1 class="text-2xl font-bold mb-4">WIN6 PRO - LOCKED</h1>
+        <p id="lock-msg" class="text-red-500 mb-4"></p>
+        <input id="premium-code" type="text" placeholder="License Key" class="w-full max-w-xs p-3 rounded mb-4 text-center">
+        <button onclick="activateCode()" class="bg-blue-600 text-white px-8 py-3 rounded font-bold">ACTIVATE</button>
     </div>
 
     <div id="app-main" class="w-full max-w-md hidden">
-        <header class="flex flex-col items-center mb-8 pt-4">
-            <h1 class="text-3xl font-black italic text-yellow-500 tracking-tighter drop-shadow-2xl">WIN6 PRO</h1>
-            <div id="plan-status" class="mt-4"></div>
-        </header>
+        <div class="text-center mb-6">
+            <h1 class="text-xl font-bold">WIN6 PRO</h1>
+            <div id="plan-status" class="text-xs mt-2"></div>
+        </div>
 
-        <main class="glass rounded-[2.5rem] p-6 mb-6 shadow-2xl relative overflow-hidden">
-            <div class="flex gap-2 mb-8">
-                <input id="digit-input" type="number" placeholder="0-9" class="flex-1 bg-white/5 border border-white/10 p-5 rounded-2xl text-3xl font-black text-center focus:outline-none focus:border-yellow-500/50 transition-all placeholder:text-gray-800">
-                <button onclick="submit()" class="bg-yellow-500 text-black px-10 rounded-2xl font-black text-xl hover:bg-yellow-400 active:scale-90 transition-all shadow-lg shadow-yellow-500/20">ENTER</button>
+        <div class="glass p-6 rounded-xl mb-4">
+            <div class="flex gap-2 mb-4">
+                <input id="digit-input" type="number" placeholder="Enter Digit" class="flex-1 p-4 rounded text-xl text-center">
+                <button onclick="submit()" class="bg-white text-black px-6 rounded font-bold">ENTER</button>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 mb-8">
-                <div class="glass p-5 rounded-2xl text-center border-b-4 border-blue-600">
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Pattern P</p>
-                    <p id="pred-p" class="text-3xl font-black">-</p>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="bg-gray-900 p-4 rounded text-center">
+                    <p class="text-[10px] text-gray-400">P</p>
+                    <p id="pred-p" class="text-xl font-bold">-</p>
                 </div>
-                <div class="glass p-5 rounded-2xl text-center border-b-4 border-purple-600">
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Pattern E</p>
-                    <p id="pred-e" class="text-3xl font-black">-</p>
+                <div class="bg-gray-900 p-4 rounded text-center">
+                    <p class="text-[10px] text-gray-400">E</p>
+                    <p id="pred-e" class="text-xl font-bold">-</p>
                 </div>
-                <div class="glass p-5 rounded-2xl text-center border-b-4 border-yellow-600">
-                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Pattern S</p>
-                    <p id="pred-s" class="text-3xl font-black">-</p>
+                <div class="bg-gray-900 p-4 rounded text-center">
+                    <p class="text-[10px] text-gray-400">S</p>
+                    <p id="pred-s" class="text-xl font-bold">-</p>
                 </div>
             </div>
 
-            <div class="space-y-3" id="history-list">
-                <p class="text-center text-gray-700 text-[10px] font-bold py-4 italic uppercase tracking-widest">Waiting for data inputs...</p>
-            </div>
-        </main>
+            <div id="history-list" class="space-y-2"></div>
+        </div>
 
-        <section id="upgrade-section" class="glass p-5 rounded-3xl border-dashed border-white/10">
-            <p class="text-center text-[10px] text-gray-500 font-black mb-4 italic tracking-widest">OWN A PREMIUM KEY?</p>
+        <div id="upgrade-section" class="mt-4 p-4 border border-gray-800 rounded">
+            <p class="text-[10px] text-gray-500 mb-2">UPGRADE TO PREMIUM</p>
             <div class="flex gap-2">
-                <input id="admin-upgrade-code" type="text" placeholder="ENTER KEY HERE" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl text-xs font-bold focus:outline-none focus:border-yellow-500/30 uppercase">
-                <button onclick="upgradeAdmin()" class="bg-white/10 px-6 py-2 rounded-xl text-[11px] font-black hover:bg-white/20 transition uppercase">Upgrade</button>
+                <input id="admin-upgrade-code" type="text" placeholder="Key" class="flex-1 p-2 text-xs rounded">
+                <button onclick="upgradeAdmin()" class="bg-gray-700 text-[10px] px-4 py-2 rounded uppercase">Apply</button>
             </div>
-        </section>
+        </div>
     </div>
 
     <script>
-        // --- API CONFIGURATION ---
         const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -83,30 +76,28 @@
         let history = [];
 
         async function checkAccess() {
-            try {
-                const { data, error } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
-                if (error || !data.can_access) {
-                    document.getElementById('lock-screen').style.display = 'flex';
-                    document.getElementById('app-main').style.display = 'none';
-                    document.getElementById('lock-msg').innerText = data ? data.msg : 'Server Error';
-                } else {
-                    isPremium = data.is_premium;
-                    remMins = data.mins || 0;
-                    document.getElementById('lock-screen').style.display = 'none';
-                    document.getElementById('app-main').style.display = 'block';
-                    updateStatusUI(data.days);
-                }
-            } catch (e) { console.error(e); }
+            const { data, error } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
+            if (error || !data.can_access) {
+                document.getElementById('lock-screen').style.display = 'flex';
+                document.getElementById('app-main').style.display = 'none';
+                document.getElementById('lock-msg').innerText = data ? data.msg : 'Error';
+            } else {
+                isPremium = data.is_premium;
+                remMins = data.mins || 0;
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('app-main').style.display = 'block';
+                updateStatusUI(data.days);
+            }
         }
 
-        function updateStatusUI(days = 0) {
+        function updateStatusUI(days) {
             const el = document.getElementById('plan-status');
             if (isPremium) {
-                el.innerHTML = `<span class="status-badge bg-yellow-400/10 text-yellow-400 border-yellow-400/30 tracking-widest">💎 Premium Member</span>`;
+                el.innerHTML = `<span class="text-yellow-500 font-bold">💎 PREMIUM ACTIVE</span>`;
             } else if (!isTimerStarted) {
-                el.innerHTML = `<span class="status-badge bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse tracking-tighter">⏳ Waiting for input... (${days}d Left)</span>`;
+                el.innerHTML = `<span class="text-blue-400 font-bold italic animate-pulse">Waiting for input... (${days} days trial)</span>`;
             } else {
-                el.innerHTML = `<span class="status-badge bg-green-500/10 text-green-400 border-green-500/30">⏱️ ${remMins} Min Left Today</span>`;
+                el.innerHTML = `<span class="text-green-500 font-bold uppercase tracking-widest">${remMins} MIN LEFT TODAY</span>`;
             }
         }
 
@@ -144,8 +135,8 @@
                 updateStatusUI();
             }
 
-            history.push({ val, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
-            if (history.length > 15) history.shift();
+            history.push({ val, time: new Date().toLocaleTimeString() });
+            if (history.length > 10) history.shift();
             updatePredictions();
             renderHistory();
             input.value = '';
@@ -171,9 +162,9 @@
         function renderHistory() {
             const list = document.getElementById('history-list');
             list.innerHTML = history.slice().reverse().map(i => `
-                <div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5 shadow-inner">
-                    <span class="text-[10px] font-black text-gray-600 tracking-widest">${i.time}</span>
-                    <span class="text-xl font-black ${i.val > 4 ? 'text-blue-500' : 'text-red-500'} tracking-tighter">${i.val}</span>
+                <div class="flex justify-between items-center bg-gray-900/50 p-2 rounded text-xs border border-gray-800">
+                    <span class="text-gray-500">${i.time}</span>
+                    <span class="font-bold ${i.val > 4 ? 'text-blue-500' : 'text-red-500'}">${i.val}</span>
                 </div>
             `).join('');
         }
@@ -181,13 +172,13 @@
         async function activateCode() {
             const code = document.getElementById('premium-code').value;
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
-            if (data?.success) location.reload(); else alert(data?.msg || 'Error');
+            if (data?.success) location.reload(); else alert(data?.msg || 'Activation Failed');
         }
 
         async function upgradeAdmin() {
             const code = document.getElementById('admin-upgrade-code').value;
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
-            if (data?.success) location.reload(); else alert(data?.msg || 'Error');
+            if (data?.success) location.reload(); else alert(data?.msg || 'Invalid Key');
         }
 
         checkAccess();
