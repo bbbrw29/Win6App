@@ -8,18 +8,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000d1a; color: white; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000d1a; color: white; overflow-x: hidden; }
         
-        /* Prediction Shapes (Locked) */
+        /* Prediction Shapes (LOCKED) */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); }
 
-        /* Dark Card Style (Locked) */
+        /* Roll History Cards */
         .roll-card { flex-shrink: 0; width: 270px; background: rgba(0, 51, 102, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
-        .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(0,255,136,0.3); }
-        .status-no { color: #ff3366; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
+        .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; }
+        .status-no { color: #ff3366; font-size: 24px; font-weight: 900; }
 
         .mini-shape { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 14px; border-width: 2px; }
         .p-circle { border-radius: 50%; border-color: #ff4136; color: #ff4136; }
@@ -27,10 +27,10 @@
         .s-diamond { transform: rotate(45deg); border-color: #2ecc40; color: #2ecc40; border-radius: 4px; }
         .s-diamond span { transform: rotate(-45deg); }
 
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; box-shadow: 0 0 10px rgba(255,220,0,0.4); }
+        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; }
         .g-display { font-size: 75px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
 
-        /* Login Screen UI */
+        /* Lock Screen Overlay */
         #lock-screen { position: fixed; inset: 0; background: #000d1a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
     </style>
 </head>
@@ -38,23 +38,25 @@
 
     <div id="lock-screen" style="display: none;">
         <h1 class="text-yellow-400 text-5xl font-black mb-2 uppercase italic tracking-tighter">Win 6 Pro</h1>
-        <p class="text-cyan-400 text-xs mb-8 tracking-[0.3em] font-bold italic">PREMIUM PREDICTION SYSTEM</p>
-        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2rem] mb-8 w-full max-w-sm">
+        <p class="text-cyan-400 text-[10px] mb-10 tracking-[0.4em] font-bold italic uppercase opacity-70">Premium Prediction System</p>
+        
+        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2.5rem] mb-8 w-full max-w-sm">
             <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Checking Access...</p>
         </div>
+
         <div class="w-full max-w-sm space-y-4">
             <input type="text" id="license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl outline-none" placeholder="ENTER LICENSE CODE">
-            <button onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg uppercase">Activate Pro</button>
-            <p class="text-gray-500 text-[10px] mt-4 font-mono uppercase" id="device-id-display"></p>
+            <button onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg uppercase transition-transform">Activate Pro</button>
+            <p class="text-gray-600 text-[10px] mt-6 font-mono uppercase tracking-widest" id="device-id-display"></p>
         </div>
     </div>
 
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
             
-            <div class="text-center">
-                <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-4 py-1.5 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic shadow-sm">
-                    Connecting...
+            <div class="text-center pt-2">
+                <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-5 py-2 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic shadow-sm">
+                    Connecting to Server...
                 </span>
             </div>
 
@@ -64,7 +66,7 @@
                 <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">S Double</p><div class="box-s"><span id="pred-s"></span></div></div>
             </div>
 
-            <div class="bg-[#002b52] p-5 rounded-[2rem] flex items-center justify-between border border-white/10 shadow-inner">
+            <div class="bg-[#002b52] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/10 shadow-inner">
                 <div class="text-center flex-1"><div id="highlight-g" class="g-display">-</div></div>
                 <div class="flex flex-col gap-2 w-36">
                     <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 outline-none border-4 border-yellow-400 text-black bg-white" placeholder="?" oninput="validate(this)">
@@ -80,87 +82,110 @@
 
             <div class="space-y-2">
                 <div class="flex justify-between items-center px-2">
-                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
-                    <span id="total-stg" class="text-xs font-bold opacity-50">0 STG</span>
+                    <h3 class="font-black text-cyan-400 text-lg italic uppercase tracking-tighter">Live Record Logs</h3>
+                    <span id="total-stg" class="text-xs font-bold opacity-40">0 STG</span>
                 </div>
-                <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
+                <div id="history-container" class="flex overflow-x-auto gap-3 pb-4 scroll-smooth"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-800">📋 Copy Data</button>
-                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-900">🔄 Reset All</button>
+                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-950 active:translate-y-1 active:border-b-0 transition-all">📋 Copy Data</button>
+                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-950 active:translate-y-1 active:border-b-0 transition-all">🔄 Reset App</button>
             </div>
 
-            <div class="bg-slate-900/80 p-5 rounded-[2rem] border border-white/10">
-                <h3 class="font-black text-yellow-400 mb-3 text-xs uppercase tracking-widest text-center border-b border-white/5 pb-2 italic">Pattern History Analysis</h3>
-                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto">
-                    <div id="no-history-msg" class="text-center py-4 opacity-20 text-xs italic">No broken patterns recorded yet.</div>
+            <div class="bg-slate-900/80 p-5 rounded-[2.5rem] border border-white/10">
+                <h3 class="font-black text-yellow-400 mb-3 text-[10px] uppercase tracking-[0.2em] text-center border-b border-white/5 pb-2 italic opacity-70">Pattern History Analysis</h3>
+                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                    <div id="no-history-msg" class="text-center py-6 opacity-20 text-xs italic uppercase tracking-widest">No Patterns Found</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Supabase Config ---
+        // --- CONFIGURATION ---
         const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- Auth & Timer Logic ---
+        // --- AUTH & TIMER LOGIC (NEW) ---
         let deviceId = localStorage.getItem('win6pro_id') || 'W6P-' + Math.random().toString(36).substring(2, 10).toUpperCase();
         localStorage.setItem('win6pro_id', deviceId);
         document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
 
-        let remMins = 0; let isPremium = false;
+        let remMins = 0; let isPremium = false; let elapsedSinceLastSync = 0;
+
         async function checkAccess() {
             try {
-                const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
-                if (!data || !data.can_access) {
+                const { data, error } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
+                if (error || !data || !data.can_access) {
                     document.getElementById('lock-screen').style.display = 'flex';
-                    document.getElementById('lock-msg').innerText = data ? data.msg : 'Connection Error';
+                    document.getElementById('lock-msg').innerText = data ? data.msg : 'Daily Limit Reached';
+                    document.getElementById('app-main').style.display = 'none';
                 } else {
-                    isPremium = data.is_premium; remMins = data.mins || 0;
+                    isPremium = data.is_premium; 
+                    remMins = data.mins || 0;
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
                     updateStatusUI(data);
                     if (!isPremium) startLocalTimer();
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                document.getElementById('lock-msg').innerText = "Trial Expired / Access Denied";
+                document.getElementById('lock-screen').style.display = 'flex';
+            }
         }
 
         function updateStatusUI(data) {
             const el = document.getElementById('plan-status');
-            if (data.is_premium) {
-                el.innerText = "💎 Premium Member (Unlimited Access)";
-                el.className = "bg-yellow-400/20 text-yellow-400 text-[10px] px-4 py-1.5 rounded-full border border-yellow-400/50 font-bold uppercase tracking-widest italic shadow-sm";
+            if (isPremium) {
+                el.innerText = "💎 Premium Member (Unlimited)";
+                el.className = "bg-yellow-400/10 text-yellow-400 text-[10px] px-5 py-2 rounded-full border border-yellow-400/30 font-bold uppercase tracking-widest italic shadow-sm";
             } else {
                 el.innerText = `⏳ Trial: ${data.days} Days Left | ⏱️ ${remMins} Min Today`;
             }
         }
 
         function startLocalTimer() {
-            let elapsed = 0;
             setInterval(async () => {
                 if (remMins > 0) {
-                    elapsed++; remMins--;
-                    document.getElementById('plan-status').innerText = `⏳ Trial Active | ⏱️ ${remMins} Min Left`;
-                    if (elapsed >= 5) { // Sync every 5 mins
-                        await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: elapsed });
-                        elapsed = 0;
+                    remMins--; elapsedSinceLastSync++;
+                    document.getElementById('plan-status').innerText = `⏳ Trial Active | ⏱️ ${remMins} Min Remaining`;
+                    
+                    // Sync every 5 minutes to save API requests
+                    if (elapsedSinceLastSync >= 5) {
+                        await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: elapsedSinceLastSync });
+                        elapsedSinceLastSync = 0;
                     }
-                } else { location.reload(); }
-            }, 60000);
-            // Save on close
-            window.onbeforeunload = () => { if(elapsed > 0) supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: elapsed }); };
+                } else {
+                    location.reload(); // Lock when time runs out
+                }
+            }, 60000); // Every 1 minute
         }
+
+        // Final sync before closing app
+        window.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && elapsedSinceLastSync > 0 && !isPremium) {
+                navigator.sendBeacon(`${SUPABASE_URL}/rest/v1/rpc/sync_minutes`, JSON.stringify({
+                    input_device_id: deviceId,
+                    add_mins: elapsedSinceLastSync
+                }));
+            }
+        });
 
         async function activateCode() {
             const code = document.getElementById('license-input').value.trim();
+            if (!code) return alert("Please enter code");
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
-            if (data?.success) { alert("Activated!"); location.reload(); } else { alert("Invalid Code!"); }
+            if (data?.success) {
+                alert("Pro Version Activated Successfully!");
+                location.reload();
+            } else {
+                alert("Invalid or Used Code!");
+            }
         }
 
-        // --- (LOCKED) ORIGINAL PREDICTION FUNCTIONS ---
+        // --- ORIGINAL PREDICTION LOGIC (LOCKED - DO NOT CHANGE) ---
         let history = []; let warnings = []; let roll = 1, stage = 1;
         let pNext, eNext, sNext; let activePattern = null;
 
@@ -231,23 +256,24 @@
         function renderWarnings() {
             const container = document.getElementById('warning-history');
             if(document.getElementById('no-history-msg')) document.getElementById('no-history-msg').remove();
-            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs font-bold leading-relaxed">${warnings.length - idx}. ${w.text}</div>`).join('');
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs font-bold leading-relaxed shadow-sm">${warnings.length - idx}. ${w.text}</div>`).join('');
         }
 
         async function copy() {
-            let t = "WIN6 PRO DARK RECORD\n";
+            let t = "WIN6 PRO RECORD LOGS\n";
             history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; });
-            await navigator.clipboard.writeText(t); alert("Copied!");
+            await navigator.clipboard.writeText(t); alert("History Copied to Clipboard!");
         }
 
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_V_DARK', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
+        function save() { localStorage.setItem('WIN6_FINAL_STORE', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_V_DARK'));
+            const data = JSON.parse(localStorage.getItem('WIN6_FINAL_STORE'));
             if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; activePattern = data.activePattern || null; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Data အားလုံး ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
+        function reset() { if(confirm("Are you sure you want to clear all data?")) { localStorage.clear(); location.reload(); } }
 
+        // Start App
         load();
         checkAccess();
     </script>
