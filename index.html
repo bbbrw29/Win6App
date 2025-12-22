@@ -8,15 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000d1a; color: white; overflow-x: hidden; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000d1a; color: white; }
         
-        /* Prediction Shapes */
+        /* Prediction Shapes (Locked) */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); }
 
-        /* Dark Card Style */
+        /* Dark Card Style (Locked) */
         .roll-card { flex-shrink: 0; width: 270px; background: rgba(0, 51, 102, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
         .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(0,255,136,0.3); }
         .status-no { color: #ff3366; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
@@ -29,8 +29,8 @@
 
         .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; box-shadow: 0 0 10px rgba(255,220,0,0.4); }
         .g-display { font-size: 75px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
-        
-        /* Lock Screen Overlay */
+
+        /* [NEW] Login/Lock UI */
         #lock-screen { position: fixed; inset: 0; background: #000d1a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
     </style>
 </head>
@@ -39,18 +39,21 @@
     <div id="lock-screen" style="display: none;">
         <h1 class="text-yellow-400 text-5xl font-black mb-2 uppercase italic tracking-tighter">Win 6 Pro</h1>
         <p class="text-cyan-400 text-xs mb-8 tracking-[0.3em] font-bold">PREMIUM PREDICTION SYSTEM</p>
+        
         <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2rem] mb-8 w-full max-w-sm">
             <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Checking Access...</p>
         </div>
+
         <div class="w-full max-w-sm space-y-4">
             <input type="text" id="license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl outline-none" placeholder="ENTER CODE">
-            <button id="btn-activate" onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg">ACTIVATE PRO</button>
+            <button onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg">ACTIVATE PRO</button>
             <p class="text-gray-500 text-[10px] mt-4 font-mono" id="device-id-display"></p>
         </div>
     </div>
 
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
+            
             <div class="bg-[#001f3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
                 <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">P Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
                 <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">E Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
@@ -94,77 +97,43 @@
     </div>
 
     <script>
-        // --- [SUPABASE INTEGRATION SECTION] ---
+        // --- [SUPABASE CONFIG] ---
         const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // --- [AUTH LOGIC] ---
         let deviceId = localStorage.getItem('win6pro_device_id');
         if (!deviceId) {
-            deviceId = 'WEB-' + Math.random().toString(36).substring(2, 15);
+            deviceId = 'W6P-' + Math.random().toString(36).substring(2, 10).toUpperCase();
             localStorage.setItem('win6pro_device_id', deviceId);
         }
         document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
 
         async function checkAccess() {
             try {
-                // User ကို Database မှာ အရင်စစ်မယ်/သွင်းမယ်
                 await supabaseClient.rpc('init_user', { input_id: deviceId });
-                
-                // Access Status ကို ယူမယ်
                 const { data, error } = await supabaseClient.rpc('check_access', { input_device_id: deviceId });
                 
                 if (error || (data && !data.can_access)) {
                     document.getElementById('lock-screen').style.display = 'flex';
                     document.getElementById('app-main').style.display = 'none';
-                    document.getElementById('lock-msg').innerText = data ? data.status_message : 'Access Denied';
+                    document.getElementById('lock-msg').innerText = data ? data.status_message : 'Access Expired';
                 } else {
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
-                    startHeartbeat(); // Access ရှိမှ Heartbeat စမယ်
                 }
-            } catch (err) { 
-                console.error("Auth Error:", err);
-                document.getElementById('lock-msg').innerText = "Connection Error";
-            }
+            } catch (err) { console.error(err); }
         }
 
         async function activateCode() {
-            const btn = document.getElementById('btn-activate');
-            const codeInput = document.getElementById('license-input');
-            const code = codeInput.value.trim();
-            
+            const code = document.getElementById('license-input').value.trim();
             if(!code) return alert("Please enter a code");
-            
-            btn.disabled = true;
-            btn.innerText = "ACTIVATING...";
-
-            const { data, error } = await supabaseClient.rpc('activate_pro', { 
-                input_device_id: deviceId, 
-                input_code: code 
-            });
-
-            if (data && data.success) {
-                alert("Success! Pro Activated.");
-                location.reload(); // Refresh လုပ်ပြီး App ထဲ တိုက်ရိုက်ဝင်ရန်
-            } else {
-                alert("Error: " + (data ? data.message : "Invalid Code"));
-                btn.disabled = false;
-                btn.innerText = "ACTIVATE PRO";
-            }
+            const { data } = await supabaseClient.rpc('activate_pro', { input_device_id: deviceId, input_code: code });
+            if (data && data.success) { alert("Success!"); location.reload(); } else { alert("Invalid Code"); }
         }
 
-        function startHeartbeat() {
-            // ၅ မိနစ်တစ်ခါ Usage Update လုပ်မယ်
-            setInterval(() => {
-                supabaseClient.rpc('update_usage', { input_device_id: deviceId, minutes: 5 });
-            }, 5 * 60 * 1000);
-        }
-
-        // Run Initial Check
-        checkAccess();
-
-        // --- [ORIGINAL APP LOGIC SECTION] ---
+        // --- [LOCKED PREDICTION LOGIC] ---
         let history = []; let warnings = []; let roll = 1, stage = 1;
         let pNext, eNext, sNext; let activePattern = null;
 
@@ -254,7 +223,9 @@
             if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; activePattern = data.activePattern || null; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
         function reset() { if(confirm("Data အားလုံး ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
+        
         load();
+        checkAccess(); // Start Access Check
     </script>
 </body>
 </html>
