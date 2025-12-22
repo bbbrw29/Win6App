@@ -10,16 +10,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #000d1a; color: white; }
         
-        /* Prediction Shapes (Locked) */
+        /* Prediction Shapes */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); }
 
-        /* Dark Card Style (Locked) */
         .roll-card { flex-shrink: 0; width: 270px; background: rgba(0, 51, 102, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
-        .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(0,255,136,0.3); }
-        .status-no { color: #ff3366; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
+        .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; }
+        .status-no { color: #ff3366; font-size: 24px; font-weight: 900; }
 
         .mini-shape { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 14px; border-width: 2px; }
         .p-circle { border-radius: 50%; border-color: #ff4136; color: #ff4136; }
@@ -27,25 +26,22 @@
         .s-diamond { transform: rotate(45deg); border-color: #2ecc40; color: #2ecc40; border-radius: 4px; }
         .s-diamond span { transform: rotate(-45deg); }
 
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; box-shadow: 0 0 10px rgba(255,220,0,0.4); }
+        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; }
         .g-display { font-size: 75px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
 
-        /* [NEW] Login/Lock UI */
+        /* Lock Screen UI */
         #lock-screen { position: fixed; inset: 0; background: #000d1a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
     </style>
 </head>
 <body class="p-2 pb-10">
 
     <div id="lock-screen" style="display: none;">
-        <h1 class="text-yellow-400 text-5xl font-black mb-2 uppercase italic tracking-tighter">Win 6 Pro</h1>
-        <p class="text-cyan-400 text-xs mb-8 tracking-[0.3em] font-bold">PREMIUM PREDICTION SYSTEM</p>
-        
-        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2rem] mb-8 w-full max-w-sm">
-            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Checking Access...</p>
+        <h1 class="text-yellow-400 text-5xl font-black mb-10 uppercase italic">Win 6 Pro</h1>
+        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2rem] mb-8 w-full max-w-sm text-center">
+            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Trial Expired</p>
         </div>
-
         <div class="w-full max-w-sm space-y-4">
-            <input type="text" id="license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl outline-none" placeholder="ENTER CODE">
+            <input type="text" id="license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl outline-none" placeholder="ENTER LICENSE CODE">
             <button onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg">ACTIVATE PRO</button>
             <p class="text-gray-500 text-[10px] mt-4 font-mono" id="device-id-display"></p>
         </div>
@@ -54,6 +50,12 @@
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
             
+            <div class="text-center pt-2">
+                <span id="plan-status" class="bg-cyan-400/20 text-cyan-400 text-[10px] px-3 py-1 rounded-full border border-cyan-400/50 font-bold uppercase tracking-widest italic">
+                    Loading Plan...
+                </span>
+            </div>
+
             <div class="bg-[#001f3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
                 <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">P Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
                 <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">E Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
@@ -76,36 +78,36 @@
 
             <div class="space-y-2">
                 <div class="flex justify-between items-center px-2">
-                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
+                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Logs</h3>
                     <span id="total-stg" class="text-xs font-bold opacity-50">0 STG</span>
                 </div>
                 <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-800">📋 Copy Data</button>
-                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-900">🔄 Reset All</button>
+                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-800">📋 Copy</button>
+                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-900">🔄 Reset</button>
             </div>
 
             <div class="bg-slate-900/80 p-5 rounded-[2rem] border border-white/10">
-                <h3 class="font-black text-yellow-400 mb-3 text-xs uppercase tracking-widest text-center border-b border-white/5 pb-2 italic">Pattern History Analysis</h3>
-                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto">
-                    <div id="no-history-msg" class="text-center py-4 opacity-20 text-xs italic">No broken patterns recorded yet.</div>
+                <h3 class="font-black text-yellow-400 mb-3 text-xs text-center border-b border-white/5 pb-2 italic">PATTERN HISTORY</h3>
+                <div id="warning-history" class="space-y-3 max-h-40 overflow-y-auto">
+                    <div id="no-history-msg" class="text-center py-4 opacity-20 text-xs italic">No broken patterns.</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- [SUPABASE CONFIG] ---
+        // Supabase Setup
         const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- [AUTH LOGIC] ---
+        // Access Logic
         let deviceId = localStorage.getItem('win6pro_device_id');
         if (!deviceId) {
-            deviceId = 'W6P-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            deviceId = 'W6P-' + Math.random().toString(36).substring(2, 12).toUpperCase();
             localStorage.setItem('win6pro_device_id', deviceId);
         }
         document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
@@ -118,22 +120,23 @@
                 if (error || (data && !data.can_access)) {
                     document.getElementById('lock-screen').style.display = 'flex';
                     document.getElementById('app-main').style.display = 'none';
-                    document.getElementById('lock-msg').innerText = data ? data.status_message : 'Access Expired';
+                    document.getElementById('lock-msg').innerText = data ? data.status_message : 'No Access';
                 } else {
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
+                    document.getElementById('plan-status').innerText = data.status_message;
                 }
             } catch (err) { console.error(err); }
         }
 
         async function activateCode() {
             const code = document.getElementById('license-input').value.trim();
-            if(!code) return alert("Please enter a code");
+            if(!code) return alert("Enter Code!");
             const { data } = await supabaseClient.rpc('activate_pro', { input_device_id: deviceId, input_code: code });
-            if (data && data.success) { alert("Success!"); location.reload(); } else { alert("Invalid Code"); }
+            if (data && data.success) { alert("Activated!"); location.reload(); } else { alert("Invalid Code!"); }
         }
 
-        // --- [LOCKED PREDICTION LOGIC] ---
+        // Prediction Logic (Locked)
         let history = []; let warnings = []; let roll = 1, stage = 1;
         let pNext, eNext, sNext; let activePattern = null;
 
@@ -141,8 +144,7 @@
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
             const entry = { val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null };
-            history.push(entry);
-            managePatternLogic();
+            history.push(entry); managePatternLogic();
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePred(val); renderTable(); save();
             input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
@@ -184,9 +186,7 @@
             Object.keys(rolls).forEach(r => {
                 const b = document.createElement('div'); b.className = 'roll-card';
                 b.innerHTML = `<div class="text-md text-center font-black text-cyan-400 mb-2 border-b border-white/10 pb-1">ROLL ${r}</div>
-                    <div class="grid grid-cols-8 gap-0 text-[9px] text-gray-500 font-bold mb-1 text-center italic uppercase">
-                        <span>STG</span><span>P</span><span>OK</span><span>E</span><span>OK</span><span>S</span><span>OK</span><span>G</span>
-                    </div>`;
+                    <div class="grid grid-cols-8 gap-0 text-[9px] text-gray-500 font-bold mb-1 text-center italic uppercase"><span>STG</span><span>P</span><span>OK</span><span>E</span><span>OK</span><span>S</span><span>OK</span><span>G</span></div>`;
                 rolls[r].forEach(i => {
                     b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
                         <span class="text-[10px] font-bold text-gray-500 w-4">${i.stage}</span>
@@ -207,25 +207,25 @@
         function renderWarnings() {
             const container = document.getElementById('warning-history');
             if(document.getElementById('no-history-msg')) document.getElementById('no-history-msg').remove();
-            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs font-bold leading-relaxed">${warnings.length - idx}. ${w.text}</div>`).join('');
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-[10px] font-bold">${warnings.length - idx}. ${w.text}</div>`).join('');
         }
 
         async function copy() {
-            let t = "WIN6 PRO DARK RECORD\n";
+            let t = "WIN6 PRO RECORD\n";
             history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; });
             await navigator.clipboard.writeText(t); alert("Copied!");
         }
 
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_V_DARK', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
+        function save() { localStorage.setItem('WIN6_V_DARK', JSON.stringify({ history, warnings, roll, stage })); }
         function load() {
             const data = JSON.parse(localStorage.getItem('WIN6_V_DARK'));
-            if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; activePattern = data.activePattern || null; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
+            if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Data အားလုံး ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
+        function reset() { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
         
         load();
-        checkAccess(); // Start Access Check
+        checkAccess();
     </script>
 </body>
 </html>
