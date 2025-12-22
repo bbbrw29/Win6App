@@ -46,7 +46,7 @@
         <div class="max-w-md mx-auto space-y-4">
             <div class="text-center pt-2">
                 <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-5 py-2 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic">
-                    Loading Subscription...
+                    Checking Access...
                 </span>
             </div>
 
@@ -64,13 +64,28 @@
                 </div>
             </div>
 
+            <div id="alert-box" class="hidden">
+                <div class="bg-red-600 border-4 border-white text-white p-4 rounded-2xl text-center animate-pulse">
+                    <span id="alert-msg" class="text-2xl font-black uppercase"></span>
+                </div>
+            </div>
+
             <div class="space-y-2">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
+                    <span id="total-stg" class="text-xs font-bold opacity-40">0 STG</span>
+                </div>
                 <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
             </div>
-            
+
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-950 active:translate-y-1">📋 Copy</button>
-                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-950">🔄 Reset</button>
+                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase">📋 Copy</button>
+                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase">🔄 Reset</button>
+            </div>
+
+            <div class="bg-slate-900/80 p-5 rounded-[2.5rem] border border-white/10">
+                <h3 class="font-black text-yellow-400 mb-3 text-[10px] uppercase text-center italic opacity-60">Pattern Analysis</h3>
+                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto"></div>
             </div>
         </div>
     </div>
@@ -82,9 +97,12 @@
 
         let deviceId = localStorage.getItem('win6pro_id') || 'W6P-' + Math.random().toString(36).substring(2, 10).toUpperCase();
         localStorage.setItem('win6pro_id', deviceId);
-        
+        document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
+
         let remMins = 0; let isPremium = false; let syncBuffer = 0;
-        let timerStarted = false; // Input စမစ စစ်ဆေးရန်
+        let timerStarted = false;
+        let history = []; let warnings = []; let roll = 1, stage = 1;
+        let pNext, eNext, sNext; let activePattern = null;
 
         async function checkAccess() {
             try {
@@ -106,9 +124,7 @@
             const el = document.getElementById('plan-status');
             if (isPremium) {
                 el.innerText = "💎 Premium Member (Unlimited)";
-                el.className = "bg-yellow-400/10 text-yellow-400 text-[10px] px-5 py-2 rounded-full border border-yellow-400/30 font-bold uppercase italic";
             } else {
-                // Input မရိုက်ခင် Waiting စာသားပြမည်
                 el.innerText = timerStarted 
                     ? `⏳ Trial Active | ⏱️ ${remMins} Min Remaining` 
                     : `⏳ Trial: ${data.days} Days Left | ⏱️ 120 Min (Waiting for input)`;
@@ -116,16 +132,12 @@
         }
 
         function startTimer() {
-            // Timer စသည်နှင့် ချက်ချင်း UI ပြောင်းမည်
             document.getElementById('plan-status').innerText = `⏳ Trial Active | ⏱️ ${remMins} Min Remaining`;
-            
             setInterval(async () => {
                 if (remMins > 0) {
                     remMins--; syncBuffer++;
                     document.getElementById('plan-status').innerText = `⏳ Trial Active | ⏱️ ${remMins} Min Remaining`;
-                    
-                    // API ခေါ်ဆိုမှု လျှော့ချရန် ၂ မိနစ်တစ်ခါ Sync လုပ်မည်
-                    if (syncBuffer >= 2) { 
+                    if (syncBuffer >= 2) {
                         await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
                         syncBuffer = 0;
                     }
@@ -133,26 +145,38 @@
             }, 60000);
         }
 
+        // --- LOCKED SUBMIT FUNCTION ---
         function submit() {
-            // --- TRIGGER: ပထမဆုံး Input မှာ Timer စတင်မည် ---
             if (!isPremium && !timerStarted) {
                 timerStarted = true;
                 startTimer();
             }
 
-            // (Locked Logic) - ပြောင်းလဲခြင်းမရှိပါ
             const input = document.getElementById('digit-input');
-            const val = parseInt(input.value); const grp = val >= 5 ? 'B' : 'S';
-            const entry = { val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null };
-            history.push(entry); managePatternLogic();
+            const val = parseInt(input.value);
+            const grp = val >= 5 ? 'B' : 'S';
+
+            const entry = { 
+                val, grp, roll, stage, 
+                p: pNext, pOk: pNext ? pNext === grp : null, 
+                e: eNext, eOk: eNext ? eNext === grp : null, 
+                s: sNext, sOk: sNext ? sNext === grp : null 
+            };
+
+            history.push(entry);
+            managePatternLogic();
+
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
-            updatePred(val); renderTable(); save();
-            input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
+
+            updatePred(val);
+            renderTable();
+            save();
+
+            input.value = ''; input.focus();
+            document.getElementById('btn-submit').disabled = true;
         }
 
-        // --- ကျန်ရှိသော Locked Functions (updatePred, renderTable, etc.) များသည် မူရင်းအတိုင်းဖြစ်သည် ---
-        let history = []; let warnings = []; let roll = 1, stage = 1;
-        let pNext, eNext, sNext; let activePattern = null;
+        // --- LOCKED LOGIC & PATTERN FUNCTIONS ---
         function updatePred(last) {
             pNext = last % 2 === 0 ? 'S' : 'B';
             if(history.length >= 3) { eNext = history.slice(-3).reduce((a,b) => a+b.val, 0) % 2 === 0 ? 'S' : 'B'; }
@@ -166,14 +190,71 @@
             document.getElementById('pred-s').innerHTML = sNext ? `<span>${sNext}</span>` : '-';
             document.getElementById('highlight-g').innerText = last;
         }
-        function managePatternLogic() { /* မူရင်းအတိုင်း */ }
-        function renderTable() { /* မူရင်းအတိုင်း */ }
-        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_ULTIMATE_STORE', JSON.stringify({ history, warnings, roll, stage })); }
-        function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_ULTIMATE_STORE'));
-            if(data) { history = data.history; roll = data.roll; stage = data.stage; renderTable(); if(history.length) updatePred(history[history.length-1].val); }
+
+        function managePatternLogic() {
+            const seq = history.map(h => h.grp).join(''); let current = null;
+            if(seq.length >= 4) {
+                let dp = 0; for(let i=seq.length-1; i>=3; i-=2) { if(seq[i]===seq[i-1] && seq[i-2]===seq[i-3] && seq[i]!==seq[i-2]) dp += 2; else break; }
+                if(dp >= 4) { if(seq.length % 2 !== 0 && seq[seq.length-1] === seq[seq.length-2]) dp += 1; current = { type: 'အတွဲလိုက် (BBSS)', count: dp, start: history.length - dp }; }
+            }
+            if(!current) {
+                let last = seq.slice(-1), sCount = 0; for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) sCount++; else break; }
+                if(sCount >= 5) current = { type: last==='B'?'အကြီးတန်း':'အသေးတန်း', count: sCount, start: history.length - sCount };
+            }
+            const box = document.getElementById('alert-box');
+            if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} ${current.count} ကြိမ်`; box.classList.remove('hidden'); }
+            else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} ကြိမ် (R${s.roll}S${s.stage} မှ R${e.roll}S${e.stage} အထိ)` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
         }
+
+        function renderTable() {
+            const container = document.getElementById('history-container'); container.innerHTML = '';
+            document.getElementById('total-stg').innerText = `${history.length} STG`;
+            const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
+            Object.keys(rolls).forEach(r => {
+                const b = document.createElement('div'); b.className = 'roll-card';
+                b.innerHTML = `<div class="text-md text-center font-black text-cyan-400 mb-2 border-b border-white/10 pb-1">ROLL ${r}</div>`;
+                rolls[r].forEach(i => {
+                    b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0 italic">
+                        <span class="text-[10px] font-bold text-gray-500 w-4">${i.stage}</span>
+                        <div class="mini-shape p-circle">${i.p||'-'}</div>
+                        <span class="${i.pOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <div class="mini-shape e-square">${i.e||'-'}</div>
+                        <span class="${i.eOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span>
+                        <div class="mini-shape s-diamond"><span>${i.s||'-'}</span></div>
+                        <span class="${i.sOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span>
+                        <div class="g-num">${i.val}</div>
+                    </div>`;
+                });
+                container.appendChild(b);
+            });
+            container.scrollLeft = container.scrollWidth;
+        }
+
+        function renderWarnings() {
+            const container = document.getElementById('warning-history');
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs font-bold mb-2">${w.text}</div>`).join('');
+        }
+
+        async function activateCode(source) {
+            const code = document.getElementById('lock-license-input').value.trim();
+            const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
+            if (data?.success) { alert("Success!"); location.reload(); } else { alert("Invalid Code!"); }
+        }
+
+        function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
+        function save() { localStorage.setItem('WIN6_STORE', JSON.stringify({ history, warnings, roll, stage })); }
+        function load() {
+            const data = JSON.parse(localStorage.getItem('WIN6_STORE'));
+            if(data) { 
+                history = data.history || []; 
+                warnings = data.warnings || []; 
+                roll = data.roll || 1; 
+                stage = data.stage || 1; 
+                renderTable(); renderWarnings(); 
+                if(history.length) updatePred(history[history.length-1].val); 
+            }
+        }
+        async function copy() { let t = "WIN6 PRO LOGS\n"; history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; }); await navigator.clipboard.writeText(t); alert("Copied!"); }
         function reset() { if(confirm("Data ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
 
         load(); checkAccess();
