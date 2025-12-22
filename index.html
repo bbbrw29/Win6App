@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win 6 Pro - Dark Edition</title>
+    <title>Win 6 Pro -Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -16,7 +16,7 @@
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); }
 
-        /* Roll History Cards */
+        /* Status UI */
         .roll-card { flex-shrink: 0; width: 270px; background: rgba(0, 51, 102, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
         .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; }
         .status-no { color: #ff3366; font-size: 24px; font-weight: 900; }
@@ -30,24 +30,33 @@
         .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; }
         .g-display { font-size: 75px; font-weight: 900; color: #ffdc00; text-shadow: 4px 4px 0px #000; }
 
-        /* Lock Screen Overlay */
+        /* Overlay Screens */
         #lock-screen { position: fixed; inset: 0; background: #000d1a; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
+        #upgrade-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body class="p-2 pb-10">
 
     <div id="lock-screen" style="display: none;">
-        <h1 class="text-yellow-400 text-5xl font-black mb-2 uppercase italic tracking-tighter">Win 6 Pro</h1>
-        <p class="text-cyan-400 text-[10px] mb-10 tracking-[0.4em] font-bold italic uppercase opacity-70">Premium Prediction System</p>
-        
+        <h1 class="text-yellow-400 text-5xl font-black mb-2 italic">Win 6 Pro</h1>
+        <p class="text-cyan-400 text-[10px] mb-10 tracking-[0.4em] font-bold italic uppercase opacity-70">Security Access Required</p>
         <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2.5rem] mb-8 w-full max-w-sm">
             <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Checking Access...</p>
         </div>
-
         <div class="w-full max-w-sm space-y-4">
-            <input type="text" id="license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl outline-none" placeholder="ENTER LICENSE CODE">
-            <button onclick="activateCode()" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl active:scale-95 shadow-lg uppercase transition-transform">Activate Pro</button>
-            <p class="text-gray-600 text-[10px] mt-6 font-mono uppercase tracking-widest" id="device-id-display"></p>
+            <input type="text" id="lock-license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl" placeholder="ENTER LICENSE CODE">
+            <button onclick="activateCode('lock')" class="w-full bg-yellow-400 text-black py-5 rounded-2xl font-black text-xl shadow-lg uppercase">Activate Now</button>
+            <p class="text-gray-600 text-[10px] mt-6 font-mono" id="device-id-display"></p>
+        </div>
+    </div>
+
+    <div id="upgrade-modal">
+        <div class="bg-[#002b52] w-full max-w-sm p-8 rounded-[2.5rem] border-2 border-yellow-400 text-center relative shadow-2xl">
+            <button onclick="hideUpgradeBox()" class="absolute top-4 right-6 text-gray-400 text-3xl font-bold">&times;</button>
+            <h2 class="text-yellow-400 font-black text-2xl mb-2 italic uppercase">Upgrade Pro</h2>
+            <p class="text-[10px] text-gray-400 mb-8 uppercase tracking-widest italic">Remove all limits & access unlimited</p>
+            <input type="text" id="modal-license-input" class="w-full p-4 rounded-xl text-black text-center font-black border-2 border-yellow-400 mb-4 outline-none text-lg" placeholder="ENTER CODE HERE">
+            <button onclick="activateCode('modal')" class="w-full bg-yellow-400 text-black py-4 rounded-xl font-black uppercase shadow-lg active:scale-95 transition-all">Activate Membership</button>
         </div>
     </div>
 
@@ -55,8 +64,8 @@
         <div class="max-w-md mx-auto space-y-4">
             
             <div class="text-center pt-2">
-                <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-5 py-2 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic shadow-sm">
-                    Connecting to Server...
+                <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-5 py-2 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic">
+                    Loading Subscription...
                 </span>
             </div>
 
@@ -82,38 +91,44 @@
 
             <div class="space-y-2">
                 <div class="flex justify-between items-center px-2">
-                    <h3 class="font-black text-cyan-400 text-lg italic uppercase tracking-tighter">Live Record Logs</h3>
+                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
                     <span id="total-stg" class="text-xs font-bold opacity-40">0 STG</span>
                 </div>
-                <div id="history-container" class="flex overflow-x-auto gap-3 pb-4 scroll-smooth"></div>
+                <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-950 active:translate-y-1 active:border-b-0 transition-all">📋 Copy Data</button>
-                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-950 active:translate-y-1 active:border-b-0 transition-all">🔄 Reset App</button>
+                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-blue-950 active:translate-y-1 active:border-b-0 transition-all">📋 Copy</button>
+                <button onclick="reset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase border-b-4 border-red-950 active:translate-y-1 active:border-b-0 transition-all">🔄 Reset</button>
+            </div>
+
+            <div id="upgrade-section" class="mt-4 px-2 hidden">
+                <button onclick="showUpgradeBox()" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-300 text-black py-4 rounded-2xl font-black text-md uppercase border-b-4 border-yellow-700 active:scale-95 transition-all shadow-xl">
+                    💎 Upgrade to Premium
+                </button>
             </div>
 
             <div class="bg-slate-900/80 p-5 rounded-[2.5rem] border border-white/10">
-                <h3 class="font-black text-yellow-400 mb-3 text-[10px] uppercase tracking-[0.2em] text-center border-b border-white/5 pb-2 italic opacity-70">Pattern History Analysis</h3>
+                <h3 class="font-black text-yellow-400 mb-3 text-[10px] uppercase text-center border-b border-white/5 pb-2 italic opacity-60">Pattern Analysis</h3>
                 <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto pr-1">
-                    <div id="no-history-msg" class="text-center py-6 opacity-20 text-xs italic uppercase tracking-widest">No Patterns Found</div>
+                    <div id="no-history-msg" class="text-center py-6 opacity-20 text-xs italic">No Records Found</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
+        // --- SUPABASE CONFIG ---
         const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- AUTH & TIMER LOGIC (NEW) ---
+        // --- AUTH & UPGRADE LOGIC ---
         let deviceId = localStorage.getItem('win6pro_id') || 'W6P-' + Math.random().toString(36).substring(2, 10).toUpperCase();
         localStorage.setItem('win6pro_id', deviceId);
         document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
 
-        let remMins = 0; let isPremium = false; let elapsedSinceLastSync = 0;
+        let remMins = 0; let isPremium = false; let syncBuffer = 0;
 
         async function checkAccess() {
             try {
@@ -128,64 +143,56 @@
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
                     updateStatusUI(data);
-                    if (!isPremium) startLocalTimer();
+                    if (!isPremium) startTimer();
                 }
             } catch (e) { 
-                document.getElementById('lock-msg').innerText = "Trial Expired / Access Denied";
+                document.getElementById('lock-msg').innerText = "Connection Error";
                 document.getElementById('lock-screen').style.display = 'flex';
             }
         }
 
         function updateStatusUI(data) {
             const el = document.getElementById('plan-status');
+            const upgradeSec = document.getElementById('upgrade-section');
             if (isPremium) {
                 el.innerText = "💎 Premium Member (Unlimited)";
                 el.className = "bg-yellow-400/10 text-yellow-400 text-[10px] px-5 py-2 rounded-full border border-yellow-400/30 font-bold uppercase tracking-widest italic shadow-sm";
+                upgradeSec.style.display = 'none';
             } else {
                 el.innerText = `⏳ Trial: ${data.days} Days Left | ⏱️ ${remMins} Min Today`;
+                upgradeSec.style.display = 'block';
             }
         }
 
-        function startLocalTimer() {
+        function startTimer() {
             setInterval(async () => {
                 if (remMins > 0) {
-                    remMins--; elapsedSinceLastSync++;
+                    remMins--; syncBuffer++;
                     document.getElementById('plan-status').innerText = `⏳ Trial Active | ⏱️ ${remMins} Min Remaining`;
-                    
-                    // Sync every 5 minutes to save API requests
-                    if (elapsedSinceLastSync >= 5) {
-                        await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: elapsedSinceLastSync });
-                        elapsedSinceLastSync = 0;
+                    if (syncBuffer >= 5) {
+                        await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
+                        syncBuffer = 0;
                     }
-                } else {
-                    location.reload(); // Lock when time runs out
-                }
-            }, 60000); // Every 1 minute
+                } else { location.reload(); }
+            }, 60000);
         }
 
-        // Final sync before closing app
-        window.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && elapsedSinceLastSync > 0 && !isPremium) {
-                navigator.sendBeacon(`${SUPABASE_URL}/rest/v1/rpc/sync_minutes`, JSON.stringify({
-                    input_device_id: deviceId,
-                    add_mins: elapsedSinceLastSync
-                }));
-            }
-        });
+        function showUpgradeBox() { document.getElementById('upgrade-modal').style.display = 'flex'; }
+        function hideUpgradeBox() { document.getElementById('upgrade-modal').style.display = 'none'; }
 
-        async function activateCode() {
-            const code = document.getElementById('license-input').value.trim();
-            if (!code) return alert("Please enter code");
+        async function activateCode(source) {
+            const inputId = source === 'lock' ? 'lock-license-input' : 'modal-license-input';
+            const code = document.getElementById(inputId).value.trim();
+            if (!code) return alert("Enter Code!");
+            
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
             if (data?.success) {
-                alert("Pro Version Activated Successfully!");
+                alert("Success! Welcome to Premium Membership.");
                 location.reload();
-            } else {
-                alert("Invalid or Used Code!");
-            }
+            } else { alert("Invalid or Expired Code!"); }
         }
 
-        // --- ORIGINAL PREDICTION LOGIC (LOCKED - DO NOT CHANGE) ---
+        // --- PREDICTION LOGIC (LOCKED) ---
         let history = []; let warnings = []; let roll = 1, stage = 1;
         let pNext, eNext, sNext; let activePattern = null;
 
@@ -234,17 +241,16 @@
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
                 const b = document.createElement('div'); b.className = 'roll-card';
-                b.innerHTML = `<div class="text-md text-center font-black text-cyan-400 mb-2 border-b border-white/10 pb-1">ROLL ${r}</div>
-                    <div class="grid grid-cols-8 gap-0 text-[9px] text-gray-500 font-bold mb-1 text-center italic uppercase"><span>STG</span><span>P</span><span>OK</span><span>E</span><span>OK</span><span>S</span><span>OK</span><span>G</span></div>`;
+                b.innerHTML = `<div class="text-md text-center font-black text-cyan-400 mb-2 border-b border-white/10 pb-1">ROLL ${r}</div>`;
                 rolls[r].forEach(i => {
-                    b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
+                    b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0 italic">
                         <span class="text-[10px] font-bold text-gray-500 w-4">${i.stage}</span>
                         <div class="mini-shape p-circle">${i.p||'-'}</div>
-                        <span class="${i.pOk?'status-ok':'status-no'} w-6 text-center">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <span class="${i.pOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
                         <div class="mini-shape e-square">${i.e||'-'}</div>
-                        <span class="${i.eOk?'status-ok':'status-no'} w-6 text-center">${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span>
+                        <span class="${i.eOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span>
                         <div class="mini-shape s-diamond"><span>${i.s||'-'}</span></div>
-                        <span class="${i.sOk?'status-ok':'status-no'} w-6 text-center">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span>
+                        <span class="${i.sOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span>
                         <div class="g-num">${i.val}</div>
                     </div>`;
                 });
@@ -256,24 +262,23 @@
         function renderWarnings() {
             const container = document.getElementById('warning-history');
             if(document.getElementById('no-history-msg')) document.getElementById('no-history-msg').remove();
-            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs font-bold leading-relaxed shadow-sm">${warnings.length - idx}. ${w.text}</div>`).join('');
+            container.innerHTML = warnings.map((w, idx) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs font-bold">${warnings.length - idx}. ${w.text}</div>`).join('');
         }
 
         async function copy() {
-            let t = "WIN6 PRO RECORD LOGS\n";
+            let t = "WIN6 PRO LOGS\n";
             history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; });
-            await navigator.clipboard.writeText(t); alert("History Copied to Clipboard!");
+            await navigator.clipboard.writeText(t); alert("Copied!");
         }
 
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('WIN6_FINAL_STORE', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
+        function save() { localStorage.setItem('WIN6_ULTIMATE_STORE', JSON.stringify({ history, warnings, roll, stage, activePattern })); }
         function load() {
-            const data = JSON.parse(localStorage.getItem('WIN6_FINAL_STORE'));
+            const data = JSON.parse(localStorage.getItem('WIN6_ULTIMATE_STORE'));
             if(data) { history = data.history; warnings = data.warnings || []; roll = data.roll; stage = data.stage; activePattern = data.activePattern || null; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function reset() { if(confirm("Are you sure you want to clear all data?")) { localStorage.clear(); location.reload(); } }
+        function reset() { if(confirm("Data များအားလုံး ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
 
-        // Start App
         load();
         checkAccess();
     </script>
