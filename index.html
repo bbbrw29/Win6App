@@ -3,96 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic - Professional Analysis</title>
+    <title>Omni Logic Professional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000814; color: white; overflow-x: hidden; }
-        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000814; color: white; }
+        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
         .box-s span { transform: rotate(-45deg); }
+        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 900; border: 1px solid rgba(255,255,255,0.2); }
         .roll-card { flex-shrink: 0; width: 280px; background: rgba(0, 51, 102, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
-        .status-ok { color: #00ff88; font-size: 18px; font-weight: 900; }
-        .status-no { color: #ff3366; font-size: 18px; font-weight: 900; }
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; }
-        .g-display { font-size: 75px; font-weight: 900; color: #00f2ff; text-shadow: 0 0 20px rgba(0,242,255,0.5); }
-        .locked-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.8); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #000; font-size: 10px; font-weight: 900; filter: none !important; }
-        .blur-logic { filter: blur(5px); }
-        .mini-shape { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 14px; border-width: 2px; }
-        .p-circle { border-radius: 50%; border-color: #ff4136; color: #ff4136; }
-        .e-square { border-radius: 6px; border-color: #b10dc9; color: #b10dc9; }
-        .s-diamond { transform: rotate(45deg); border-color: #2ecc40; color: #2ecc40; border-radius: 4px; }
-        .s-diamond span { transform: rotate(-45deg); }
+        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; }
+        .mini-shape { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 12px; border-width: 2px; }
     </style>
 </head>
 <body class="p-2 pb-10">
 
     <div id="lock-screen" class="fixed inset-0 bg-[#000814] z-[9999] flex flex-col items-center justify-center p-6 text-center" style="display: none;">
-        <h1 class="text-5xl font-black mb-2 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">OMNI LOGIC</h1>
-        <p class="text-cyan-400 text-[10px] mb-10 tracking-[0.4em] font-bold uppercase opacity-70 italic">Universal Prediction System</p>
-        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2.5rem] mb-8 w-full max-w-sm">
-            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Trial Expired!</p>
+        <h1 class="text-4xl font-black mb-10 text-cyan-400 italic">OMNI LOGIC</h1>
+        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-3xl mb-8 w-full max-w-sm">
+            <p id="lock-msg" class="text-red-500 font-black uppercase italic">Trial Expired!</p>
         </div>
-        <input type="text" id="lock-license-input" class="w-full max-w-sm p-5 rounded-2xl text-black text-center font-black border-4 border-cyan-500 text-xl mb-4" placeholder="ENTER LICENSE CODE">
-        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 text-white py-5 rounded-2xl font-black text-xl shadow-[0_0_20px_rgba(6,182,212,0.5)] uppercase active:scale-95">Activate Premium</button>
-        <a href="YOUR_TELEGRAM_LINK" target="_blank" class="mt-6 text-cyan-400 font-bold border-b border-cyan-400 pb-1 italic text-sm">Buy License Key via Telegram</a>
-        <p class="text-gray-600 text-[10px] mt-10 font-mono uppercase" id="device-id-display"></p>
+        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-xl text-black text-center font-black border-4 border-cyan-500 mb-4" placeholder="LICENSE CODE">
+        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-xl font-black shadow-lg">Activate Premium</button>
+        <a href="YOUR_TELEGRAM_LINK" class="mt-6 text-cyan-400 font-bold underline">Buy via Telegram</a>
+        <p class="text-gray-600 text-[10px] mt-10" id="device-id-display"></p>
     </div>
 
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
             <div class="text-center pt-4">
-                <h1 class="text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">OMNI LOGIC</h1>
-                <div id="plan-status" class="mt-2 inline-block bg-white/5 text-cyan-400 text-[10px] px-4 py-1 rounded-full border border-white/10 font-bold uppercase tracking-widest italic italic">Checking License...</div>
+                <h1 class="text-3xl font-black italic text-cyan-500">OMNI LOGIC</h1>
+                <div id="plan-status" class="mt-2 text-[10px] text-cyan-400 uppercase tracking-widest font-bold">Syncing...</div>
             </div>
 
             <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
                 <div>
-                    <p class="text-[10px] font-bold text-gray-500 mb-1 uppercase">P-Logic</p>
-                    <div id="box-p-wrap" class="box-p">
-                        <span id="pred-p" class="">-</span>
-                        <div id="lock-p" class="locked-overlay">PREMIUM</div>
-                    </div>
+                    <p class="text-[10px] font-bold text-gray-500 mb-1 uppercase">P-Logic (Free)</p>
+                    <div class="box-p"><span id="pred-p">-</span></div>
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-500 mb-1 uppercase">E-Logic</p>
-                    <div id="box-e-wrap" class="box-e">
-                        <span id="pred-e" class="">-</span>
+                    <div class="box-e">
+                        <span id="pred-e" class="blur-sm">-</span>
                         <div id="lock-e" class="locked-overlay">PREMIUM</div>
                     </div>
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-500 mb-1 uppercase">S-Logic</p>
-                    <div class="box-s"><span id="pred-s"></span></div>
+                    <div class="box-s">
+                        <span id="pred-s" class="blur-sm"></span>
+                        <div id="lock-s" class="locked-overlay"><span>PREMIUM</span></div>
+                    </div>
                 </div>
             </div>
 
             <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 shadow-inner">
-                <div class="text-center flex-1"><div id="highlight-g" class="g-display">-</div></div>
+                <div class="text-center flex-1"><div id="highlight-g" class="text-6xl font-black text-cyan-400">-</div></div>
                 <div class="flex flex-col gap-2 w-32">
-                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black bg-white" placeholder="?" oninput="validate(this)" disabled>
-                    <button id="btn-submit" class="w-full py-4 bg-cyan-500 text-white font-black rounded-xl text-xl shadow-lg active:scale-95 disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black" placeholder="?" oninput="validate(this)" disabled>
+                    <button id="btn-submit" class="w-full py-4 bg-cyan-500 text-white font-black rounded-xl text-xl disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <h3 class="font-black text-cyan-500 text-sm italic uppercase px-2 tracking-widest">Live Record Logs</h3>
-                <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
+            <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
+
+            <div id="premium-btn-box">
+                <button onclick="showUpgrade()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-4 rounded-2xl font-black uppercase shadow-xl italic">🚀 Unlock All Logics (S & E)</button>
             </div>
 
-            <div id="premium-btn-box" class="space-y-3">
-                <button onclick="showUpgrade()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-4 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 italic">🚀 Unlock P & E Logics</button>
-                <div class="text-center">
-                    <a href="YOUR_TELEGRAM_LINK" target="_blank" class="text-cyan-400 font-bold italic text-sm underline">Contact Admin via Telegram</a>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-slate-800 py-4 text-white font-black rounded-2xl text-sm uppercase border border-white/10">📋 Copy Logs</button>
-                <button onclick="fullReset()" class="bg-slate-800 py-4 text-red-400 font-black rounded-2xl text-sm uppercase border border-white/10">🔄 Full Reset</button>
-            </div>
+            <button onclick="fullReset()" class="w-full bg-slate-800 py-3 text-red-400 font-bold rounded-xl text-xs uppercase border border-white/10">Full Clear Logs</button>
         </div>
     </div>
 
@@ -102,16 +84,20 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let deviceId = ""; let isPremium = false; let remMins = 0; let syncBuffer = 0;
-        let history = []; let roll = 1, stage = 1;
-        let pNext, eNext, sNext; let timerStarted = false;
+        let history = []; let roll = 1, stage = 1; let pNext, eNext, sNext; let timerStarted = false;
 
         async function initDevice() {
-            const info = [navigator.userAgent, screen.height, screen.width].join('|');
+            // Hardware-based Identification (Canvas Fingerprinting အပါအဝင်)
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const renderer = gl ? gl.getParameter(gl.RENDERER) : "";
+            const info = [navigator.userAgent, screen.height, screen.width, renderer].join('|');
             const encoder = new TextEncoder();
             const data = encoder.encode(info);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             deviceId = "OMNI-" + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
+            
             document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
             checkAccess();
         }
@@ -122,20 +108,10 @@
                 if (data && data.can_access) {
                     isPremium = data.is_premium;
                     remMins = isPremium ? data.mins : Math.min(data.mins || 90, 90);
-                    
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
                     document.getElementById('digit-input').disabled = false;
-                    
-                    if(isPremium) {
-                        document.getElementById('premium-btn-box').style.display = 'none';
-                        document.getElementById('lock-p').style.display = 'none';
-                        document.getElementById('lock-e').style.display = 'none';
-                    } else {
-                        document.getElementById('pred-p').classList.add('blur-logic');
-                        document.getElementById('pred-e').classList.add('blur-logic');
-                    }
-                    updateStatusUI(data);
+                    updateUI();
                 } else {
                     document.getElementById('lock-screen').style.display = 'flex';
                     document.getElementById('lock-msg').innerText = data.reason || "Trial Ended!";
@@ -143,11 +119,18 @@
             } catch (e) { console.error(e); }
         }
 
-        function updateStatusUI(data) {
+        function updateUI() {
             const el = document.getElementById('plan-status');
-            const days = data.days_left !== undefined ? `(${data.days_left} DAYS LEFT)` : "";
-            if (isPremium) el.innerText = "💎 PREMIUM MEMBER";
-            else el.innerText = timerStarted ? `⏳ TRIAL: ${remMins} MIN ${days}` : `⏳ TRIAL: 90 MIN ${days}`;
+            if (isPremium) {
+                el.innerText = "💎 PREMIUM MEMBER";
+                document.getElementById('lock-e').style.display = 'none';
+                document.getElementById('lock-s').style.display = 'none';
+                document.getElementById('pred-e').classList.remove('blur-sm');
+                document.getElementById('pred-s').classList.remove('blur-sm');
+                document.getElementById('premium-btn-box').style.display = 'none';
+            } else {
+                el.innerText = `⏳ TRIAL: ${remMins} MIN LEFT`;
+            }
         }
 
         function startTimer() {
@@ -156,8 +139,7 @@
             setInterval(async () => {
                 if (remMins > 0) {
                     remMins--; syncBuffer++;
-                    localStorage.setItem('omni_rem_mins', remMins);
-                    updateStatusUI({ days_left: 7 }); // Default visual
+                    updateUI();
                     if (syncBuffer >= 3) {
                         await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
                         syncBuffer = 0;
@@ -188,8 +170,8 @@
                 sNext = (dSum % 2 !== 0) ? 'B' : 'S';
             } else sNext = null;
             document.getElementById('pred-p').innerText = pNext || '-';
-            document.getElementById('pred-e').innerText = eNext || '-';
-            document.getElementById('pred-s').innerHTML = sNext ? `<span>${sNext}</span>` : '-';
+            document.getElementById('pred-e').innerText = isPremium ? (eNext || '-') : "?";
+            document.getElementById('pred-s').innerHTML = isPremium ? (sNext ? `<span>${sNext}</span>` : '-') : "?";
             document.getElementById('highlight-g').innerText = last;
         }
 
@@ -198,20 +180,19 @@
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
                 const b = document.createElement('div'); b.className = 'roll-card';
-                b.innerHTML = `<div class="text-[10px] text-center font-black text-cyan-500 mb-2 border-b border-white/5 pb-1 uppercase tracking-widest">Roll ${r}</div>`;
+                b.innerHTML = `<div class="text-[10px] text-center font-bold text-cyan-500 mb-2 uppercase tracking-widest border-b border-white/10 pb-1">Roll ${r}</div>`;
                 rolls[r].forEach(i => {
-                    const pShow = isPremium ? i.p : "🔒";
                     const eShow = isPremium ? i.e : "🔒";
-                    const pStatus = isPremium ? (i.pOk ? '✅' : '❌') : "-";
-                    const eStatus = isPremium ? (i.eOk ? '✅' : '❌') : "-";
+                    const sShow = isPremium ? (i.s || "-") : "🔒";
+                    const okS = isPremium ? (i.sOk === null ? '-' : (i.sOk ? '✅' : '❌')) : "-";
                     b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
-                        <span class="text-[9px] font-bold text-gray-600 w-4">${i.stage}</span>
-                        <div class="mini-shape p-circle ${!isPremium?'blur-[2px]':''}">${pShow}</div>
-                        <span class="text-[10px] w-6 text-center">${pStatus}</span>
-                        <div class="mini-shape e-square ${!isPremium?'blur-[2px]':''}">${eShow}</div>
-                        <span class="text-[10px] w-6 text-center">${eStatus}</span>
-                        <div class="mini-shape s-diamond"><span>${i.s||'-'}</span></div>
-                        <span class="${i.sOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span>
+                        <span class="text-[8px] text-gray-600 w-4">${i.stage}</span>
+                        <div class="mini-shape border-[#ff4136] text-[#ff4136] rounded-full">${i.p||'-'}</div>
+                        <span class="text-[10px] w-6 text-center">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <div class="mini-shape border-[#b10dc9] text-[#b10dc9] rounded-md">${eShow}</div>
+                        <span class="text-[10px] w-6 text-center">${isPremium?(i.eOk?'✅':'❌'):'-'}</span>
+                        <div class="mini-shape border-[#2ecc40] text-[#2ecc40] rotate-45"><span class="-rotate-45">${sShow}</span></div>
+                        <span class="text-[10px] w-6 text-center">${okS}</span>
                         <div class="g-num">${i.val}</div>
                     </div>`;
                 });
@@ -226,14 +207,13 @@
             const data = JSON.parse(localStorage.getItem('OMNI_STORE'));
             if(data) { history = data.history || []; roll = data.roll || 1; stage = data.stage || 1; renderTable(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        function fullReset() { if(confirm("Reset all logs?")) { localStorage.removeItem('OMNI_STORE'); location.reload(); } }
+        function fullReset() { if(confirm("Clear all logs?")) { localStorage.removeItem('OMNI_STORE'); location.reload(); } }
         function showUpgrade() { document.getElementById('app-main').style.display = 'none'; document.getElementById('lock-screen').style.display = 'flex'; }
         async function activateCode() {
             const code = document.getElementById('lock-license-input').value.trim();
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
             if (data?.success) { alert("Premium Activated!"); location.reload(); } else alert("Invalid Key!");
         }
-        async function copy() { let t = "OMNI LOGS\n"; history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] S-Logic:${i.sOk?'✅':'❌'}\n`; }); navigator.clipboard.writeText(t); alert("Copied!"); }
 
         load(); initDevice();
     </script>
