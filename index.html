@@ -35,6 +35,9 @@
         </div>
         <input type="text" id="lock-license-input" class="w-full max-w-sm p-5 rounded-2xl text-black text-center font-black border-4 border-cyan-500 text-xl mb-4" placeholder="ENTER LICENSE CODE">
         <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 text-white py-5 rounded-2xl font-black text-xl shadow-[0_0_20px_rgba(6,182,212,0.5)] uppercase active:scale-95">Activate Premium</button>
+        
+        <a href="YOUR_TELEGRAM_LINK" target="_blank" class="mt-6 text-cyan-400 font-bold border-b border-cyan-400 pb-1 italic text-sm">Buy License Key via Telegram</a>
+        
         <p class="text-gray-600 text-[10px] mt-10 font-mono uppercase" id="device-id-display"></p>
     </div>
 
@@ -71,8 +74,11 @@
                 <button onclick="fullReset()" class="bg-slate-800 py-4 text-red-400 font-black rounded-2xl text-sm uppercase border border-white/10">🔄 Reset</button>
             </div>
 
-            <div id="premium-btn-box">
+            <div id="premium-btn-box" class="space-y-3">
                 <button onclick="showUpgrade()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-4 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 italic">🚀 Upgrade to Premium</button>
+                <div class="text-center">
+                    <a href="YOUR_TELEGRAM_LINK" target="_blank" class="text-cyan-400 font-bold italic text-sm underline">Contact Admin via Telegram</a>
+                </div>
             </div>
 
             <div class="bg-slate-900/50 p-4 rounded-[2.5rem] border border-white/5">
@@ -92,12 +98,12 @@
         let pNext, eNext, sNext; let timerStarted = false; let activePattern = null;
 
         async function initDevice() {
-            const info = [navigator.userAgent, screen.height, screen.width, navigator.language, navigator.hardwareConcurrency].join('|');
+            const info = [navigator.userAgent, screen.height, screen.width, navigator.language].join('|');
             const encoder = new TextEncoder();
             const data = encoder.encode(info);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            deviceId = "OMNI-" + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 10).toUpperCase();
+            deviceId = "OMNI-" + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
             document.getElementById('device-id-display').innerText = "ID: " + deviceId;
             checkAccess();
         }
@@ -107,9 +113,9 @@
                 const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
                 if (data && data.can_access) {
                     isPremium = data.is_premium;
+                    // Server က အချိန်ကို အမြဲဦးစားပေးယူမယ် (Data Clear တိုက်ဖျက်ရန်)
                     const serverMins = isPremium ? data.mins : Math.min(data.mins || 90, 90);
-                    const localMins = localStorage.getItem('omni_rem_mins');
-                    remMins = (localMins !== null && !isPremium) ? Math.min(parseInt(localMins), serverMins) : serverMins;
+                    remMins = serverMins; 
                     
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
@@ -118,7 +124,7 @@
                     updateStatusUI(data);
                 } else {
                     document.getElementById('lock-screen').style.display = 'flex';
-                    document.getElementById('lock-msg').innerText = "ယနေ့အတွက် အသုံးပြုခွင့် မိနစ် ၉၀ ပြည့်သွားပါပြီ။";
+                    document.getElementById('lock-msg').innerText = "Limit Reached! Contact Admin for Key.";
                 }
             } catch (e) { console.error(e); }
         }
@@ -126,25 +132,34 @@
         function updateStatusUI(data) {
             const el = document.getElementById('plan-status');
             if (isPremium) el.innerText = "💎 PREMIUM MEMBER";
-            else el.innerText = timerStarted ? `⏳ LIMIT: ${remMins} MIN LEFT` : `⏳ TRIAL: DAY ${data.days_used || 1}/7 | 90 MIN`;
+            else el.innerText = timerStarted ? `⏳ LIMIT: ${remMins} MIN LEFT` : `⏳ TRIAL: 90 MIN (WAITING INPUT)`;
         }
 
         function startTimer() {
+            if (timerStarted || isPremium) return;
+            timerStarted = true;
+            
             setInterval(async () => {
-                if (remMins > 0 && !isPremium) {
+                if (remMins > 0) {
                     remMins--; syncBuffer++;
                     localStorage.setItem('omni_rem_mins', remMins);
                     updateStatusUI({});
-                    if (syncBuffer >= 5) {
-                        await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
-                        syncBuffer = 0;
+                    
+                    // ၃ မိနစ်တစ်ကြိမ် API Sync လုပ်မည် (API Request ချွေတာရန်)
+                    if (syncBuffer >= 3) {
+                        try {
+                            await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
+                            syncBuffer = 0;
+                        } catch(e) { console.log("Sync delayed due to network"); }
                     }
-                } else if (remMins <= 0 && !isPremium) { location.reload(); }
+                    
+                    if (remMins <= 0) location.reload();
+                }
             }, 60000);
         }
 
         function submit() {
-            if (!isPremium && !timerStarted) { timerStarted = true; startTimer(); }
+            if (!isPremium && !timerStarted) startTimer();
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             const grp = val >= 5 ? 'B' : 'S';
@@ -174,15 +189,15 @@
             const seq = history.map(h => h.grp).join(''); let current = null;
             if(seq.length >= 4) {
                 let dp = 0; for(let i=seq.length-1; i>=3; i-=2) if(seq[i]===seq[i-1] && seq[i-2]===seq[i-3] && seq[i]!==seq[i-2]) dp += 2; else break;
-                if(dp >= 4) { if(seq.length % 2 !== 0 && seq[seq.length-1] === seq[seq.length-2]) dp += 1; current = { type: 'အတွဲလိုက် (BBSS)', count: dp, start: history.length - dp }; }
+                if(dp >= 4) { if(seq.length % 2 !== 0 && seq[seq.length-1] === seq[seq.length-2]) dp += 1; current = { type: 'BBSS Pattern', count: dp, start: history.length - dp }; }
             }
             if(!current) {
                 let last = seq.slice(-1), sCount = 0; for(let i=seq.length-1; i>=0; i--) if(seq[i]===last) sCount++; else break;
-                if(sCount >= 5) current = { type: last==='B'?'အကြီးတန်း':'အသေးတန်း', count: sCount, start: history.length - sCount };
+                if(sCount >= 5) current = { type: last==='B'?'Long BIG':'Long SMALL', count: sCount, start: history.length - sCount };
             }
             const box = document.getElementById('alert-box');
-            if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} ${current.count} ကြိမ်`; box.classList.remove('hidden'); }
-            else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} ကြိမ် (R${s.roll}S${s.stage} - R${e.roll}S${e.stage})` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
+            if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} x${current.count}`; box.classList.remove('hidden'); }
+            else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} times (R${s.roll}S${s.stage} - R${e.roll}S${e.stage})` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
         }
 
         function renderTable() {
@@ -190,7 +205,7 @@
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
                 const b = document.createElement('div'); b.className = 'roll-card';
-                b.innerHTML = `<div class="text-[10px] text-center font-black text-cyan-500 mb-2 border-b border-white/5 pb-1 tracking-[0.2em]">ROLL ${r}</div>`;
+                b.innerHTML = `<div class="text-[10px] text-center font-black text-cyan-500 mb-2 border-b border-white/5 pb-1 uppercase tracking-widest">Roll ${r}</div>`;
                 rolls[r].forEach(i => {
                     b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
                         <span class="text-[9px] font-bold text-gray-600 w-4">${i.stage}</span>
@@ -208,13 +223,13 @@
             container.scrollLeft = container.scrollWidth;
         }
 
-        function fullReset() { if(confirm("ဂဏန်းမှတ်တမ်းများကို ဖျက်မလား?")) { localStorage.removeItem('OMNI_STORE'); location.reload(); } }
-        function showUpgrade() { document.getElementById('app-main').style.display = 'none'; document.getElementById('lock-screen').style.display = 'flex'; document.getElementById('lock-msg').innerText = "Premium Activation Required"; }
+        function fullReset() { if(confirm("Clear history?")) { localStorage.removeItem('OMNI_STORE'); location.reload(); } }
+        function showUpgrade() { document.getElementById('app-main').style.display = 'none'; document.getElementById('lock-screen').style.display = 'flex'; }
         async function activateCode() {
             const code = document.getElementById('lock-license-input').value.trim();
             if(!code) return;
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
-            if (data?.success) { alert("Premium Activated!"); localStorage.removeItem('omni_rem_mins'); location.reload(); } else alert("Invalid License Code!");
+            if (data?.success) { alert("Premium Activated!"); location.reload(); } else alert("Invalid Key!");
         }
         function renderWarnings() { document.getElementById('warning-history').innerHTML = warnings.map(w => `<div class="p-2 bg-white/5 rounded-xl border-l-2 border-cyan-500 mb-2 text-gray-400">${w.text}</div>`).join(''); }
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
@@ -223,7 +238,7 @@
             const data = JSON.parse(localStorage.getItem('OMNI_STORE'));
             if(data) { history = data.history || []; warnings = data.warnings || []; roll = data.roll || 1; stage = data.stage || 1; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        async function copy() { let t = "OMNI LOGIC LOGS\n"; history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; }); await navigator.clipboard.writeText(t); alert("Copied to Clipboard!"); }
+        async function copy() { let t = "OMNI LOGIC LOGS\n"; history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; }); await navigator.clipboard.writeText(t); alert("Logs Copied!"); }
 
         load(); initDevice();
     </script>
