@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win 6 Pro - Final Edition</title>
+    <title>Win 6 Pro - Ultra Secure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -32,7 +32,7 @@
         <h1 class="text-yellow-400 text-5xl font-black mb-2 italic">Win 6 Pro</h1>
         <p class="text-cyan-400 text-[10px] mb-10 tracking-[0.4em] font-bold italic uppercase opacity-70">Security Access Required</p>
         <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2.5rem] mb-8 w-full max-w-sm">
-            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Checking Access...</p>
+            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Validating Device...</p>
         </div>
         <div class="w-full max-w-sm space-y-4">
             <input type="text" id="lock-license-input" class="w-full p-5 rounded-2xl text-black text-center font-black border-4 border-yellow-400 text-xl" placeholder="ENTER LICENSE CODE">
@@ -44,9 +44,7 @@
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
             <div class="text-center pt-2">
-                <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-5 py-2 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic">
-                    Syncing...
-                </span>
+                <span id="plan-status" class="bg-cyan-500/10 text-cyan-400 text-[10px] px-5 py-2 rounded-full border border-cyan-500/30 font-bold uppercase tracking-widest italic">Syncing...</span>
             </div>
 
             <div class="bg-[#001f3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
@@ -58,39 +56,32 @@
             <div class="bg-[#002b52] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/10 shadow-inner">
                 <div class="text-center flex-1"><div id="highlight-g" class="g-display">-</div></div>
                 <div class="flex flex-col gap-2 w-36">
-                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 outline-none border-4 border-yellow-400 text-black bg-white disabled:opacity-50" placeholder="?" oninput="validate(this)" disabled>
+                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 outline-none border-4 border-yellow-400 text-black bg-white" placeholder="?" oninput="validate(this)" disabled>
                     <button id="btn-submit" class="w-full py-4 bg-yellow-400 text-black font-black rounded-xl text-xl shadow-lg active:scale-95 disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
                 </div>
             </div>
 
             <div id="alert-box" class="hidden">
-                <div class="bg-red-600 border-4 border-white text-white p-4 rounded-2xl text-center animate-pulse">
-                    <span id="alert-msg" class="text-2xl font-black uppercase"></span>
-                </div>
+                <div class="bg-red-600 border-4 border-white text-white p-4 rounded-2xl text-center animate-pulse"><span id="alert-msg" class="text-2xl font-black uppercase"></span></div>
             </div>
 
             <div class="space-y-2">
-                <div class="flex justify-between items-center px-2">
-                    <h3 class="font-black text-cyan-400 text-lg italic uppercase">Live Record Logs</h3>
-                    <span id="total-stg" class="text-xs font-bold opacity-40">0 STG</span>
-                </div>
+                <h3 class="font-black text-cyan-400 text-lg italic uppercase px-2">Live Record Logs</h3>
                 <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase active:scale-95">📋 Copy Logs</button>
-                <button onclick="fullReset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase active:scale-95">🔄 Reset Logs</button>
+                <button onclick="copy()" class="bg-blue-600 py-4 text-white font-black rounded-2xl text-md uppercase">📋 Copy Logs</button>
+                <button onclick="fullReset()" class="bg-red-500 py-4 text-white font-black rounded-2xl text-md uppercase">🔄 Reset Logs</button>
             </div>
 
             <div id="premium-btn-box" class="pt-2">
-                <button onclick="showUpgrade()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-4 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 italic">
-                    🚀 Upgrade to Premium
-                </button>
+                <button onclick="showUpgrade()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-4 rounded-2xl font-black text-lg uppercase shadow-xl animate-bounce">🚀 Upgrade to Premium</button>
             </div>
 
             <div class="bg-slate-900/80 p-5 rounded-[2.5rem] border border-white/10">
                 <h3 class="font-black text-yellow-400 mb-3 text-[10px] uppercase text-center italic opacity-60">Pattern Analysis</h3>
-                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto font-bold"></div>
+                <div id="warning-history" class="space-y-3 max-h-60 overflow-y-auto font-bold text-xs"></div>
             </div>
         </div>
     </div>
@@ -100,80 +91,70 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let deviceId = localStorage.getItem('win6pro_id') || 'W6P-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-        localStorage.setItem('win6pro_id', deviceId);
-        document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
-
-        let remMins = 0; let isPremium = false; let syncBuffer = 0;
-        let timerStarted = false;
+        let deviceId = ""; let isPremium = false; let remMins = 0; let syncBuffer = 0;
         let history = []; let warnings = []; let roll = 1, stage = 1;
-        let pNext, eNext, sNext; let activePattern = null;
+        let pNext, eNext, sNext; let timerStarted = false;
 
-        // 1. Check Access & Server-First Logic
+        // 1. Digital Fingerprinting for Persistent ID
+        async function initDevice() {
+            const info = [navigator.userAgent, screen.height, screen.width, navigator.language, navigator.hardwareConcurrency].join('|');
+            const encoder = new TextEncoder();
+            const data = encoder.encode(info);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            deviceId = "W6P-" + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 10).toUpperCase();
+            document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
+            checkAccess();
+        }
+
+        // 2. Access Control & Daily Limit
         async function checkAccess() {
             try {
                 const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
                 if (data && data.can_access) {
-                    isPremium = data.is_premium; 
-                    
-                    // လက်ကျန်အချိန်ကို Server နှင့် Local Storage ပေါင်းစပ်စစ်ဆေးခြင်း
+                    isPremium = data.is_premium;
                     const localMins = localStorage.getItem('win6_rem_mins');
-                    if (localMins !== null && !isPremium) {
-                        remMins = Math.min(parseInt(localMins), data.mins);
-                    } else {
-                        remMins = data.mins || 0;
-                    }
-
+                    remMins = (localMins !== null && !isPremium) ? Math.min(parseInt(localMins), data.mins) : (data.mins || 0);
+                    
                     document.getElementById('lock-screen').style.display = 'none';
                     document.getElementById('app-main').style.display = 'block';
                     document.getElementById('digit-input').disabled = false;
-                    
                     if(isPremium) document.getElementById('premium-btn-box').style.display = 'none';
                     updateStatusUI(data);
                 } else {
                     document.getElementById('lock-screen').style.display = 'flex';
-                    document.getElementById('lock-msg').innerText = data ? data.msg : 'Access Denied';
+                    document.getElementById('lock-msg').innerText = data ? data.msg : 'Daily Limit Reached';
                 }
             } catch (e) { console.error(e); }
         }
 
         function updateStatusUI(data) {
             const el = document.getElementById('plan-status');
-            if (isPremium) {
-                el.innerText = "💎 Premium Member (Unlimited)";
-            } else {
-                el.innerText = timerStarted 
-                    ? `⏳ Trial Active | ⏱️ ${remMins} Min Remaining` 
-                    : `⏳ Trial: ${data.days} Days Left | ⏱️ ${remMins} Min (Waiting for Input)`;
-            }
+            if (isPremium) el.innerText = "💎 Premium Member (Unlimited)";
+            else el.innerText = timerStarted ? `⏳ Today's Limit: ${remMins} Min Left` : `⏳ Trial: Day ${data.days_used || 1}/7 | ${remMins} Min Left`;
         }
 
-        // 2. Optimized 5-Minute Sync Timer
+        // 3. 5-Min Sync Timer
         function startTimer() {
-            updateStatusUI({});
             setInterval(async () => {
                 if (remMins > 0) {
                     remMins--; syncBuffer++;
                     localStorage.setItem('win6_rem_mins', remMins);
                     updateStatusUI({});
-                    
                     if (syncBuffer >= 5) {
                         await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
                         syncBuffer = 0;
                     }
                 } else { 
-                    localStorage.removeItem('win6_rem_mins');
+                    localStorage.removeItem('win6_rem_mins'); 
                     location.reload(); 
                 }
             }, 60000);
         }
 
-        // 3. Logic & Pattern Functions
+        // 4. Core Logic (Locked)
         function submit() {
-            if (!isPremium && !timerStarted) {
-                timerStarted = true;
-                startTimer();
-            }
+            if (!isPremium && !timerStarted) { timerStarted = true; startTimer(); }
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             const grp = val >= 5 ? 'B' : 'S';
@@ -181,21 +162,18 @@
             history.push(entry);
             managePatternLogic();
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
-            updatePred(val);
-            renderTable();
-            save();
-            input.value = ''; input.focus();
-            document.getElementById('btn-submit').disabled = true;
+            updatePred(val); renderTable(); save();
+            input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
         function updatePred(last) {
             pNext = last % 2 === 0 ? 'S' : 'B';
-            if(history.length >= 3) { eNext = history.slice(-3).reduce((a,b) => a+b.val, 0) % 2 === 0 ? 'S' : 'B'; }
-            if(history.length >= 10) { 
-                let s10 = history.slice(-10).reduce((a,b) => a+b.val, 0); 
-                let dSum = s10; while (dSum >= 10) { dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0); }
+            if(history.length >= 3) eNext = history.slice(-3).reduce((a,b) => a+b.val, 0) % 2 === 0 ? 'S' : 'B';
+            if(history.length >= 10) {
+                let s10 = history.slice(-10).reduce((a,b) => a+b.val, 0);
+                let dSum = s10; while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);
                 sNext = (dSum % 2 !== 0) ? 'B' : 'S';
-            } else { sNext = null; }
+            } else sNext = null;
             document.getElementById('pred-p').innerText = pNext || '-';
             document.getElementById('pred-e').innerText = eNext || '-';
             document.getElementById('pred-s').innerHTML = sNext ? `<span>${sNext}</span>` : '-';
@@ -205,27 +183,26 @@
         function managePatternLogic() {
             const seq = history.map(h => h.grp).join(''); let current = null;
             if(seq.length >= 4) {
-                let dp = 0; for(let i=seq.length-1; i>=3; i-=2) { if(seq[i]===seq[i-1] && seq[i-2]===seq[i-3] && seq[i]!==seq[i-2]) dp += 2; else break; }
+                let dp = 0; for(let i=seq.length-1; i>=3; i-=2) if(seq[i]===seq[i-1] && seq[i-2]===seq[i-3] && seq[i]!==seq[i-2]) dp += 2; else break;
                 if(dp >= 4) { if(seq.length % 2 !== 0 && seq[seq.length-1] === seq[seq.length-2]) dp += 1; current = { type: 'အတွဲလိုက် (BBSS)', count: dp, start: history.length - dp }; }
             }
             if(!current) {
-                let last = seq.slice(-1), sCount = 0; for(let i=seq.length-1; i>=0; i--) { if(seq[i]===last) sCount++; else break; }
+                let last = seq.slice(-1), sCount = 0; for(let i=seq.length-1; i>=0; i--) if(seq[i]===last) sCount++; else break;
                 if(sCount >= 5) current = { type: last==='B'?'အကြီးတန်း':'အသေးတန်း', count: sCount, start: history.length - sCount };
             }
             const box = document.getElementById('alert-box');
             if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} ${current.count} ကြိမ်`; box.classList.remove('hidden'); }
-            else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} ကြိမ် (R${s.roll}S${s.stage} မှ R${e.roll}S${e.stage} အထိ)` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
+            else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} ကြိမ် (R${s.roll}S${s.stage} - R${e.roll}S${e.stage})` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
         }
 
         function renderTable() {
             const container = document.getElementById('history-container'); container.innerHTML = '';
-            document.getElementById('total-stg').innerText = `${history.length} STG`;
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
                 const b = document.createElement('div'); b.className = 'roll-card';
                 b.innerHTML = `<div class="text-md text-center font-black text-cyan-400 mb-2 border-b border-white/10 pb-1 italic">ROLL ${r}</div>`;
                 rolls[r].forEach(i => {
-                    b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0 italic">
+                    b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
                         <span class="text-[10px] font-bold text-gray-500 w-4">${i.stage}</span>
                         <div class="mini-shape p-circle">${i.p||'-'}</div>
                         <span class="${i.pOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
@@ -241,37 +218,15 @@
             container.scrollLeft = container.scrollWidth;
         }
 
-        // 4. Action Functions (Reset & Upgrade)
-        function showUpgrade() {
-            document.getElementById('app-main').style.display = 'none';
-            document.getElementById('lock-screen').style.display = 'flex';
-            document.getElementById('lock-msg').innerText = "Enter Premium Code to Unlock";
-        }
-
-        function fullReset() {
-            if(confirm("ဂဏန်းမှတ်တမ်းများကိုသာ ဖျက်ထုတ်မလား? (ကျန်ရှိသည့်အချိန် မပျက်ပါ)")) {
-                localStorage.removeItem('WIN6_STORE');
-                // win6_rem_mins ကို မဖျက်သောကြောင့် အချိန်မပျက်ပါ
-                location.reload();
-            }
-        }
-
+        function fullReset() { if(confirm("ဂဏန်းမှတ်တမ်းများကိုသာ ဖျက်မလား? (လက်ကျန်အချိန် မပျက်ပါ)")) { localStorage.removeItem('WIN6_STORE'); location.reload(); } }
+        function showUpgrade() { document.getElementById('app-main').style.display = 'none'; document.getElementById('lock-screen').style.display = 'flex'; document.getElementById('lock-msg').innerText = "Enter Premium Code"; }
         async function activateCode() {
             const code = document.getElementById('lock-license-input').value.trim();
             if(!code) return alert("Code ရိုက်ပါ");
             const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
-            if (data?.success) { 
-                alert("Congratulation! Premium Activated."); 
-                localStorage.removeItem('win6_rem_mins'); 
-                location.reload(); 
-            } else { alert("Invalid Code!"); }
+            if (data?.success) { alert("Success!"); localStorage.removeItem('win6_rem_mins'); location.reload(); } else alert("Invalid Code!");
         }
-
-        function renderWarnings() {
-            const container = document.getElementById('warning-history');
-            container.innerHTML = warnings.map((w) => `<div class="p-3 bg-white/5 rounded-xl border-l-4 border-yellow-400 text-xs mb-2 font-bold">${w.text}</div>`).join('');
-        }
-
+        function renderWarnings() { document.getElementById('warning-history').innerHTML = warnings.map(w => `<div class="p-2 bg-white/5 rounded-xl border-l-4 border-yellow-400 mb-2">${w.text}</div>`).join(''); }
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
         function save() { localStorage.setItem('WIN6_STORE', JSON.stringify({ history, warnings, roll, stage })); }
         function load() {
@@ -280,7 +235,7 @@
         }
         async function copy() { let t = "WIN6 PRO LOGS\n"; history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; }); await navigator.clipboard.writeText(t); alert("Copied!"); }
 
-        load(); checkAccess();
+        load(); initDevice();
     </script>
 </body>
 </html>
