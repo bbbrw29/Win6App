@@ -3,88 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic Elite - Final Version</title>
+    <title>Omni Logic Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #010816; color: white; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #010816; color: white; overflow: hidden; }
         
+        /* Prediction Shapes */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 55px; height: 55px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
         .box-s span { transform: rotate(-45deg); display: block; }
         
-        .locked-overlay, .locked-overlay-e { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; z-index: 10; }
-        .locked-overlay { transform: rotate(-45deg); }
+        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; z-index: 10; }
 
         .log-box { padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 6px solid rgba(0,0,0,0.3); }
-        .bg-big { background-color: #ff4136 !important; color: white !important; } 
-        .bg-small { background-color: #2ecc40 !important; color: white !important; }
-        .bg-pingpong { background-color: #b10dc9 !important; color: white !important; }
-        .bg-double { background-color: #ffdc00 !important; color: black !important; }
+        .bg-big { background-color: #ff4136 !important; } .bg-small { background-color: #2ecc40 !important; }
+        .bg-bsbs { background-color: #b10dc9 !important; } .bg-bbss { background-color: #ffdc00 !important; color: black !important; }
 
-        #intel-log-container { height: 280px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 20px; padding: 10px; }
+        #intel-log-container { height: 260px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 20px; padding: 10px; }
         .roll-card { flex-shrink: 0; width: 310px; background: rgba(30, 41, 59, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .g-num { background: #ffdc00; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
         .mini-shape { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 10px; border-width: 2px; }
         
-        .animate-danger { animation: flash-red 0.5s infinite; }
-        @keyframes flash-red { 0%, 100% { background: #ff4136; } 50% { background: #800000; } }
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #2ecc40; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 900; display: none; z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body class="p-2">
 
+    <div id="toast">DATA COPIED!</div>
+
     <div id="lock-screen" class="fixed inset-0 bg-[#010816] z-[9999] flex flex-col items-center justify-center p-6 text-center" style="display: none;">
-        <h1 class="text-3xl font-black mb-1 text-cyan-400 italic">OMNI ELITE</h1>
-        <div class="bg-gradient-to-br from-cyan-500 to-blue-600 p-[2px] rounded-3xl mb-6 w-full max-w-sm">
-            <div class="bg-[#010816] rounded-[calc(1.5rem-1px)] p-6">
-                <p class="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-1">Monthly Access</p>
-                <p class="text-4xl font-black text-white">5,000 <span class="text-sm font-normal">MMK</span></p>
-            </div>
-        </div>
-        <div class="bg-white/5 p-6 rounded-[2.5rem] text-left mb-6 w-full max-w-sm border border-white/10">
-            <h4 class="text-yellow-500 font-black text-[10px] mb-4 italic tracking-[0.1em] uppercase">💎 PREMIUM BENEFITS</h4>
-            <ul class="text-[11px] space-y-3 text-gray-300">
-                <li>✅ Unlock E and S Logic</li>
-                <li>✅ Streak Alert System (Advanced)</li>
-                <li>✅ Record Logs History</li>
-                <li>✅ Copy to Data Analysis</li>
+        <h1 class="text-3xl font-black mb-6 text-cyan-400 italic underline">UPGRADE TO PREMIUM</h1>
+        <div class="bg-white/5 p-6 rounded-[2rem] text-left mb-6 w-full max-w-sm border border-white/10">
+            <ul class="text-[12px] space-y-4 text-gray-300 font-bold">
+                <li>✅ Unlock E-Logic & S-Logic</li>
+                <li>✅ Streak & Pattern Alerts</li>
+                <li>✅ Record History & Copy Data</li>
             </ul>
         </div>
-        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4 text-xl" placeholder="ENTER KEY">
-        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-2xl font-black text-white uppercase shadow-lg">Activate Premium</button>
-        <button onclick="hideUpgrade()" id="back-btn" class="mt-4 text-gray-600 text-[10px] font-bold uppercase" style="display:none;">← Close</button>
+        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4" placeholder="ENTER LICENSE KEY">
+        <button onclick="location.reload()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-2xl font-black text-white uppercase shadow-lg">Activate</button>
+        <button onclick="hideUpgrade()" id="back-btn" class="mt-4 text-gray-500 text-[10px] font-bold uppercase underline" style="display:none;">Close</button>
     </div>
 
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
-            <div class="text-center pt-4">
+            <div class="text-center pt-2">
                 <h1 class="text-2xl font-black italic text-cyan-500">OMNI LOGIC</h1>
-                <div id="plan-status" class="text-[9px] text-cyan-400 font-black mt-1 uppercase tracking-tighter">AUTHENTICATING...</div>
+                <div id="plan-status" class="text-[9px] text-cyan-400 font-black uppercase tracking-widest">Checking...</div>
             </div>
 
             <div id="streak-warning" class="px-2" style="display: none;">
                 <div id="warning-box" class="p-3 rounded-xl text-center border-l-4">
-                    <p id="warning-text" class="font-black text-[11px] italic uppercase"></p>
+                    <p id="warning-text" class="font-black text-[12px] italic uppercase tracking-wider"></p>
                 </div>
             </div>
 
-            <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500">
+            <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
                 <div><p class="text-[8px] text-gray-500 mb-1">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
-                <div><p class="text-[8px] text-gray-500 mb-1">E-LOGIC</p><div class="box-e"><span id="pred-e" class="blur-sm">-</span><div id="lock-e" class="locked-overlay-e" onclick="showUpgrade(true)">LOCKED</div></div></div>
-                <div><p class="text-[8px] text-gray-500 mb-1">S-LOGIC</p><div class="box-s"><span id="pred-s" class="blur-sm"></span><div id="lock-s" class="locked-overlay" onclick="showUpgrade(true)">LOCKED</div></div></div>
+                <div><p class="text-[8px] text-gray-500 mb-1">E-LOGIC</p><div class="box-e"><span id="pred-e">-</span><div id="lock-e" class="locked-overlay" onclick="showUpgrade(true)">LOCKED</div></div></div>
+                <div><p class="text-[8px] text-gray-500 mb-1">S-LOGIC</p><div class="box-s"><span id="pred-s"></span><div id="lock-s" class="locked-overlay" onclick="showUpgrade(true)">LOCKED</div></div></div>
             </div>
 
             <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5">
                 <div class="text-6xl font-black text-cyan-400 flex-1 text-center" id="highlight-g">-</div>
                 <div class="flex flex-col gap-2 w-28">
-                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black" oninput="validate(this)">
-                    <button id="btn-submit" class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl text-lg disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black outline-none focus:bg-cyan-100" placeholder="0" oninput="validateInput(this)">
+                    <button id="btn-submit" class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl text-lg disabled:opacity-30 active:scale-95 transition-all" onclick="submit()" disabled>ENTER</button>
                 </div>
             </div>
 
-            <div class="px-2 pt-2">
+            <div class="px-2">
                 <button onclick="copyAnalysis()" class="w-full py-3 bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/50 rounded-2xl flex items-center justify-center gap-2 text-cyan-400 font-black text-xs transition-all shadow-lg">
                     📋 COPY DATA FOR ANALYSIS
                 </button>
@@ -94,19 +85,17 @@
             <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
 
             <div class="px-2">
-                <h3 class="font-black text-yellow-500 text-[10px] uppercase mb-2">Pattern Intelligence History</h3>
+                <h3 class="font-black text-yellow-500 text-[10px] uppercase mb-2">Pattern Intelligence</h3>
                 <div id="intel-wrapper" class="relative">
-                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic uppercase">Analyzing Patterns...</div></div>
-                    <div id="intel-lock" class="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10" onclick="showUpgrade(true)">
-                        <p class="text-yellow-500 font-black text-[10px] border border-yellow-500/30 px-4 py-2 rounded-full tracking-widest uppercase">🔒 Unlock Intel History</p>
+                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic uppercase">Ready...</div></div>
+                    <div id="intel-lock" class="absolute inset-0 bg-black/90 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10" onclick="showUpgrade(true)">
+                        <p class="text-yellow-500 font-black text-[10px] border border-yellow-500/30 px-4 py-2 rounded-full tracking-widest uppercase">🔒 Unlock Pattern Intel</p>
                     </div>
                 </div>
             </div>
 
-            <div class="px-2 pb-10">
-                <button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-900 to-red-600 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-all border border-red-500/40 uppercase">
-                    ⚠️ RESET GAME DATA
-                </button>
+            <div class="px-2 pb-10 text-center">
+                <button onclick="fullReset()" class="text-red-500 font-black text-[10px] uppercase tracking-widest hover:underline">⚠️ RESET GAME DATA</button>
             </div>
         </div>
     </div>
@@ -130,7 +119,6 @@
         async function checkAccess() {
             const { data, error } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
             if(error) return;
-
             isPremium = data.is_premium;
             const createdAt = new Date(data.created_at).getTime();
             const TRIAL_LIMIT = 90 * 60 * 1000;
@@ -140,20 +128,14 @@
                 document.getElementById('intel-lock').style.display = 'none';
                 document.getElementById('lock-e').style.display = 'none';
                 document.getElementById('lock-s').style.display = 'none';
-                document.getElementById('pred-e').classList.remove('blur-sm');
-                document.getElementById('pred-s').classList.remove('blur-sm');
             } else {
-                const timer = setInterval(() => {
-                    const now = Date.now();
-                    const remaining = TRIAL_LIMIT - (now - createdAt);
-                    if(remaining <= 0) {
-                        document.getElementById('plan-status').innerText = "FREE TRIAL EXPIRED";
-                        showUpgrade(false);
-                        clearInterval(timer);
-                    } else {
-                        const minsLeft = Math.floor(remaining / 60000);
-                        const daysActive = Math.ceil((now - createdAt) / (24 * 60 * 60 * 1000));
-                        document.getElementById('plan-status').innerText = `GUEST MODE (${minsLeft} MINS LEFT / DAY ${daysActive})`;
+                setInterval(() => {
+                    const remaining = TRIAL_LIMIT - (Date.now() - createdAt);
+                    if(remaining <= 0) { showUpgrade(false); }
+                    else {
+                        const mins = Math.floor(remaining/60000);
+                        const days = Math.ceil((Date.now() - createdAt) / (24*60*60*1000));
+                        document.getElementById('plan-status').innerText = `GUEST MODE (${mins} MINS LEFT / DAY ${days})`;
                     }
                 }, 1000);
             }
@@ -161,12 +143,17 @@
             load();
         }
 
+        function validateInput(el) {
+            if (el.value.length > 1) el.value = el.value.slice(-1);
+            document.getElementById('btn-submit').disabled = (el.value === "");
+        }
+
         function submit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             const grp = val >= 5 ? 'B' : 'S';
 
-            processPatternAlerts(grp, roll, stage);
+            processPatterns(grp, roll, stage);
             
             history.push({
                 val, grp, roll, stage,
@@ -177,102 +164,66 @@
 
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePredictions(); renderTable(); save();
-            input.value = ''; input.focus(); 
-            document.getElementById('btn-submit').disabled = true;
+            input.value = ''; document.getElementById('btn-submit').disabled = true;
             document.getElementById('highlight-g').innerText = val;
             document.getElementById('roll-info').innerText = `Roll ${roll} Stg ${stage}`;
         }
 
-        function processPatternAlerts(grp, r, s) {
+        function processPatterns(grp, r, s) {
             const warnBox = document.getElementById('streak-warning');
             const warnText = document.getElementById('warning-text');
             const warnWrap = document.getElementById('warning-box');
+            const historyStr = history.map(h => h.grp).join('') + grp;
             
-            const fullHistory = history.map(h => h.grp).join('') + grp;
-            let detected = null;
-            let colorClass = "border-red-500 bg-red-950/40 text-red-500";
-            let logType = "";
+            let detected = null; let css = "border-red-500 bg-red-950/40 text-red-500"; let logCss = "";
 
-            if (fullHistory.match(/(BBSSBBSS|SSBBSSBB)$/)) {
-                detected = "DOUBLE JUMP DETECTED";
-                colorClass = "border-yellow-500 bg-yellow-950/40 text-yellow-500";
-                logType = "bg-double";
-            } else if (fullHistory.match(/(BSBSBS|SBSBSB)$/)) {
-                detected = "SINGLE JUMP (PING-PONG)";
-                colorClass = "border-purple-500 bg-purple-950/40 text-purple-500";
-                logType = "bg-pingpong";
+            if (historyStr.match(/(BBSSBBSS|SSBBSSBB)$/)) {
+                detected = `BBSS Pattern: 8x`; css = "border-yellow-500 bg-yellow-950/40 text-yellow-500"; logCss = "bg-bbss";
+            } else if (historyStr.match(/(BSBSBS|SBSBSB)$/)) {
+                detected = `BSBS Pattern: 6x`; css = "border-purple-500 bg-purple-950/40 text-purple-500"; logCss = "bg-bsbs";
             } else {
-                const streakMatch = fullHistory.match(/(B{4,}|S{4,})$/);
-                if (streakMatch) {
-                    const count = streakMatch[0].length;
-                    detected = `${streakMatch[0][0] === 'B' ? 'BIG' : 'SMALL'} STREAK: ${count}x`;
-                    logType = streakMatch[0][0] === 'B' ? "bg-big" : "bg-small";
-                    if (count >= 12) warnWrap.classList.add('animate-danger');
-                    if (count >= 20) detected = "🔥 20+ RECORD STREAK 🔥";
+                const streak = historyStr.match(/(B{4,}|S{4,})$/);
+                if (streak) {
+                    const count = streak[0].length;
+                    detected = `${streak[0][0]} Streak: ${count}x`;
+                    logCss = streak[0][0] === 'B' ? "bg-big" : "bg-small";
                 }
             }
 
             if (detected) {
-                warnBox.style.display = 'block';
-                warnText.innerText = `⚠️ ${detected} ⚠️`;
-                warnWrap.className = `p-3 rounded-xl text-center border-l-4 ${colorClass}`;
-                
-                intelLogs.unshift({
-                    pattern: fullHistory.slice(-4).toUpperCase(),
-                    label: detected,
-                    range: `R${r}S${s}`,
-                    css: logType
-                });
+                warnBox.style.display = 'block'; warnText.innerText = `⚠️ ${detected}`;
+                warnWrap.className = `p-3 rounded-xl text-center border-l-4 ${css}`;
+                intelLogs.unshift({ pattern: historyStr.slice(-4).toUpperCase(), label: detected, range: `R${r}S${s}`, css: logCss });
                 renderIntel();
-            } else {
-                warnBox.style.display = 'none';
-                warnWrap.classList.remove('animate-danger');
-            }
-        }
-
-        function renderIntel() {
-            const container = document.getElementById('intel-log-container');
-            if(intelLogs.length > 0) document.getElementById('no-intel').style.display = 'none';
-            container.innerHTML = intelLogs.slice(0,20).map(log => `
-                <div class="log-box ${log.css}">
-                    <div class="text-[18px] font-black tracking-[3px]">${log.pattern}</div>
-                    <div class="flex justify-between items-center mt-2 opacity-80 font-bold text-[10px] uppercase">
-                        <span>${log.label}</span>
-                        <span class="font-mono text-[9px]">${log.range}</span>
-                    </div>
-                </div>
-            `).join('');
+            } else { warnBox.style.display = 'none'; }
         }
 
         function updatePredictions() {
-            if (history.length === 0) return;
-            const lastVal = history[history.length-1].val;
-            
-            // P-Logic: Simple Odd/Even
-            pNext = (lastVal % 2 === 0) ? 'S' : 'B';
-            
-            // E-Logic: Last 3 Sum Odd/Even
+            if (!history.length) return;
+            const last = history[history.length-1].val;
+            pNext = (last % 2 === 0) ? 'S' : 'B';
             eNext = history.length >= 3 ? (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0 ? 'S' : 'B') : "-";
-            
-            // S-Logic: Last 5 Sum Root (Premium)
             if(history.length >= 5) {
                 let sSum = history.slice(-5).reduce((a,b)=>a+b.val,0);
                 while(sSum >= 10) sSum = sSum.toString().split('').map(Number).reduce((a,b)=>a+b,0);
                 sNext = (sSum % 2 !== 0) ? 'B' : 'S';
-            } else { sNext = "-"; }
-
+            }
             document.getElementById('pred-p').innerText = pNext;
             document.getElementById('pred-e').innerText = isPremium ? eNext : "?";
-            document.getElementById('pred-s').innerText = isPremium ? (sNext === "-" ? "-" : sNext) : "?";
+            document.getElementById('pred-s').innerText = isPremium ? (sNext || "-") : "?";
         }
 
         function copyAnalysis() {
             if (!isPremium) { showUpgrade(true); return; }
-            let logText = "OMNI LOGIC ANALYSIS DATA\n==========================\n";
+            let text = "OMNI DATA LOG\n=============\n";
             history.forEach(h => {
-                logText += `[R${h.roll}S${h.stage}] Val:${h.val} | Res:${h.grp} | P:${h.pOk?'✅':'❌'} E:${h.eOk?'✅':'❌'} S:${h.sOk?'✅':'❌'}\n`;
+                text += `${h.val} | P:${h.p}(${h.pOk?'ok':'x'}) | E:${h.e}(${h.eOk?'ok':'x'}) | S:${h.s}(${h.sOk?'ok':'x'})\n`;
             });
-            navigator.clipboard.writeText(logText).then(() => alert("Analysis Data Copied!"));
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => toast.style.display = 'none', 2000);
+            });
         }
 
         function renderTable() {
@@ -304,25 +255,30 @@
             container.scrollLeft = container.scrollWidth;
         }
 
-        function validate(el) { el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
+        function renderIntel() {
+            const container = document.getElementById('intel-log-container');
+            if(intelLogs.length) document.getElementById('no-intel').style.display = 'none';
+            container.innerHTML = intelLogs.slice(0,20).map(log => `
+                <div class="log-box ${log.css} text-white">
+                    <div class="text-[18px] font-black tracking-[3px]">${log.pattern}</div>
+                    <div class="flex justify-between items-center mt-2 opacity-80 font-bold text-[10px] uppercase">
+                        <span>${log.label}</span> <span>${log.range}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function save() { localStorage.setItem('OMNI_STORE', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
             const data = JSON.parse(localStorage.getItem('OMNI_STORE'));
             if(data) { 
-                history = data.history || []; roll = data.roll || 1; stage = data.stage || 1; intelLogs = data.intelLogs || [];
-                renderTable(); renderIntel(); if(history.length) updatePredictions();
+                history = data.history; roll = data.roll; stage = data.stage; intelLogs = data.intelLogs;
+                renderTable(); renderIntel(); updatePredictions();
             }
         }
-        function fullReset() { 
-            if(confirm("Permanently wipe game logs?")) { 
-                const id = localStorage.getItem('omni_stable_id');
-                localStorage.clear(); localStorage.setItem('omni_stable_id', id);
-                location.reload(); 
-            } 
-        }
-        function showUpgrade(backable) { document.getElementById('app-main').style.display='none'; document.getElementById('lock-screen').style.display='flex'; document.getElementById('back-btn').style.display=backable?'block':'none'; }
+        function fullReset() { if(confirm("Clear logs?")) { const id = localStorage.getItem('omni_stable_id'); localStorage.clear(); localStorage.setItem('omni_stable_id', id); location.reload(); } }
+        function showUpgrade(b) { document.getElementById('app-main').style.display='none'; document.getElementById('lock-screen').style.display='flex'; document.getElementById('back-btn').style.display=b?'block':'none'; }
         function hideUpgrade() { document.getElementById('lock-screen').style.display='none'; document.getElementById('app-main').style.display='block'; }
-        async function activateCode() { location.reload(); }
         init();
     </script>
 </body>
