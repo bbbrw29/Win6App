@@ -1,37 +1,33 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic Elite - Pattern Intel</title>
+    <title>Omni Logic Elite - Global Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #010816; color: white; overflow-x: hidden; }
         
-        /* Prediction Boxes */
-        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
+        /* Prediction UI Components */
+        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
+        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 55px; height: 55px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
         .box-s span { transform: rotate(-45deg); }
+        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 8px; font-weight: 900; cursor: pointer; }
         
-        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 9px; font-weight: 900; border: 1px solid rgba(251,191,36,0.3); }
-        .roll-card { flex-shrink: 0; width: 280px; background: rgba(30, 41, 59, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .g-num { background: #ffdc00; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; }
-        .mini-shape { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 12px; border-width: 2px; }
+        /* History & Intel Log Styling */
+        .roll-card { flex-shrink: 0; width: 310px; background: rgba(30, 41, 59, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .g-num { background: #ffdc00; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
+        .mini-shape { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 10px; border-width: 2px; }
         
-        /* Pattern Intel Section Styles */
-        #intel-log-container { height: 280px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 20px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .intel-entry { margin-bottom: 8px; padding: 12px; border-radius: 12px; border-left-width: 5px; }
-        
-        /* Color Coding for Patterns */
-        .bg-streak-big { background: rgba(239, 68, 68, 0.2); border-left-color: #ef4444; }
-        .bg-streak-small { background: rgba(59, 130, 246, 0.2); border-left-color: #3b82f6; }
-        .bg-jump-single { background: rgba(168, 85, 247, 0.2); border-left-color: #a855f7; }
-        .bg-jump-double { background: rgba(245, 158, 11, 0.2); border-left-color: #f59e0b; }
-
-        .intel-locked { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 50; }
+        #intel-log-container { height: 250px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 20px; padding: 10px; }
+        .intel-entry { margin-bottom: 8px; padding: 10px; border-radius: 10px; border-left: 5px solid; }
+        .bg-streak-big { background: rgba(239, 68, 68, 0.15); border-left-color: #ef4444; }
+        .bg-streak-small { background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; }
+        .bg-jump-single { background: rgba(168, 85, 247, 0.15); border-left-color: #a855f7; }
+        .bg-jump-double { background: rgba(245, 158, 11, 0.15); border-left-color: #f59e0b; }
         
         .status-pulse { animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -40,87 +36,90 @@
 <body class="p-2 pb-10">
 
     <div id="lock-screen" class="fixed inset-0 bg-[#010816] z-[9999] flex flex-col items-center justify-center p-6 text-center" style="display: none;">
-        <h1 class="text-4xl font-black mb-2 text-cyan-400 italic">OMNI LOGIC</h1>
-        <p class="text-[10px] tracking-[0.3em] text-white uppercase mb-8">Elite Access Required</p>
-        <div class="bg-cyan-900/20 p-6 rounded-[2.5rem] border border-cyan-500/30 text-left mb-6 w-full max-w-sm">
-            <h4 class="text-yellow-400 font-black mb-3 italic">💎 ELITE BENEFITS:</h4>
-            <ul class="text-xs space-y-3 text-gray-300">
-                <li>✅ Unlock <span class="text-purple-400 font-bold">E</span> & <span class="text-green-400 font-bold">S</span> Logics</li>
-                <li>✅ Smart Pattern Warning System</li>
-                <li>✅ Deep Intel History (Color-Coded)</li>
-                <li>✅ Unlimited Access</li>
+        <h1 class="text-3xl font-black mb-1 text-cyan-400 italic">OMNI ELITE</h1>
+        <p class="text-[9px] tracking-[0.3em] text-gray-500 mb-6 uppercase italic">Advanced Intelligence Access</p>
+
+        <div class="bg-gradient-to-br from-cyan-500 to-blue-600 p-[2px] rounded-3xl mb-6 w-full max-w-sm shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+            <div class="bg-[#010816] rounded-[calc(1.5rem-1px)] p-6">
+                <p class="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-1">Monthly Access</p>
+                <p class="text-4xl font-black text-white">5,000 <span class="text-sm font-normal">MMK</span></p>
+            </div>
+        </div>
+
+        <div class="bg-white/5 p-6 rounded-[2.5rem] text-left mb-6 w-full max-w-sm border border-white/10 shadow-inner">
+            <h4 class="text-yellow-500 font-black text-[10px] mb-4 italic tracking-[0.1em] uppercase border-b border-yellow-500/20 pb-2">💎 PREMIUM BENEFITS</h4>
+            <ul class="text-[11px] space-y-3 text-gray-300">
+                <li class="flex items-start gap-2">
+                    <span class="text-cyan-500">✔</span>
+                    <span><b>Unlock All Logics:</b> Access E and S logics alongside Standard P.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-cyan-500">✔</span>
+                    <span><b>Result Correction:</b> Auto-tracking of Win/Loss (✅/❌) for all logics.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-cyan-500">✔</span>
+                    <span><b>Pattern Intelligence:</b> Color-coded logs for broken streaks and jumps.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-cyan-500">✔</span>
+                    <span><b>Real-time Alerts:</b> Warning notifications when long patterns occur.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-cyan-500">✔</span>
+                    <span><b>Export Data:</b> One-click copy for all history logs.</span>
+                </li>
             </ul>
         </div>
-        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4" placeholder="ENTER LICENSE CODE">
-        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-2xl font-black text-xl active:scale-95">UNLOCK PREMIUM</button>
-        <button onclick="hideUpgrade()" id="back-btn" class="mt-4 text-gray-500 text-xs uppercase font-bold" style="display:none;">← Back</button>
+
+        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4 text-xl" placeholder="ENTER LICENSE KEY">
+        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-2xl font-black text-white shadow-lg active:scale-95 transition-transform uppercase">Activate Premium</button>
+        <button onclick="hideUpgrade()" id="back-btn" class="mt-4 text-gray-600 text-[10px] font-bold uppercase" style="display:none;">← Close</button>
     </div>
 
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
-            
             <div class="text-center pt-4">
-                <h1 class="text-3xl font-black italic text-cyan-500">OMNI LOGIC</h1>
-                <div id="plan-status" class="text-[10px] text-cyan-400 tracking-widest font-black mt-1">GUEST ACCESS</div>
+                <h1 class="text-2xl font-black italic text-cyan-500">OMNI LOGIC</h1>
+                <div id="plan-status" class="text-[9px] text-cyan-400 tracking-widest font-black uppercase mt-1">GUEST MODE</div>
             </div>
 
-            <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
-                <div>
-                    <p class="text-[9px] font-bold text-gray-500 mb-1">P-LOGIC</p>
-                    <div class="box-p"><span id="pred-p">-</span></div>
-                </div>
-                <div>
-                    <p class="text-[9px] font-bold text-gray-500 mb-1">E-LOGIC</p>
-                    <div class="box-e">
-                        <span id="pred-e" class="blur-sm">-</span>
-                        <div id="lock-e" class="locked-overlay" onclick="showUpgrade(true)">PREMIUM</div>
-                    </div>
-                </div>
-                <div>
-                    <p class="text-[9px] font-bold text-gray-500 mb-1">S-LOGIC</p>
-                    <div class="box-s">
-                        <span id="pred-s" class="blur-sm"></span>
-                        <div id="lock-s" class="locked-overlay" onclick="showUpgrade(true)">PREMIUM</div>
-                    </div>
-                </div>
+            <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-xl">
+                <div><p class="text-[8px] text-gray-500 mb-1">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
+                <div><p class="text-[8px] text-gray-500 mb-1">E-LOGIC</p><div class="box-e"><span id="pred-e" class="blur-sm">-</span><div id="lock-e" class="locked-overlay" onclick="showUpgrade(true)">PREMIUM</div></div></div>
+                <div><p class="text-[8px] text-gray-500 mb-1">S-LOGIC</p><div class="box-s"><span id="pred-s" class="blur-sm"></span><div id="lock-s" class="locked-overlay" onclick="showUpgrade(true)">PREMIUM</div></div></div>
             </div>
 
             <div id="pattern-section" class="px-2" style="display: none;">
-                <div class="bg-red-950/30 border-l-4 border-red-500 p-3 rounded-xl">
-                    <p id="pattern-display" class="text-red-500 font-black text-xs italic status-pulse"></p>
+                <div class="bg-red-950/40 border-l-4 border-red-500 p-3 rounded-xl">
+                    <p id="pattern-display" class="text-red-500 font-black text-[11px] italic status-pulse"></p>
                 </div>
             </div>
 
-            <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5">
+            <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 shadow-2xl">
                 <div class="text-6xl font-black text-cyan-400 flex-1 text-center" id="highlight-g">-</div>
-                <div class="flex flex-col gap-2 w-32">
-                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black" placeholder="?" oninput="validate(this)">
-                    <button id="btn-submit" class="w-full py-4 bg-cyan-500 text-white font-black rounded-xl text-xl disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+                <div class="flex flex-col gap-2 w-28">
+                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black" oninput="validate(this)">
+                    <button id="btn-submit" class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl text-lg disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
                 </div>
             </div>
 
-            <div class="px-2 flex justify-between items-end">
-                <h3 class="font-black text-cyan-500 text-xs italic uppercase">Logs</h3>
-                <span class="text-[9px] text-gray-500" id="roll-info">Roll 1 Stage 1</span>
+            <div class="px-2 flex justify-between items-center">
+                <h3 class="font-black text-cyan-500 text-[10px] uppercase italic">Record Logs</h3>
+                <button onclick="copyLogs()" class="text-[9px] bg-white/5 px-3 py-1 rounded-full border border-white/10 text-gray-500 font-bold">COPY LOGS</button>
             </div>
             <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
 
             <div class="px-2">
-                <h3 class="font-black text-yellow-500 text-[10px] italic uppercase mb-2 tracking-widest">Deep Pattern Intelligence (Premium)</h3>
+                <h3 class="font-black text-yellow-500 text-[10px] uppercase mb-2">Pattern Intelligence</h3>
                 <div id="intel-wrapper" class="relative">
-                    <div id="intel-log-container">
-                        <div id="no-intel" class="text-center text-gray-600 text-[10px] mt-24 italic uppercase tracking-tighter">No Advanced Trends Detected Yet</div>
-                    </div>
-                    <div id="intel-lock" class="intel-locked" onclick="showUpgrade(true)">
-                        <div class="text-center">
-                            <p class="text-yellow-500 font-black text-[11px] mb-1">LOCKED FOR GUESTS</p>
-                            <p class="text-white text-[8px] opacity-40 uppercase tracking-widest">Click to Unlock Intel Log</p>
-                        </div>
+                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24">SCANNING FOR PATTERNS...</div></div>
+                    <div id="intel-lock" class="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10" onclick="showUpgrade(true)">
+                        <p class="text-yellow-500 font-black text-[10px] bg-black/40 px-4 py-2 rounded-full border border-yellow-500/30">🔒 UNLOCK PREMIUM INTEL</p>
                     </div>
                 </div>
             </div>
-
-            <button onclick="fullReset()" class="w-full py-2 text-red-900 text-[9px] font-bold uppercase tracking-[0.2em]">Reset All App Data</button>
+            <button onclick="fullReset()" class="w-full text-[8px] text-gray-800 uppercase py-4">Factory Reset Data</button>
         </div>
     </div>
 
@@ -132,9 +131,8 @@
         let deviceId = ""; let isPremium = false;
         let history = []; let intelLogs = [];
         let roll = 1, stage = 1;
-        let pNext, eNext, sNext;
-        let activePattern = null; 
-        let patternStart = { r: 1, s: 1, count: 0 };
+        let pNext = "-", eNext = "-", sNext = "-";
+        let activePattern = null; let patternStart = { r: 1, s: 1, count: 0 };
 
         async function init() {
             deviceId = localStorage.getItem('omni_stable_id') || "OMNI-" + Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -146,7 +144,7 @@
             const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
             isPremium = data?.is_premium || false;
             if (isPremium) {
-                document.getElementById('plan-status').innerText = "ELITE MEMBERSHIP ACTIVE";
+                document.getElementById('plan-status').innerText = "ELITE ACCESS ACTIVE";
                 document.getElementById('intel-lock').style.display = 'none';
                 document.getElementById('lock-e').style.display = 'none';
                 document.getElementById('lock-s').style.display = 'none';
@@ -162,81 +160,66 @@
             const val = parseInt(input.value);
             const grp = val >= 5 ? 'B' : 'S';
 
-            // Check Patterns BEFORE adding to history
             monitorPatterns(grp, roll, stage);
 
-            history.push({ val, grp, roll, stage, p: pNext, e: eNext, s: sNext });
-            
+            const currentEntry = {
+                val, grp, roll, stage,
+                p: pNext, pOk: (pNext === "-" ? null : pNext === grp),
+                e: eNext, eOk: (eNext === "-" ? null : eNext === grp),
+                s: sNext, sOk: (sNext === "-" ? null : sNext === grp)
+            };
+            history.push(currentEntry);
+
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             
-            updatePred(val); 
+            updatePredictions(); 
             renderTable(); 
             save();
             
             input.value = ''; input.focus(); 
             document.getElementById('btn-submit').disabled = true;
-            document.getElementById('roll-info').innerText = `Roll ${roll} Stage ${stage}`;
+            document.getElementById('highlight-g').innerText = val;
         }
 
-        // --- PATTERN INTELLIGENCE LOGIC ---
         function monitorPatterns(newGrp, r, s) {
             const historyStr = history.map(h => h.grp).join('') + newGrp;
             let detected = null;
             let count = 0;
 
-            // 1. Check Streaks (6+)
             const streakMatch = historyStr.match(/(B{6,}|S{6,})$/);
-            if (streakMatch) {
-                detected = streakMatch[0][0] === 'B' ? "BIG STREAK" : "SMALL STREAK";
-                count = streakMatch[0].length;
-            } 
-            // 2. Check Single Jump (6+)
+            if (streakMatch) { detected = (streakMatch[0][0] === 'B' ? "BIG" : "SMALL") + " STREAK"; count = streakMatch[0].length; }
             else if (/(BSBSBS|SBSBSB)(BS|SB)*$/.test(historyStr)) {
                 const jumpMatch = historyStr.match(/((BS){3,}|(SB){3,})$/);
-                if (jumpMatch) { detected = "SINGLE JUMP (B/S)"; count = jumpMatch[0].length; }
+                if (jumpMatch) { detected = "SINGLE JUMP"; count = jumpMatch[0].length; }
             }
-            // 3. Check Double Jump (8+)
             else if (/(BBSSBBSS|SSBBSSBB)(BBSS|SSBB)*$/.test(historyStr)) {
                 const doubleMatch = historyStr.match(/((BBSS){2,}|(SSBB){2,})$/);
-                if (doubleMatch) { detected = "DOUBLE JUMP (BB/SS)"; count = doubleMatch[0].length; }
+                if (doubleMatch) { detected = "DOUBLE JUMP"; count = doubleMatch[0].length; }
             }
 
             if (detected) {
                 if (!activePattern || activePattern !== detected) {
-                    activePattern = detected;
-                    patternStart = { r: r, s: s, count: count };
+                    activePattern = detected; patternStart = { r: r, s: s, count: count };
                 }
                 patternStart.count = count;
-                showWarning(detected, count);
+                document.getElementById('pattern-section').style.display = 'block';
+                document.getElementById('pattern-display').innerText = `⚠️ WARNING: ${detected} - LEVEL ${count}`;
             } else {
                 if (activePattern) {
                     saveToIntel(activePattern, patternStart, r, s);
                     activePattern = null;
-                    hideWarning();
+                    document.getElementById('pattern-section').style.display = 'none';
                 }
             }
         }
 
-        function showWarning(name, count) {
-            document.getElementById('pattern-section').style.display = 'block';
-            document.getElementById('pattern-display').innerText = `⚠️ WARNING: ${name} DETECTED (${count} ကြိမ်မြောက်)`;
-        }
-
-        function hideWarning() { document.getElementById('pattern-section').style.display = 'none'; }
-
         function saveToIntel(name, start, endR, endS) {
-            let bg = "";
-            if (name === "BIG STREAK") bg = "bg-streak-big";
-            else if (name === "SMALL STREAK") bg = "bg-streak-small";
-            else if (name === "SINGLE JUMP (B/S)") bg = "bg-jump-single";
-            else if (name === "DOUBLE JUMP (BB/SS)") bg = "bg-jump-double";
+            let bg = "bg-streak-big";
+            if (name.includes("SMALL")) bg = "bg-streak-small";
+            else if (name.includes("SINGLE")) bg = "bg-jump-single";
+            else if (name.includes("DOUBLE")) bg = "bg-jump-double";
 
-            intelLogs.unshift({
-                name: name,
-                range: `R${start.r} S${start.s} → R${endR} S${endS}`,
-                count: start.count,
-                bg: bg
-            });
+            intelLogs.unshift({ name, range: `R${start.r}S${start.s} → R${endR}S${endS}`, count: start.count, bg });
             renderIntel();
         }
 
@@ -246,8 +229,8 @@
             container.innerHTML = intelLogs.map((log, i) => `
                 <div class="intel-entry ${log.bg}">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-[10px] font-black text-white uppercase">${intelLogs.length - i}. ${log.name}</span>
-                        <span class="bg-black/30 text-white px-2 py-0.5 rounded-full text-[9px] font-bold">L: ${log.count}</span>
+                        <span class="text-[10px] font-black text-white uppercase">${intelLogs.length-i}. ${log.name}</span>
+                        <span class="bg-black/40 px-2 rounded-full text-[9px] font-bold">Len: ${log.count}</span>
                     </div>
                     <div class="text-[9px] font-mono text-white/50">${log.range}</div>
                 </div>
@@ -255,14 +238,19 @@
             container.scrollTop = 0;
         }
 
-        function updatePred(last) {
-            pNext = last % 2 === 0 ? 'S' : 'B';
-            eNext = history.length >= 3 ? (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0 ? 'S' : 'B') : '-';
-            sNext = history.length >= 5 ? (history.slice(-5).reduce((a,b)=>a+b.val,0) % 2 === 0 ? 'S' : 'B') : '-';
+        function updatePredictions() {
+            if (history.length === 0) return;
+            const last = history[history.length-1].val;
+            pNext = (last % 2 === 0) ? 'S' : 'B';
+            eNext = history.length >= 3 ? (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0 ? 'S' : 'B') : "-";
+            if(history.length >= 5) {
+                let sSum = history.slice(-5).reduce((a,b)=>a+b.val,0);
+                while(sSum >= 10) sSum = sSum.toString().split('').map(Number).reduce((a,b)=>a+b,0);
+                sNext = (sSum % 2 !== 0) ? 'B' : 'S';
+            } else { sNext = "-"; }
             document.getElementById('pred-p').innerText = pNext;
             document.getElementById('pred-e').innerText = isPremium ? eNext : "?";
-            document.getElementById('pred-s').innerText = isPremium ? sNext : "?";
-            document.getElementById('highlight-g').innerText = last;
+            document.getElementById('pred-s').innerText = isPremium ? (sNext === "-" ? "-" : sNext) : "?";
         }
 
         function renderTable() {
@@ -270,18 +258,38 @@
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(rolls).map(r => `
                 <div class="roll-card">
-                    <div class="text-[9px] text-center font-bold text-cyan-500 mb-2 border-b border-white/5 pb-1">ROLL ${r}</div>
+                    <div class="text-[9px] text-center font-bold text-cyan-500 mb-2 border-b border-white/5 pb-1 uppercase">Roll ${r}</div>
                     ${rolls[r].map(i => `
                         <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
-                            <span class="text-[8px] text-gray-600 w-3">${i.stage}</span>
-                            <div class="mini-shape border-[#ff4136] text-[#ff4136] rounded-full">${i.p}</div>
-                            <div class="mini-shape border-[#b10dc9] text-[#b10dc9] rounded-md">${isPremium?i.e:'🔒'}</div>
+                            <span class="text-[8px] text-gray-600 w-4">${i.stage}</span>
+                            <div class="flex items-center gap-0.5">
+                                <div class="mini-shape border-[#ff4136] text-[#ff4136] rounded-full">${i.p}</div>
+                                <span class="text-[9px] w-3 text-center">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                            </div>
+                            <div class="flex items-center gap-0.5">
+                                <div class="mini-shape border-[#b10dc9] text-[#b10dc9] rounded-md">${isPremium?i.e:'🔒'}</div>
+                                <span class="text-[9px] w-3 text-center">${isPremium?(i.eOk===null?'-':(i.eOk?'✅':'❌')):'-'}</span>
+                            </div>
+                            <div class="flex items-center gap-0.5">
+                                <div class="mini-shape border-[#2ecc40] text-[#2ecc40] rotate-45"><span class="-rotate-45 block">${isPremium?i.s:'🔒'}</span></div>
+                                <span class="text-[9px] w-3 text-center">${isPremium?(i.sOk===null?'-':(i.sOk?'✅':'❌')):'-'}</span>
+                            </div>
                             <div class="g-num">${i.val}</div>
                         </div>
                     `).join('')}
                 </div>
             `).join('');
             container.scrollLeft = container.scrollWidth;
+        }
+
+        function copyLogs() {
+            if (!isPremium) { showUpgrade(true); return; }
+            let text = "OMNI ELITE EXPORT\n";
+            history.forEach(h => {
+                text += `R${h.roll}S${h.stage}: [${h.val}] P:${h.pOk?'✅':'❌'} E:${h.eOk?'✅':'❌'} S:${h.sOk?'✅':'❌'}\n`;
+            });
+            navigator.clipboard.writeText(text);
+            alert("History Logs copied to clipboard!");
         }
 
         function validate(el) { el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
@@ -292,14 +300,13 @@
                 history = data.history || []; roll = data.roll || 1; stage = data.stage || 1; 
                 intelLogs = data.intelLogs || [];
                 renderTable(); renderIntel(); 
-                if(history.length) updatePred(history[history.length-1].val);
-                document.getElementById('roll-info').innerText = `Roll ${roll} Stage ${stage}`;
+                if(history.length) updatePredictions();
             }
         }
-        function fullReset() { if(confirm("Clear App Cache?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Permanently clear all data?")) { localStorage.clear(); location.reload(); } }
         function showUpgrade(backable) { document.getElementById('app-main').style.display='none'; document.getElementById('lock-screen').style.display='flex'; document.getElementById('back-btn').style.display=backable?'block':'none'; }
         function hideUpgrade() { document.getElementById('lock-screen').style.display='none'; document.getElementById('app-main').style.display='block'; }
-        async function activateCode() { alert("Verification feature connected to Supabase."); location.reload(); }
+        async function activateCode() { location.reload(); }
 
         init();
     </script>
