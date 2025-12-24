@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic Elite - Master Edition</title>
+    <title>Omni Logic Elite - Final Master Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -16,10 +16,10 @@
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 55px; height: 55px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
         .box-s span { transform: rotate(-45deg); display: block; }
         
-        .locked-overlay, .locked-overlay-e { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; }
+        .locked-overlay, .locked-overlay-e { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; z-index: 10; }
         .locked-overlay { transform: rotate(-45deg); }
 
-        /* Pattern History Styling (နောက်ခံအရောင်များ) */
+        /* Pattern Log Box Styles */
         .log-box { padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 6px solid rgba(0,0,0,0.3); }
         .bg-big { background-color: #ff4136 !important; color: white !important; } 
         .bg-small { background-color: #2ecc40 !important; color: white !important; }
@@ -48,10 +48,10 @@
         <div class="bg-white/5 p-6 rounded-[2.5rem] text-left mb-6 w-full max-w-sm border border-white/10">
             <h4 class="text-yellow-500 font-black text-[10px] mb-4 italic tracking-[0.1em] uppercase">💎 PREMIUM BENEFITS</h4>
             <ul class="text-[11px] space-y-3 text-gray-300">
-                <li>✅ Unlock All Logics & Intelligence</li>
-                <li>✅ Win/Loss Correction Tracking</li>
-                <li>✅ 20+ Streak Alert System</li>
-                <li>✅ Stable Device ID (No Reset Loss)</li>
+                <li>✅ Unlock E and S Logic</li>
+                <li>✅ Streak Alert System (Advanced)</li>
+                <li>✅ Record Logs History</li>
+                <li>✅ Copy to Data Analysis</li>
             </ul>
         </div>
         <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4 text-xl" placeholder="ENTER KEY">
@@ -63,7 +63,7 @@
         <div class="max-w-md mx-auto space-y-4">
             <div class="text-center pt-4">
                 <h1 class="text-2xl font-black italic text-cyan-500">OMNI LOGIC</h1>
-                <div id="plan-status" class="text-[9px] text-cyan-400 font-black mt-1 uppercase tracking-tighter">CHECKING ACCESS...</div>
+                <div id="plan-status" class="text-[9px] text-cyan-400 font-black mt-1 uppercase tracking-tighter">AUTHENTICATING...</div>
             </div>
 
             <div id="streak-warning" class="px-2" style="display: none;">
@@ -90,18 +90,18 @@
             <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
 
             <div class="px-2">
-                <h3 class="font-black text-yellow-500 text-[10px] uppercase mb-2">Pattern Intelligence</h3>
+                <h3 class="font-black text-yellow-500 text-[10px] uppercase mb-2">Pattern Intelligence History</h3>
                 <div id="intel-wrapper" class="relative">
-                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic uppercase">Scan Ready...</div></div>
+                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic uppercase">Analyzing Patterns...</div></div>
                     <div id="intel-lock" class="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10" onclick="showUpgrade(true)">
-                        <p class="text-yellow-500 font-black text-[10px] border border-yellow-500/30 px-4 py-2 rounded-full tracking-widest">🔒 UNLOCK PATTERN HISTORY</p>
+                        <p class="text-yellow-500 font-black text-[10px] border border-yellow-500/30 px-4 py-2 rounded-full tracking-widest uppercase">🔒 Unlock Intel History</p>
                     </div>
                 </div>
             </div>
 
             <div class="px-2 pb-10">
                 <button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-900 to-red-600 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-all border border-red-500/40 uppercase">
-                    ⚠️ Reset Game Data (Device ID Stay)
+                    ⚠️ RESET GAME DATA
                 </button>
             </div>
         </div>
@@ -141,13 +141,16 @@
                 document.getElementById('pred-s').classList.remove('blur-sm');
             } else {
                 const timer = setInterval(() => {
-                    const remaining = TRIAL_LIMIT - (Date.now() - createdAt);
+                    const now = Date.now();
+                    const remaining = TRIAL_LIMIT - (now - createdAt);
                     if(remaining <= 0) {
                         document.getElementById('plan-status').innerText = "FREE TRIAL EXPIRED";
                         showUpgrade(false);
                         clearInterval(timer);
                     } else {
-                        document.getElementById('plan-status').innerText = `GUEST MODE (${Math.floor(remaining/60000)} MINS LEFT)`;
+                        const minsLeft = Math.floor(remaining / 60000);
+                        const daysActive = Math.ceil((now - createdAt) / (24 * 60 * 60 * 1000));
+                        document.getElementById('plan-status').innerText = `GUEST MODE (${minsLeft} MINS LEFT / DAY ${daysActive})`;
                     }
                 }, 1000);
             }
@@ -188,14 +191,10 @@
             } else if (currentStreak.type === grp) {
                 currentStreak.items.push(grp);
                 const count = currentStreak.items.length;
-                
                 if (count >= 4) {
                     warnBox.style.display = 'block';
                     warnText.innerText = `⚠️ ${currentStreak.type === 'B' ? 'BIG' : 'SMALL'} STREAK: ${count} TIMES ⚠️`;
-                    if (count >= 12) { 
-                        warnWrap.classList.add('animate-danger'); 
-                        warnText.innerText = `🚨 EXTREME STREAK: ${count} TIMES 🚨`;
-                    }
+                    if (count >= 12) { warnWrap.classList.add('animate-danger'); warnText.innerText = `🚨 EXTREME STREAK: ${count} TIMES 🚨`; }
                     if (count >= 20) warnText.innerText = `🔥 20+ TIMES RECORD STREAK 🔥`;
                 }
             } else {
@@ -204,10 +203,9 @@
                     let css = currentStreak.type === 'B' ? 'bg-big' : 'bg-small';
                     let label = currentStreak.type === 'B' ? 'BIG STREAK' : 'SMALL STREAK';
 
-                    // Ping-Pong or Double Detection
-                    const fullHistory = history.map(h => h.grp).join('') + grp;
-                    if (fullHistory.match(/(BSBSBS|SBSBSB)$/)) { css = 'bg-pingpong'; label = 'PING-PONG'; }
-                    if (fullHistory.match(/(BBSSBBSS|SSBBSSBB)$/)) { css = 'bg-double'; label = 'DOUBLE'; }
+                    const historyStr = history.map(h => h.grp).join('') + grp;
+                    if (historyStr.match(/(BSBSBS|SBSBSB)$/)) { css = 'bg-pingpong'; label = 'PING-PONG'; }
+                    if (historyStr.match(/(BBSSBBSS|SSBBSSBB)$/)) { css = 'bg-double'; label = 'DOUBLE'; }
 
                     intelLogs.unshift({
                         pattern: patternStr,
@@ -291,7 +289,7 @@
             }
         }
         function fullReset() { 
-            if(confirm("Wipe game data? Device ID will stay same.")) { 
+            if(confirm("Permanently wipe all game data?")) { 
                 const id = localStorage.getItem('omni_stable_id');
                 localStorage.clear(); 
                 localStorage.setItem('omni_stable_id', id);
