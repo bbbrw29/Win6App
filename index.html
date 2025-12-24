@@ -9,26 +9,30 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #010816; color: white; overflow-x: hidden; }
+        
+        /* Prediction Shapes */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 55px; height: 55px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
         .box-s span { transform: rotate(-45deg); display: block; }
         
-        /* Locked Text Fixed (အတည့်ဖြစ်အောင် လုပ်ထားသည်) */
-        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; transform: rotate(-45deg); cursor: pointer; }
-        .locked-overlay-e { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; }
-        
+        .locked-overlay, .locked-overlay-e { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; }
+        .locked-overlay { transform: rotate(-45deg); }
+
+        /* Pattern History Styling (နောက်ခံအရောင်များ) */
+        .log-box { padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 6px solid rgba(0,0,0,0.3); }
+        .bg-big { background-color: #ff4136 !important; color: white !important; } 
+        .bg-small { background-color: #2ecc40 !important; color: white !important; }
+        .bg-pingpong { background-color: #b10dc9 !important; color: white !important; }
+        .bg-double { background-color: #ffdc00 !important; color: black !important; }
+
+        #intel-log-container { height: 280px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 20px; padding: 10px; }
         .roll-card { flex-shrink: 0; width: 310px; background: rgba(30, 41, 59, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .g-num { background: #ffdc00; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
         .mini-shape { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 10px; border-width: 2px; }
-        #intel-log-container { height: 250px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 20px; padding: 10px; }
-        .intel-entry { margin-bottom: 8px; padding: 10px; border-radius: 10px; border-left: 5px solid; }
-        .bg-streak-big { background: rgba(239, 68, 68, 0.15); border-left-color: #ef4444; }
-        .bg-streak-small { background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; }
-        .bg-jump-single { background: rgba(168, 85, 247, 0.15); border-left-color: #a855f7; }
-        .bg-jump-double { background: rgba(245, 158, 11, 0.15); border-left-color: #f59e0b; }
-        .status-pulse { animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        .animate-danger { animation: flash-red 0.5s infinite; }
+        @keyframes flash-red { 0%, 100% { background: #ff4136; } 50% { background: #800000; } }
     </style>
 </head>
 <body class="p-2">
@@ -44,11 +48,10 @@
         <div class="bg-white/5 p-6 rounded-[2.5rem] text-left mb-6 w-full max-w-sm border border-white/10">
             <h4 class="text-yellow-500 font-black text-[10px] mb-4 italic tracking-[0.1em] uppercase">💎 PREMIUM BENEFITS</h4>
             <ul class="text-[11px] space-y-3 text-gray-300">
-                <li>✅ Unlock All Logics (P, E, S)</li>
-                <li>✅ Win/Loss Correction Tracking (✅/❌)</li>
-                <li>✅ Advanced Pattern Intelligence History</li>
-                <li>✅ Real-time Streak/Jump Warning</li>
-                <li>✅ Export All Data Logs</li>
+                <li>✅ Unlock All Logics & Intelligence</li>
+                <li>✅ Win/Loss Correction Tracking</li>
+                <li>✅ 20+ Streak Alert System</li>
+                <li>✅ Stable Device ID (No Reset Loss)</li>
             </ul>
         </div>
         <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4 text-xl" placeholder="ENTER KEY">
@@ -60,19 +63,19 @@
         <div class="max-w-md mx-auto space-y-4">
             <div class="text-center pt-4">
                 <h1 class="text-2xl font-black italic text-cyan-500">OMNI LOGIC</h1>
-                <div id="plan-status" class="text-[9px] text-cyan-400 font-black mt-1">GUEST MODE</div>
+                <div id="plan-status" class="text-[9px] text-cyan-400 font-black mt-1 uppercase tracking-tighter">CHECKING ACCESS...</div>
+            </div>
+
+            <div id="streak-warning" class="px-2" style="display: none;">
+                <div id="warning-box" class="p-3 rounded-xl text-center border-l-4 border-red-500 bg-red-950/40">
+                    <p id="warning-text" class="text-red-500 font-black text-[11px] italic uppercase"></p>
+                </div>
             </div>
 
             <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500">
                 <div><p class="text-[8px] text-gray-500 mb-1">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
                 <div><p class="text-[8px] text-gray-500 mb-1">E-LOGIC</p><div class="box-e"><span id="pred-e" class="blur-sm">-</span><div id="lock-e" class="locked-overlay-e" onclick="showUpgrade(true)">LOCKED</div></div></div>
                 <div><p class="text-[8px] text-gray-500 mb-1">S-LOGIC</p><div class="box-s"><span id="pred-s" class="blur-sm"></span><div id="lock-s" class="locked-overlay" onclick="showUpgrade(true)">LOCKED</div></div></div>
-            </div>
-
-            <div id="pattern-section" class="px-2" style="display: none;">
-                <div class="bg-red-950/40 border-l-4 border-red-500 p-3 rounded-xl animate-pulse">
-                    <p id="pattern-display" class="text-red-500 font-black text-[11px] italic"></p>
-                </div>
             </div>
 
             <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5">
@@ -83,28 +86,22 @@
                 </div>
             </div>
 
-            <div class="px-2 pt-2">
-                <button onclick="copyLogs()" class="w-full py-3 bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/50 rounded-2xl flex items-center justify-center gap-2 text-cyan-400 font-black text-xs transition-all shadow-lg">
-                    📋 COPY PREMIUM EXPORT LOGS
-                </button>
-            </div>
-
             <div class="px-2 flex justify-between items-end"><h3 class="font-black text-cyan-500 text-[10px] uppercase italic">Record History</h3><span class="text-[9px] text-gray-600" id="roll-info">Roll 1 Stg 1</span></div>
             <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
 
             <div class="px-2">
                 <h3 class="font-black text-yellow-500 text-[10px] uppercase mb-2">Pattern Intelligence</h3>
                 <div id="intel-wrapper" class="relative">
-                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24">SCANNING...</div></div>
+                    <div id="intel-log-container"><div id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic uppercase">Scan Ready...</div></div>
                     <div id="intel-lock" class="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10" onclick="showUpgrade(true)">
-                        <p class="text-yellow-500 font-black text-[10px] border border-yellow-500/30 px-4 py-2 rounded-full">🔒 UNLOCK INTEL LOG</p>
+                        <p class="text-yellow-500 font-black text-[10px] border border-yellow-500/30 px-4 py-2 rounded-full tracking-widest">🔒 UNLOCK PATTERN HISTORY</p>
                     </div>
                 </div>
             </div>
 
             <div class="px-2 pb-10">
-                <button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-900 to-red-600 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-all border border-red-500/40">
-                    ⚠️ RESET ALL APP DATA (FACTORY RESET)
+                <button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-900 to-red-600 rounded-2xl text-white font-black text-xs shadow-xl active:scale-95 transition-all border border-red-500/40 uppercase">
+                    ⚠️ Reset Game Data (Device ID Stay)
                 </button>
             </div>
         </div>
@@ -119,7 +116,7 @@
         let history = []; let intelLogs = [];
         let roll = 1, stage = 1;
         let pNext = "-", eNext = "-", sNext = "-";
-        let activePattern = null; let patternStart = { r: 1, s: 1, count: 0 };
+        let currentStreak = { type: null, items: [], startPos: "" };
 
         async function init() {
             deviceId = localStorage.getItem('omni_stable_id') || "OMNI-" + Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -128,8 +125,13 @@
         }
 
         async function checkAccess() {
-            const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
-            isPremium = data?.is_premium || false;
+            const { data, error } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
+            if(error) return;
+
+            isPremium = data.is_premium;
+            const createdAt = new Date(data.created_at).getTime();
+            const TRIAL_LIMIT = 90 * 60 * 1000;
+
             if (isPremium) {
                 document.getElementById('plan-status').innerText = "PREMIUM ACCESS ACTIVE";
                 document.getElementById('intel-lock').style.display = 'none';
@@ -137,6 +139,17 @@
                 document.getElementById('lock-s').style.display = 'none';
                 document.getElementById('pred-e').classList.remove('blur-sm');
                 document.getElementById('pred-s').classList.remove('blur-sm');
+            } else {
+                const timer = setInterval(() => {
+                    const remaining = TRIAL_LIMIT - (Date.now() - createdAt);
+                    if(remaining <= 0) {
+                        document.getElementById('plan-status').innerText = "FREE TRIAL EXPIRED";
+                        showUpgrade(false);
+                        clearInterval(timer);
+                    } else {
+                        document.getElementById('plan-status').innerText = `GUEST MODE (${Math.floor(remaining/60000)} MINS LEFT)`;
+                    }
+                }, 1000);
             }
             document.getElementById('app-main').style.display = 'block';
             load();
@@ -146,14 +159,17 @@
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             const grp = val >= 5 ? 'B' : 'S';
-            monitorPatterns(grp, roll, stage);
-            const currentEntry = {
+            const pos = `R${roll}S${stage}`;
+
+            processPatternIntel(grp, roll, stage);
+            
+            history.push({
                 val, grp, roll, stage,
                 p: pNext, pOk: (pNext === "-" ? null : pNext === grp),
                 e: eNext, eOk: (eNext === "-" ? null : eNext === grp),
                 s: sNext, sOk: (sNext === "-" ? null : sNext === grp)
-            };
-            history.push(currentEntry);
+            });
+
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePredictions(); renderTable(); save();
             input.value = ''; input.focus(); 
@@ -162,48 +178,63 @@
             document.getElementById('roll-info').innerText = `Roll ${roll} Stg ${stage}`;
         }
 
-        function monitorPatterns(newGrp, r, s) {
-            const historyStr = history.map(h => h.grp).join('') + newGrp;
-            let detected = null; let count = 0;
-            const streakMatch = historyStr.match(/(B{6,}|S{6,})$/);
-            if (streakMatch) { detected = (streakMatch[0][0] === 'B' ? "BIG" : "SMALL") + " STREAK"; count = streakMatch[0].length; }
-            else if (/(BSBSBS|SBSBSB)(BS|SB)*$/.test(historyStr)) {
-                const jumpMatch = historyStr.match(/((BS){3,}|(SB){3,})$/);
-                if (jumpMatch) { detected = "SINGLE JUMP"; count = jumpMatch[0].length; }
-            }
-            else if (/(BBSSBBSS|SSBBSSBB)(BBSS|SSBB)*$/.test(historyStr)) {
-                const doubleMatch = historyStr.match(/((BBSS){2,}|(SSBB){2,})$/);
-                if (doubleMatch) { detected = "DOUBLE JUMP"; count = doubleMatch[0].length; }
-            }
-            if (detected) {
-                if (!activePattern || activePattern !== detected) { activePattern = detected; patternStart = { r: r, s: s, count: count }; }
-                patternStart.count = count;
-                document.getElementById('pattern-section').style.display = 'block';
-                document.getElementById('pattern-display').innerText = `⚠️ ${detected}: LEVEL ${count}`;
-            } else {
-                if (activePattern) { saveToIntel(activePattern, patternStart, r, s); activePattern = null; document.getElementById('pattern-section').style.display = 'none'; }
-            }
-        }
+        function processPatternIntel(grp, r, s) {
+            const warnBox = document.getElementById('streak-warning');
+            const warnText = document.getElementById('warning-text');
+            const warnWrap = document.getElementById('warning-box');
 
-        function saveToIntel(name, start, endR, endS) {
-            let bg = name.includes("BIG") ? "bg-streak-big" : (name.includes("SMALL") ? "bg-streak-small" : (name.includes("SINGLE") ? "bg-jump-single" : "bg-jump-double"));
-            intelLogs.unshift({ name, range: `R${start.r}S${start.s} → R${endR}S${endS}`, count: start.count, bg });
-            renderIntel();
+            if (currentStreak.type === null) {
+                currentStreak = { type: grp, items: [grp], startPos: `R${r}S${s}` };
+            } else if (currentStreak.type === grp) {
+                currentStreak.items.push(grp);
+                const count = currentStreak.items.length;
+                
+                if (count >= 4) {
+                    warnBox.style.display = 'block';
+                    warnText.innerText = `⚠️ ${currentStreak.type === 'B' ? 'BIG' : 'SMALL'} STREAK: ${count} TIMES ⚠️`;
+                    if (count >= 12) { 
+                        warnWrap.classList.add('animate-danger'); 
+                        warnText.innerText = `🚨 EXTREME STREAK: ${count} TIMES 🚨`;
+                    }
+                    if (count >= 20) warnText.innerText = `🔥 20+ TIMES RECORD STREAK 🔥`;
+                }
+            } else {
+                if (currentStreak.items.length >= 4) {
+                    const patternStr = currentStreak.items.join('');
+                    let css = currentStreak.type === 'B' ? 'bg-big' : 'bg-small';
+                    let label = currentStreak.type === 'B' ? 'BIG STREAK' : 'SMALL STREAK';
+
+                    // Ping-Pong or Double Detection
+                    const fullHistory = history.map(h => h.grp).join('') + grp;
+                    if (fullHistory.match(/(BSBSBS|SBSBSB)$/)) { css = 'bg-pingpong'; label = 'PING-PONG'; }
+                    if (fullHistory.match(/(BBSSBBSS|SSBBSSBB)$/)) { css = 'bg-double'; label = 'DOUBLE'; }
+
+                    intelLogs.unshift({
+                        pattern: patternStr,
+                        label: `${label} (${currentStreak.items.length}x)`,
+                        range: `${currentStreak.startPos} → R${r}S${s}`,
+                        css: css
+                    });
+                    renderIntel();
+                }
+                currentStreak = { type: grp, items: [grp], startPos: `R${r}S${s}` };
+                warnBox.style.display = 'none';
+                warnWrap.classList.remove('animate-danger');
+            }
         }
 
         function renderIntel() {
             const container = document.getElementById('intel-log-container');
             if(intelLogs.length > 0) document.getElementById('no-intel').style.display = 'none';
-            container.innerHTML = intelLogs.map((log, i) => `
-                <div class="intel-entry ${log.bg}">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[10px] font-black text-white uppercase">${intelLogs.length-i}. ${log.name}</span>
-                        <span class="bg-black/40 px-2 rounded-full text-[9px] font-bold">L: ${log.count}</span>
+            container.innerHTML = intelLogs.map(log => `
+                <div class="log-box ${log.css}">
+                    <div class="text-[18px] font-black tracking-[3px]">${log.pattern}</div>
+                    <div class="flex justify-between items-center mt-2 opacity-80 font-bold text-[10px] uppercase">
+                        <span>${log.label}</span>
+                        <span class="font-mono text-[9px]">${log.range}</span>
                     </div>
-                    <div class="text-[9px] font-mono text-white/50">${log.range}</div>
                 </div>
             `).join('');
-            container.scrollTop = 0;
         }
 
         function updatePredictions() {
@@ -250,13 +281,6 @@
             container.scrollLeft = container.scrollWidth;
         }
 
-        function copyLogs() {
-            if (!isPremium) { showUpgrade(true); return; }
-            let text = "OMNI ELITE LOGS\n";
-            history.forEach(h => { text += `R${h.roll}S${h.stage}: [${h.val}] P:${h.pOk?'✅':'❌'} E:${h.eOk?'✅':'❌'} S:${h.sOk?'✅':'❌'}\n`; });
-            navigator.clipboard.writeText(text); alert("All Logs copied to clipboard!");
-        }
-
         function validate(el) { el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
         function save() { localStorage.setItem('OMNI_STORE', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
@@ -266,7 +290,14 @@
                 renderTable(); renderIntel(); if(history.length) updatePredictions();
             }
         }
-        function fullReset() { if(confirm("Permanently wipe all logs and patterns?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { 
+            if(confirm("Wipe game data? Device ID will stay same.")) { 
+                const id = localStorage.getItem('omni_stable_id');
+                localStorage.clear(); 
+                localStorage.setItem('omni_stable_id', id);
+                location.reload(); 
+            } 
+        }
         function showUpgrade(backable) { document.getElementById('app-main').style.display='none'; document.getElementById('lock-screen').style.display='flex'; document.getElementById('back-btn').style.display=backable?'block':'none'; }
         function hideUpgrade() { document.getElementById('lock-screen').style.display='none'; document.getElementById('app-main').style.display='block'; }
         async function activateCode() { location.reload(); }
