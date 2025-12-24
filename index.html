@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic - V18</title>
+    <title>Omni Logic - V19</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        html, body { background-color: #010816; color: white; height: 100%; overflow-y: auto; font-family: 'Inter', sans-serif; }
+        html, body { background-color: #010816; color: white; height: 100%; overflow-y: auto; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 50px; height: 50px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
@@ -26,8 +26,8 @@
     <div id="toast">HISTORY COPIED!</div>
     <div id="app-main" class="max-w-md mx-auto space-y-4">
         <div class="text-center pt-2">
-            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V18</h1>
-            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic italic">Single Digit Input Only</div>
+            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V19</h1>
+            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic italic">Fixing Pattern Break Freeze</div>
         </div>
 
         <div id="streak-warning" class="px-2" style="display: none;">
@@ -36,51 +36,57 @@
             </div>
         </div>
 
-        <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[2rem] border-b-4 border-cyan-500">
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black">E-LOGIC</p><div class="box-e"><span id="pred-e">-</span></div></div>
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black">S-LOGIC</p><div class="box-s"><span id="pred-s"></span></div></div>
+        <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[2rem] border-b-4 border-cyan-500 shadow-lg">
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">P-Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">E-Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">S-Logic</p><div class="box-s"><span id="pred-s"></span></div></div>
         </div>
 
         <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 gap-3 shadow-2xl">
             <div class="text-6xl font-black text-cyan-400 flex-1 text-center" id="highlight-g">-</div>
             <div class="flex flex-col gap-2 w-32">
                 <input type="tel" id="digit-input" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black outline-none bg-white" placeholder="0">
-                <button class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl active:scale-95" onclick="handleManualSubmit()">ENTER</button>
+                <button class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl active:scale-95" id="btn-enter" onclick="handleManualSubmit()">ENTER</button>
             </div>
         </div>
 
-        <button onclick="copyAnalysis()" class="w-full py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest">📋 COPY CLEAN HISTORY</button>
+        <button onclick="copyAnalysis()" class="w-full py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg">📋 Copy History (Clean)</button>
 
         <div id="history-container" class="flex overflow-x-auto gap-3 py-1"></div>
 
         <div class="px-2">
-            <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider mb-2 italic">Pattern History (PIH)</h3>
+            <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider mb-2 italic">Pattern Intelligence (PIH)</h3>
             <div id="intel-wrapper" class="bg-white/5 rounded-[2.5rem] p-5 border border-white/5">
                 <div id="intel-log-container" class="h-[280px] overflow-y-auto"><p id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic font-bold">READY...</p></div>
             </div>
         </div>
 
-        <div class="px-2 pt-4 pb-12"><button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-900 text-white font-black rounded-2xl shadow-xl uppercase text-[10px]">Reset All</button></div>
+        <div class="px-2 pt-4 pb-12"><button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-900 text-white font-black rounded-2xl shadow-xl uppercase text-[10px]">Reset All Data</button></div>
     </div>
 
     <script>
         let history = []; let intelLogs = [];
         let roll = 1, stage = 1, pNext = "-", eNext = "-", sNext = "-";
-        let lastActivePattern = null;
+        let activePatternData = null;
 
         const inputEl = document.getElementById('digit-input');
         inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleManualSubmit(); });
 
         function handleManualSubmit() {
-            let valStr = inputEl.value.trim();
+            const valStr = inputEl.value.trim();
             if (valStr === "") return;
-            let num = parseInt(valStr);
+            const num = parseInt(valStr);
             const grp = num >= 5 ? 'B' : 'S';
             
-            processGame(num, grp);
+            // UI Update First
             inputEl.value = "";
-            setTimeout(() => inputEl.focus(), 100);
+            document.getElementById('highlight-g').innerText = num;
+            
+            // Logic Execution
+            setTimeout(() => {
+                processGame(num, grp);
+                inputEl.focus(); // Force Focus back
+            }, 10);
         }
 
         function processGame(num, grp) {
@@ -88,39 +94,42 @@
             history.push({ val: num, grp, roll, stage, p: pNext, pOk: (pNext===grp), e: eNext, eOk: (eNext===grp), s: sNext, sOk: (sNext===grp) });
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePredictions(); renderTable(); save();
-            document.getElementById('highlight-g').innerText = num;
         }
 
         function detectPattern(nextGrp) {
             const hStr = history.map(h => h.grp).join('') + nextGrp;
-            let currentLabel = "", currentCount = 0, css = "";
+            let label = "", count = 0, css = "";
 
             const dMatch = hStr.match(/((BBSS|SSBB)+(BB|SS|BBSS|SSBB)?)$/);
             if (dMatch && dMatch[1].length >= 6) {
-                currentLabel = "BBSS Pattern"; currentCount = dMatch[1].length; css = "bg-double";
+                label = "BBSS Pattern"; count = dMatch[1].length; css = "bg-double";
             } else if (hStr.match(/(BS){3,}|(SB){3,}$/)) {
                 const m = hStr.match(/(BS){3,}|(SB){3,}$/);
-                currentLabel = "တစ်ခုကျော်စီ Pattern"; currentCount = m[0].length; css = "bg-jump border-purple-500";
+                label = "တစ်ခုကျော်စီ Pattern"; count = m[0].length; css = "bg-jump border-purple-500";
             } else if (hStr.match(/(B{4,}|S{4,})$/)) {
                 const m = hStr.match(/(B{4,}|S{4,})$/);
-                currentLabel = m[0][0] === 'B' ? "အကြီးတောက်လျှောက်" : "အသေးတောက်လျှောက်";
-                currentCount = m[0].length; css = m[0][0] === 'B' ? "bg-big border-red-500" : "bg-small border-green-500";
+                label = m[0][0] === 'B' ? "အကြီးတောက်လျှောက်" : "အသေးတောက်လျှောက်";
+                count = m[0].length; css = m[0][0] === 'B' ? "bg-big border-red-500" : "bg-small border-green-500";
             }
 
-            if (lastActivePattern && lastActivePattern.label !== currentLabel) {
-                intelLogs.unshift({ id: intelLogs.length + 1, label: lastActivePattern.label, count: lastActivePattern.count, css: lastActivePattern.css, time: `R${roll} S${stage-1}` });
-                renderIntel();
+            // PATTERN BREAK - RECORDING LOGIC
+            if (activePatternData && activePatternData.label !== label) {
+                const record = {...activePatternData};
+                setTimeout(() => { // Record asynchronously to prevent freeze
+                    intelLogs.unshift({ id: intelLogs.length + 1, label: record.label, count: record.count, css: record.css, time: `R${roll} S${stage-1}` });
+                    renderIntel();
+                }, 0);
             }
 
             const warnBox = document.getElementById('streak-warning');
-            if (currentLabel) {
+            if (label) {
                 warnBox.style.display = 'block';
-                document.getElementById('warning-text').innerText = `${currentLabel} - ${currentCount} ကြိမ်`;
+                document.getElementById('warning-text').innerText = `${label} - ${count} ကြိမ်`;
                 document.getElementById('warning-box').className = `p-4 rounded-2xl text-center border-l-8 ${css} shadow-2xl animate-pulse`;
-                lastActivePattern = { label: currentLabel, count: currentCount, css: css };
+                activePatternData = { label, count, css };
             } else {
                 warnBox.style.display = 'none';
-                lastActivePattern = null;
+                activePatternData = null;
             }
         }
 
@@ -143,10 +152,10 @@
             const container = document.getElementById('intel-log-container');
             document.getElementById('no-intel').style.display = 'none';
             container.innerHTML = intelLogs.map(l => `
-                <div class="log-box ${l.css} shadow-lg">
+                <div class="log-box ${l.css} shadow-lg border-white/20 border-t border-r">
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <span class="bg-black/30 w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black italic">#${l.id}</span>
+                            <span class="bg-black/40 w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black italic">#${l.id}</span>
                             <div><p class="text-[11px] font-black italic uppercase">${l.label}</p><p class="text-[12px] font-black underline">${l.count} ကြိမ် ကျခဲ့သည်</p></div>
                         </div>
                         <span class="text-[8px] font-black opacity-60">${l.time}</span>
@@ -158,11 +167,11 @@
             const container = document.getElementById('history-container');
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(rolls).map(r => `
-                <div class="flex-shrink-0 w-72 bg-white/5 p-4 rounded-[2.5rem] border border-white/5">
-                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2">Roll ${r}</div>
+                <div class="flex-shrink-0 w-72 bg-white/5 p-4 rounded-[2.5rem] border border-white/5 shadow-inner">
+                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2 italic">ROLL NUMBER ${r}</div>
                     ${rolls[r].map(i => `
                         <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                            <span class="text-[9px] text-gray-500 font-black">${i.stage}</span>
+                            <span class="text-[9px] text-gray-400 font-bold">${i.stage}</span>
                             <div class="flex flex-col items-center gap-0.5"><div class="mini-shape border-red-500 text-red-500 rounded-full">${i.p}</div><span class="text-[8px] font-black ${i.pOk?'text-green-500':'text-red-500'}">${i.pOk?'✅':'❌'}</span></div>
                             <div class="flex flex-col items-center gap-0.5"><div class="mini-shape border-purple-500 text-purple-500 rounded-md">${i.e}</div><span class="text-[8px] font-black ${i.eOk?'text-green-500':'text-red-500'}">${i.eOk?'✅':'❌'}</span></div>
                             <div class="flex flex-col items-center gap-0.5"><div class="mini-shape border-green-500 text-green-500 rotate-45"><span class="-rotate-45 block">${i.s}</span></div><span class="text-[8px] font-black ${i.sOk?'text-green-500':'text-red-500'}">${i.sOk?'✅':'❌'}</span></div>
@@ -173,18 +182,17 @@
         }
 
         function copyAnalysis() {
-            let finalOutput = "OMNI HISTORY LOG\n----------------\n";
-            history.forEach(h => { finalOutput += `Num:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`; });
-            const tempArea = document.createElement("textarea");
-            tempArea.value = finalOutput; document.body.appendChild(tempArea);
-            tempArea.select(); document.execCommand("copy"); document.body.removeChild(tempArea);
+            let log = "OMNI LOGS\n----------\n";
+            history.forEach(h => { log += `N:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`; });
+            const ta = document.createElement("textarea"); ta.value = log; document.body.appendChild(ta);
+            ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
             const t = document.getElementById('toast'); t.style.display = 'block';
             setTimeout(() => { t.style.display = 'none'; }, 2000);
         }
 
-        function save() { localStorage.setItem('OMNI_V18_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
+        function save() { localStorage.setItem('OMNI_V19_FINAL', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
-            const d = JSON.parse(localStorage.getItem('OMNI_V18_STABLE'));
+            const d = JSON.parse(localStorage.getItem('OMNI_V19_FINAL'));
             if(d) { history=d.history; roll=d.roll; stage=d.stage; intelLogs=d.intelLogs || []; renderTable(); renderIntel(); updatePredictions(); }
         }
         function fullReset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
