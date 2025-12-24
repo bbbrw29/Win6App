@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic Elite - Final Master Edition</title>
+    <title>Omni Logic Elite - Final Version</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #010816; color: white; overflow-x: hidden; }
         
-        /* Prediction Shapes */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 60px; height: 60px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 55px; height: 55px; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
@@ -19,7 +18,6 @@
         .locked-overlay, .locked-overlay-e { position: absolute; inset: 0; background: rgba(0,0,0,0.9); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 10px; font-weight: 900; cursor: pointer; z-index: 10; }
         .locked-overlay { transform: rotate(-45deg); }
 
-        /* Pattern Log Box Styles */
         .log-box { padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 6px solid rgba(0,0,0,0.3); }
         .bg-big { background-color: #ff4136 !important; color: white !important; } 
         .bg-small { background-color: #2ecc40 !important; color: white !important; }
@@ -67,8 +65,8 @@
             </div>
 
             <div id="streak-warning" class="px-2" style="display: none;">
-                <div id="warning-box" class="p-3 rounded-xl text-center border-l-4 border-red-500 bg-red-950/40">
-                    <p id="warning-text" class="text-red-500 font-black text-[11px] italic uppercase"></p>
+                <div id="warning-box" class="p-3 rounded-xl text-center border-l-4">
+                    <p id="warning-text" class="font-black text-[11px] italic uppercase"></p>
                 </div>
             </div>
 
@@ -84,6 +82,12 @@
                     <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black" oninput="validate(this)">
                     <button id="btn-submit" class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl text-lg disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
                 </div>
+            </div>
+
+            <div class="px-2 pt-2">
+                <button onclick="copyAnalysis()" class="w-full py-3 bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/50 rounded-2xl flex items-center justify-center gap-2 text-cyan-400 font-black text-xs transition-all shadow-lg">
+                    📋 COPY DATA FOR ANALYSIS
+                </button>
             </div>
 
             <div class="px-2 flex justify-between items-end"><h3 class="font-black text-cyan-500 text-[10px] uppercase italic">Record History</h3><span class="text-[9px] text-gray-600" id="roll-info">Roll 1 Stg 1</span></div>
@@ -116,7 +120,6 @@
         let history = []; let intelLogs = [];
         let roll = 1, stage = 1;
         let pNext = "-", eNext = "-", sNext = "-";
-        let currentStreak = { type: null, items: [], startPos: "" };
 
         async function init() {
             deviceId = localStorage.getItem('omni_stable_id') || "OMNI-" + Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -162,9 +165,8 @@
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             const grp = val >= 5 ? 'B' : 'S';
-            const pos = `R${roll}S${stage}`;
 
-            processPatternIntel(grp, roll, stage);
+            processPatternAlerts(grp, roll, stage);
             
             history.push({
                 val, grp, roll, stage,
@@ -181,41 +183,48 @@
             document.getElementById('roll-info').innerText = `Roll ${roll} Stg ${stage}`;
         }
 
-        function processPatternIntel(grp, r, s) {
+        function processPatternAlerts(grp, r, s) {
             const warnBox = document.getElementById('streak-warning');
             const warnText = document.getElementById('warning-text');
             const warnWrap = document.getElementById('warning-box');
+            
+            const fullHistory = history.map(h => h.grp).join('') + grp;
+            let detected = null;
+            let colorClass = "border-red-500 bg-red-950/40 text-red-500";
+            let logType = "";
 
-            if (currentStreak.type === null) {
-                currentStreak = { type: grp, items: [grp], startPos: `R${r}S${s}` };
-            } else if (currentStreak.type === grp) {
-                currentStreak.items.push(grp);
-                const count = currentStreak.items.length;
-                if (count >= 4) {
-                    warnBox.style.display = 'block';
-                    warnText.innerText = `⚠️ ${currentStreak.type === 'B' ? 'BIG' : 'SMALL'} STREAK: ${count} TIMES ⚠️`;
-                    if (count >= 12) { warnWrap.classList.add('animate-danger'); warnText.innerText = `🚨 EXTREME STREAK: ${count} TIMES 🚨`; }
-                    if (count >= 20) warnText.innerText = `🔥 20+ TIMES RECORD STREAK 🔥`;
-                }
+            if (fullHistory.match(/(BBSSBBSS|SSBBSSBB)$/)) {
+                detected = "DOUBLE JUMP DETECTED";
+                colorClass = "border-yellow-500 bg-yellow-950/40 text-yellow-500";
+                logType = "bg-double";
+            } else if (fullHistory.match(/(BSBSBS|SBSBSB)$/)) {
+                detected = "SINGLE JUMP (PING-PONG)";
+                colorClass = "border-purple-500 bg-purple-950/40 text-purple-500";
+                logType = "bg-pingpong";
             } else {
-                if (currentStreak.items.length >= 4) {
-                    const patternStr = currentStreak.items.join('');
-                    let css = currentStreak.type === 'B' ? 'bg-big' : 'bg-small';
-                    let label = currentStreak.type === 'B' ? 'BIG STREAK' : 'SMALL STREAK';
-
-                    const historyStr = history.map(h => h.grp).join('') + grp;
-                    if (historyStr.match(/(BSBSBS|SBSBSB)$/)) { css = 'bg-pingpong'; label = 'PING-PONG'; }
-                    if (historyStr.match(/(BBSSBBSS|SSBBSSBB)$/)) { css = 'bg-double'; label = 'DOUBLE'; }
-
-                    intelLogs.unshift({
-                        pattern: patternStr,
-                        label: `${label} (${currentStreak.items.length}x)`,
-                        range: `${currentStreak.startPos} → R${r}S${s}`,
-                        css: css
-                    });
-                    renderIntel();
+                const streakMatch = fullHistory.match(/(B{4,}|S{4,})$/);
+                if (streakMatch) {
+                    const count = streakMatch[0].length;
+                    detected = `${streakMatch[0][0] === 'B' ? 'BIG' : 'SMALL'} STREAK: ${count}x`;
+                    logType = streakMatch[0][0] === 'B' ? "bg-big" : "bg-small";
+                    if (count >= 12) warnWrap.classList.add('animate-danger');
+                    if (count >= 20) detected = "🔥 20+ RECORD STREAK 🔥";
                 }
-                currentStreak = { type: grp, items: [grp], startPos: `R${r}S${s}` };
+            }
+
+            if (detected) {
+                warnBox.style.display = 'block';
+                warnText.innerText = `⚠️ ${detected} ⚠️`;
+                warnWrap.className = `p-3 rounded-xl text-center border-l-4 ${colorClass}`;
+                
+                intelLogs.unshift({
+                    pattern: fullHistory.slice(-4).toUpperCase(),
+                    label: detected,
+                    range: `R${r}S${s}`,
+                    css: logType
+                });
+                renderIntel();
+            } else {
                 warnBox.style.display = 'none';
                 warnWrap.classList.remove('animate-danger');
             }
@@ -224,7 +233,7 @@
         function renderIntel() {
             const container = document.getElementById('intel-log-container');
             if(intelLogs.length > 0) document.getElementById('no-intel').style.display = 'none';
-            container.innerHTML = intelLogs.map(log => `
+            container.innerHTML = intelLogs.slice(0,20).map(log => `
                 <div class="log-box ${log.css}">
                     <div class="text-[18px] font-black tracking-[3px]">${log.pattern}</div>
                     <div class="flex justify-between items-center mt-2 opacity-80 font-bold text-[10px] uppercase">
@@ -237,17 +246,33 @@
 
         function updatePredictions() {
             if (history.length === 0) return;
-            const last = history[history.length-1].val;
-            pNext = (last % 2 === 0) ? 'S' : 'B';
+            const lastVal = history[history.length-1].val;
+            
+            // P-Logic: Simple Odd/Even
+            pNext = (lastVal % 2 === 0) ? 'S' : 'B';
+            
+            // E-Logic: Last 3 Sum Odd/Even
             eNext = history.length >= 3 ? (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0 ? 'S' : 'B') : "-";
+            
+            // S-Logic: Last 5 Sum Root (Premium)
             if(history.length >= 5) {
                 let sSum = history.slice(-5).reduce((a,b)=>a+b.val,0);
                 while(sSum >= 10) sSum = sSum.toString().split('').map(Number).reduce((a,b)=>a+b,0);
                 sNext = (sSum % 2 !== 0) ? 'B' : 'S';
             } else { sNext = "-"; }
+
             document.getElementById('pred-p').innerText = pNext;
             document.getElementById('pred-e').innerText = isPremium ? eNext : "?";
             document.getElementById('pred-s').innerText = isPremium ? (sNext === "-" ? "-" : sNext) : "?";
+        }
+
+        function copyAnalysis() {
+            if (!isPremium) { showUpgrade(true); return; }
+            let logText = "OMNI LOGIC ANALYSIS DATA\n==========================\n";
+            history.forEach(h => {
+                logText += `[R${h.roll}S${h.stage}] Val:${h.val} | Res:${h.grp} | P:${h.pOk?'✅':'❌'} E:${h.eOk?'✅':'❌'} S:${h.sOk?'✅':'❌'}\n`;
+            });
+            navigator.clipboard.writeText(logText).then(() => alert("Analysis Data Copied!"));
         }
 
         function renderTable() {
@@ -289,10 +314,9 @@
             }
         }
         function fullReset() { 
-            if(confirm("Permanently wipe all game data?")) { 
+            if(confirm("Permanently wipe game logs?")) { 
                 const id = localStorage.getItem('omni_stable_id');
-                localStorage.clear(); 
-                localStorage.setItem('omni_stable_id', id);
+                localStorage.clear(); localStorage.setItem('omni_stable_id', id);
                 location.reload(); 
             } 
         }
