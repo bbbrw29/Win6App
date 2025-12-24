@@ -20,8 +20,20 @@
         .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
         .mini-shape { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 11px; border-width: 2px; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #2ecc40; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; display: none; z-index: 9999; }
-        #streak-warning { transition: opacity 0.3s ease, transform 0.3s ease; }
-        #streak-warning.hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+        #streak-warning { 
+            transition: all 0.3s ease-in-out;
+            opacity: 1;
+            max-height: 100px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        #streak-warning.hidden {
+            opacity: 0;
+            max-height: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="p-2 pb-10">
@@ -32,8 +44,9 @@
             <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic">Precise Warning Auto-Hide</div>
         </div>
 
-        <div id="streak-warning" class="hidden px-2">
-            <div id="warning-box" class="p-4 rounded-2xl text-center border-l-8 shadow-2xl animate-pulse">
+        <!-- WARNING BOX -->
+        <div id="streak-warning" class="hidden">
+            <div id="warning-box" class="p-4 rounded-2xl text-center border-l-8 shadow-2xl mx-2">
                 <p id="warning-text" class="font-black text-[14px] uppercase text-white italic"></p>
             </div>
         </div>
@@ -93,7 +106,9 @@
         }
 
         function processGame(num, grp) {
+            // Detect pattern BEFORE adding to history
             detectAndRecord(grp);
+            
             history.push({ 
                 val: num, 
                 grp, 
@@ -120,126 +135,197 @@
         }
 
         function detectAndRecord(nextGrp) {
-            const hStr = history.map(h => h.grp).join('') + nextGrp;
-            const warnBoxArea = document.getElementById('streak-warning');
-            const warningText = document.getElementById('warning-text');
-            const warningBox = document.getElementById('warning-box');
+            // Get current history string
+            const currentHistory = history.map(h => h.grp).join('');
+            const hStr = currentHistory + nextGrp;
             
-            // 1. Detect current pattern
-            let currentLabel = "", currentCount = 0, currentCss = "";
+            console.log('Checking pattern for:', hStr);
             
-            // Pattern detection thresholds
-            const patterns = [
-                { 
-                    regex: /((BBSS|SSBB)+(BB|SS|BBSS|SSBB)?)$/, 
-                    label: "BBSS Pattern", 
-                    css: "bg-double",
-                    minLength: 6
-                },
-                { 
-                    regex: /(BS){3,}|(SB){3,}$/, 
-                    label: "တစ်ခုကျော်စီ Pattern", 
-                    css: "bg-jump border-purple-500",
-                    minLength: 6
-                },
-                { 
-                    regex: /(B{4,})$/, 
-                    label: "အကြီးတောက်လျှောက်", 
-                    css: "bg-big border-red-500",
-                    minLength: 4
-                },
-                { 
-                    regex: /(S{4,})$/, 
-                    label: "အသေးတောက်လျှောက်", 
-                    css: "bg-small border-green-500",
-                    minLength: 4
-                }
-            ];
+            // Check for ALL patterns
+            let patternFound = false;
+            let currentLabel = "";
+            let currentCount = 0;
+            let currentCss = "";
+            let patternType = "";
             
-            // Find matching pattern
-            let matchedPattern = null;
-            for (const pattern of patterns) {
-                const match = hStr.match(pattern.regex);
-                if (match && match[0].length >= pattern.minLength) {
-                    currentLabel = pattern.label;
-                    currentCount = match[0].length;
-                    currentCss = pattern.css;
-                    matchedPattern = pattern;
-                    break;
+            // IMPORTANT: Check patterns in specific order
+            
+            // 1. First check for alternating patterns (SBSB or BSBS)
+            // SBSBSB က 6 chars ဆိုရင် (SB)3 ဖြစ်မယ်
+            const altMatch = hStr.match(/((SB){3,}|(BS){3,})$/);
+            if (altMatch) {
+                patternFound = true;
+                patternType = "alternating";
+                currentLabel = "တစ်ခုကျော်စီ Pattern";
+                currentCount = altMatch[0].length;
+                currentCss = "bg-jump border-purple-500";
+                console.log('Alternating pattern detected:', altMatch[0], 'length:', currentCount);
+            }
+            
+            // 2. Check for Big Streak (B ဆက်)
+            if (!patternFound) {
+                const bigStreak = hStr.match(/(B{4,})$/);
+                if (bigStreak) {
+                    patternFound = true;
+                    patternType = "big_streak";
+                    currentLabel = "အကြီးတောက်လျှောက်";
+                    currentCount = bigStreak[0].length;
+                    currentCss = "bg-big border-red-500";
+                    console.log('Big streak detected:', bigStreak[0]);
                 }
             }
             
-            // 2. Handle pattern transitions
-            if (matchedPattern) {
-                // New pattern detected or existing pattern continues
-                if (!activePattern || activePattern.label !== currentLabel) {
-                    // If there was a previous pattern, record it
-                    if (activePattern) {
-                        recordPatternToIntel(activePattern);
-                    }
+            // 3. Check for Small Streak (S ဆက်)
+            if (!patternFound) {
+                const smallStreak = hStr.match(/(S{4,})$/);
+                if (smallStreak) {
+                    patternFound = true;
+                    patternType = "small_streak";
+                    currentLabel = "အသေးတောက်လျှောက်";
+                    currentCount = smallStreak[0].length;
+                    currentCss = "bg-small border-green-500";
+                    console.log('Small streak detected:', smallStreak[0]);
+                }
+            }
+            
+            // 4. Check for BBSS Pattern
+            if (!patternFound) {
+                const bbssPattern = hStr.match(/((BBSS){2,}|(SSBB){2,})$/);
+                if (bbssPattern) {
+                    patternFound = true;
+                    patternType = "bbss";
+                    currentLabel = "BBSS Pattern";
+                    currentCount = bbssPattern[0].length;
+                    currentCss = "bg-double";
+                    console.log('BBSS pattern detected:', bbssPattern[0]);
+                }
+            }
+            
+            // Get warning box element
+            const warnBox = document.getElementById('streak-warning');
+            
+            if (patternFound) {
+                console.log('Pattern FOUND:', currentLabel, 'count:', currentCount);
+                
+                // Check if this is a continuation of existing pattern
+                if (activePattern) {
+                    // Check if pattern is broken
+                    const isSamePattern = activePattern.type === patternType;
                     
-                    // Start new pattern
+                    if (isSamePattern) {
+                        // Continue same pattern - update count
+                        activePattern.count = currentCount;
+                        activePattern.label = currentLabel;
+                        console.log('Continuing pattern, updated count to:', currentCount);
+                    } else {
+                        // Different pattern started - end old one, start new
+                        console.log('Different pattern detected, ending old pattern:', activePattern.label);
+                        savePatternToIntel(activePattern);
+                        activePattern = {
+                            type: patternType,
+                            label: currentLabel,
+                            count: currentCount,
+                            css: currentCss
+                        };
+                    }
+                } else {
+                    // No active pattern - start new one
+                    console.log('Starting NEW pattern:', currentLabel);
                     activePattern = {
+                        type: patternType,
                         label: currentLabel,
                         count: currentCount,
-                        css: currentCss,
-                        startTime: `R${roll} S${stage}`
+                        css: currentCss
                     };
-                    
-                    // Show warning box
-                    showWarningBox(currentLabel, currentCount, currentCss);
-                } else {
-                    // Continue existing pattern - update count
-                    activePattern.count = currentCount;
-                    warningText.innerText = `${currentLabel} - ${currentCount} ကြိမ်`;
                 }
+                
+                // Show warning box
+                showWarning(currentLabel, currentCount, currentCss);
+                
             } else {
-                // No pattern detected
+                console.log('NO pattern detected');
+                
+                // Check if we just broke a pattern
                 if (activePattern) {
-                    // Pattern just ended - record it
-                    recordPatternToIntel(activePattern);
+                    console.log('Pattern BROKEN. Was:', activePattern.label);
+                    
+                    // Save the completed pattern
+                    savePatternToIntel(activePattern);
+                    
+                    // Clear active pattern
                     activePattern = null;
+                    
+                    // Hide warning box
+                    hideWarning();
+                } else {
+                    // No pattern was active, ensure warning is hidden
+                    if (!warnBox.classList.contains('hidden')) {
+                        console.log('No active pattern, hiding warning');
+                        hideWarning();
+                    }
                 }
-                hideWarningBox();
             }
+            
+            console.log('Active pattern after detection:', activePattern);
         }
 
-        function showWarningBox(label, count, cssClass) {
-            const warnBoxArea = document.getElementById('streak-warning');
+        function showWarning(label, count, cssClass) {
+            const warnBox = document.getElementById('streak-warning');
             const warningText = document.getElementById('warning-text');
             const warningBox = document.getElementById('warning-box');
             
-            warningText.innerText = `${label} - ${count} ကြိမ်`;
-            warningBox.className = `p-4 rounded-2xl text-center border-l-8 ${cssClass} shadow-2xl animate-pulse`;
+            console.log('Showing warning:', label, count);
             
-            // Remove hidden class and show with animation
-            warnBoxArea.classList.remove('hidden');
+            warningText.textContent = `${label} - ${count} ကြိမ်`;
+            warningBox.className = `p-4 rounded-2xl text-center border-l-8 ${cssClass} shadow-2xl mx-2 animate-pulse`;
+            
+            // Remove hidden class to show
+            warnBox.classList.remove('hidden');
+            
+            // Force display block
             setTimeout(() => {
-                warnBoxArea.style.display = 'block';
+                warnBox.style.display = 'block';
+                warnBox.style.opacity = '1';
+                warnBox.style.maxHeight = '100px';
             }, 10);
         }
 
-        function hideWarningBox() {
-            const warnBoxArea = document.getElementById('streak-warning');
+        function hideWarning() {
+            const warnBox = document.getElementById('streak-warning');
             
-            // Add hidden class for transition
-            warnBoxArea.classList.add('hidden');
+            console.log('Hiding warning box');
             
-            // Hide after transition completes
+            // Add hidden class
+            warnBox.classList.add('hidden');
+            
+            // Set styles to hide
             setTimeout(() => {
-                warnBoxArea.style.display = 'none';
-            }, 300);
+                warnBox.style.opacity = '0';
+                warnBox.style.maxHeight = '0';
+                warnBox.style.margin = '0';
+                warnBox.style.padding = '0';
+                
+                // Completely hide after transition
+                setTimeout(() => {
+                    warnBox.style.display = 'none';
+                }, 300);
+            }, 10);
         }
 
-        function recordPatternToIntel(pattern) {
-            intelLogs.unshift({
-                id: intelLogs.length + 1,
-                label: pattern.label,
-                count: pattern.count,
-                css: pattern.css,
-                time: pattern.startTime
-            });
-            renderIntel();
+        function savePatternToIntel(pattern) {
+            if (pattern && pattern.count >= 4) {
+                console.log('Saving pattern to intel:', pattern.label, pattern.count);
+                
+                intelLogs.unshift({
+                    id: intelLogs.length + 1,
+                    label: pattern.label,
+                    count: pattern.count,
+                    css: pattern.css,
+                    time: `R${roll} S${stage}`
+                });
+                
+                renderIntel();
+            }
         }
 
         function updatePredictions() {
@@ -377,14 +463,22 @@
                 updatePredictions();
                 
                 // Restore warning box if active pattern exists
-                if (activePattern) {
-                    showWarningBox(
+                const warnBox = document.getElementById('streak-warning');
+                if (activePattern && activePattern.count >= 4) {
+                    console.log('Restoring active pattern:', activePattern);
+                    showWarning(
                         activePattern.label, 
                         activePattern.count, 
                         activePattern.css
                     );
+                } else {
+                    console.log('No active pattern to restore, hiding warning');
+                    hideWarning();
                 }
             }
+            
+            // Always focus input
+            inputEl.focus();
         }
 
         function fullReset() {
@@ -395,8 +489,27 @@
         }
 
         // Initialize on load
-        load();
-        inputEl.focus();
+        window.addEventListener('DOMContentLoaded', load);
+        
+        // Debug function to test specific sequence
+        window.testSequence = function(sequence) {
+            console.log('Testing sequence:', sequence);
+            const nums = sequence.split('').map(char => {
+                if (char === 'S') return Math.floor(Math.random() * 4) + 1;
+                if (char === 'B') return Math.floor(Math.random() * 5) + 5;
+                return 0;
+            });
+            
+            console.log('Numbers:', nums);
+            
+            // Simulate entering numbers
+            nums.forEach((num, i) => {
+                setTimeout(() => {
+                    inputEl.value = num;
+                    handleManualSubmit();
+                }, i * 100);
+            });
+        };
     </script>
 </body>
 </html>
