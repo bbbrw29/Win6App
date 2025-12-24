@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic - V15</title>
+    <title>Omni Logic - V16 Clean</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -19,13 +19,15 @@
         .bg-double { background: linear-gradient(to right, #ffdc00, #ff851b); color: black; }
         .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
         .mini-shape { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 11px; border-width: 2px; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #2ecc40; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; display: none; z-index: 9999; }
     </style>
 </head>
 <body class="p-2 pb-10">
+    <div id="toast">HISTORY COPIED!</div>
     <div id="app-main" class="max-w-md mx-auto space-y-4">
         <div class="text-center pt-2">
-            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V15</h1>
-            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic">Dynamic Counter Engine</div>
+            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V16</h1>
+            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic">No-URL Clean System</div>
         </div>
 
         <div id="streak-warning" class="px-2" style="display: none;">
@@ -35,9 +37,9 @@
         </div>
 
         <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[2rem] border-b-4 border-cyan-500">
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black">E-LOGIC</p><div class="box-e"><span id="pred-e">-</span></div></div>
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black">S-LOGIC</p><div class="box-s"><span id="pred-s"></span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">E-LOGIC</p><div class="box-e"><span id="pred-e">-</span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">S-LOGIC</p><div class="box-s"><span id="pred-s"></span></div></div>
         </div>
 
         <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 gap-3 shadow-2xl">
@@ -48,20 +50,22 @@
             </div>
         </div>
 
-        <button onclick="copyAnalysis()" class="w-full py-4 bg-cyan-600/10 border-2 border-cyan-500/30 rounded-2xl text-cyan-400 text-[10px] font-black uppercase tracking-widest">📋 COPY HISTORY LOG</button>
+        <button onclick="copyAnalysis()" class="w-full py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg active:bg-cyan-500">
+            📋 COPY CLEAN HISTORY (NO URL)
+        </button>
 
         <div id="history-container" class="flex overflow-x-auto gap-3 py-1"></div>
 
         <div class="px-2">
-            <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider mb-2 italic">Pattern History (PIH)</h3>
+            <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider mb-2 italic">Pattern Intelligence (PIH)</h3>
             <div id="intel-wrapper" class="bg-white/5 rounded-[2.5rem] p-5 border border-white/5">
                 <div id="intel-log-container" class="h-[280px] overflow-y-auto">
-                    <p id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic font-bold">MONITORING LIVE PATTERNS...</p>
+                    <p id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic font-bold uppercase">Ready...</p>
                 </div>
             </div>
         </div>
 
-        <div class="px-2 pt-4 pb-12"><button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-900 text-white font-black rounded-2xl shadow-xl uppercase text-[10px]">Reset All Records</button></div>
+        <div class="px-2 pt-4 pb-12"><button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-900 text-white font-black rounded-2xl shadow-xl uppercase text-[10px]">Reset All Data</button></div>
     </div>
 
     <script>
@@ -94,52 +98,35 @@
             const hStr = history.map(h => h.grp).join('') + nextGrp;
             let foundLabel = "", foundCount = 0, foundCss = "";
 
-            // 1. BBSS Pattern - Unlimited Count (Checks the end of the string for the pattern)
             const doubleMatch = hStr.match(/((BBSS|SSBB)+(BB|SS|BBSS|SSBB)?)$/);
             if (doubleMatch && doubleMatch[1].length >= 6) {
                 foundLabel = "BBSS Pattern";
                 foundCount = doubleMatch[1].length;
                 foundCss = "bg-double";
-            } 
-            // 2. Jump Pattern
-            else if (hStr.match(/(BS){3,}|(SB){3,}$/)) {
+            } else if (hStr.match(/(BS){3,}|(SB){3,}$/)) {
                 const m = hStr.match(/(BS){3,}|(SB){3,}$/);
                 foundLabel = "တစ်ခုကျော်စီ Pattern";
                 foundCount = m[0].length;
                 foundCss = "bg-jump border-purple-500";
-            }
-            // 3. Streak Pattern
-            else if (hStr.match(/(B{4,}|S{4,})$/)) {
+            } else if (hStr.match(/(B{4,}|S{4,})$/)) {
                 const m = hStr.match(/(B{4,}|S{4,})$/);
                 foundLabel = m[0][0] === 'B' ? "အကြီးတောက်လျှောက်" : "အသေးတောက်လျှောက်";
                 foundCount = m[0].length;
                 foundCss = m[0][0] === 'B' ? "bg-big border-red-500" : "bg-small border-green-500";
             }
 
-            // PATTERN BREAK & RECORD LOGIC
             if (activePattern && activePattern.label !== foundLabel) {
-                // Save the final count exactly as it was before it broke
-                intelLogs.unshift({
-                    id: intelLogs.length + 1,
-                    label: activePattern.label,
-                    count: activePattern.count,
-                    css: activePattern.css,
-                    time: `R${roll} S${stage-1}`
-                });
-                renderIntel();
-                activePattern = null;
+                intelLogs.unshift({ id: intelLogs.length + 1, label: activePattern.label, count: activePattern.count, css: activePattern.css, time: `R${roll} S${stage-1}` });
+                renderIntel(); activePattern = null;
             }
 
-            // Update Global Tracker & UI
             const warnBox = document.getElementById('streak-warning');
             if (foundLabel) {
                 warnBox.style.display = 'block';
                 document.getElementById('warning-text').innerText = `${foundLabel} - ${foundCount} ကြိမ်`;
                 document.getElementById('warning-box').className = `p-4 rounded-2xl text-center border-l-8 ${foundCss} shadow-2xl animate-pulse`;
                 activePattern = { label: foundLabel, count: foundCount, css: foundCss };
-            } else {
-                warnBox.style.display = 'none';
-            }
+            } else { warnBox.style.display = 'none'; }
         }
 
         function updatePredictions() {
@@ -164,8 +151,8 @@
                 <div class="log-box ${l.css} shadow-lg">
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <span class="bg-black/30 w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black italic">#${l.id}</span>
-                            <div><p class="text-[11px] font-black uppercase italic">${l.label}</p><p class="text-[12px] font-black underline">${l.count} ကြိမ် ကျခဲ့သည်</p></div>
+                            <span class="bg-black/30 w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black">#${l.id}</span>
+                            <div><p class="text-[11px] font-black italic uppercase">${l.label}</p><p class="text-[12px] font-black underline">${l.count} ကြိမ် ကျခဲ့သည်</p></div>
                         </div>
                         <span class="text-[8px] font-black opacity-60">${l.time}</span>
                     </div>
@@ -177,7 +164,7 @@
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(rolls).map(r => `
                 <div class="flex-shrink-0 w-72 bg-white/5 p-4 rounded-[2.5rem] border border-white/5 shadow-xl">
-                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2 italic uppercase tracking-widest">Roll ${r}</div>
+                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2 italic uppercase">Roll ${r}</div>
                     ${rolls[r].map(i => `
                         <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                             <span class="text-[9px] text-gray-500 font-black">${i.stage}</span>
@@ -191,17 +178,32 @@
         }
 
         function copyAnalysis() {
-            let log = "OMNI SYSTEM LOG\n----------------\n";
-            history.forEach(h => { log += `N:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`; });
-            navigator.clipboard.writeText(log).then(() => { alert("Full History Copied!"); });
+            // URL လုံးဝမပါစေရဘဲ Text သန့်သန့်ပဲ ထုတ်ပေးသည့် Logic
+            let finalOutput = "OMNI HISTORY LOG\n";
+            finalOutput += "----------------\n";
+            history.forEach(h => {
+                finalOutput += `Num:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`;
+            });
+            
+            // Clipboard ကို direct ရေးပြီး Toast ပြခြင်း
+            const tempArea = document.createElement("textarea");
+            tempArea.value = finalOutput;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempArea);
+
+            const t = document.getElementById('toast');
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 2000);
         }
 
-        function save() { localStorage.setItem('OMNI_V15_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
+        function save() { localStorage.setItem('OMNI_V16_FINAL', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
-            const d = JSON.parse(localStorage.getItem('OMNI_V15_STABLE'));
+            const d = JSON.parse(localStorage.getItem('OMNI_V16_FINAL'));
             if(d) { history=d.history; roll=d.roll; stage=d.stage; intelLogs=d.intelLogs || []; renderTable(); renderIntel(); updatePredictions(); }
         }
-        function fullReset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Clear All Records?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
