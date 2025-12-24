@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic - V17</title>
+    <title>Omni Logic - V18</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -26,8 +26,8 @@
     <div id="toast">HISTORY COPIED!</div>
     <div id="app-main" class="max-w-md mx-auto space-y-4">
         <div class="text-center pt-2">
-            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V17</h1>
-            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic italic">Precise Pattern Monitor</div>
+            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V18</h1>
+            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic italic">Single Digit Input Only</div>
         </div>
 
         <div id="streak-warning" class="px-2" style="display: none;">
@@ -45,7 +45,7 @@
         <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 gap-3 shadow-2xl">
             <div class="text-6xl font-black text-cyan-400 flex-1 text-center" id="highlight-g">-</div>
             <div class="flex flex-col gap-2 w-32">
-                <input type="tel" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black outline-none bg-white" placeholder="0">
+                <input type="tel" id="digit-input" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black outline-none bg-white" placeholder="0">
                 <button class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl active:scale-95" onclick="handleManualSubmit()">ENTER</button>
             </div>
         </div>
@@ -57,7 +57,7 @@
         <div class="px-2">
             <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider mb-2 italic">Pattern History (PIH)</h3>
             <div id="intel-wrapper" class="bg-white/5 rounded-[2.5rem] p-5 border border-white/5">
-                <div id="intel-log-container" class="h-[280px] overflow-y-auto"><p id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic font-bold">MONITORING...</p></div>
+                <div id="intel-log-container" class="h-[280px] overflow-y-auto"><p id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic font-bold">READY...</p></div>
             </div>
         </div>
 
@@ -75,8 +75,9 @@
         function handleManualSubmit() {
             let valStr = inputEl.value.trim();
             if (valStr === "") return;
-            let num = valStr.length > 1 ? valStr.split('').map(Number).reduce((a,b)=>a+b, 0) : parseInt(valStr);
-            const grp = (num % 10) >= 5 ? 'B' : 'S';
+            let num = parseInt(valStr);
+            const grp = num >= 5 ? 'B' : 'S';
+            
             processGame(num, grp);
             inputEl.value = "";
             setTimeout(() => inputEl.focus(), 100);
@@ -94,37 +95,23 @@
             const hStr = history.map(h => h.grp).join('') + nextGrp;
             let currentLabel = "", currentCount = 0, css = "";
 
-            // BBSS/SSBB - Trigger >= 6 rounds
             const dMatch = hStr.match(/((BBSS|SSBB)+(BB|SS|BBSS|SSBB)?)$/);
             if (dMatch && dMatch[1].length >= 6) {
                 currentLabel = "BBSS Pattern"; currentCount = dMatch[1].length; css = "bg-double";
-            } 
-            // Jump Pattern
-            else if (hStr.match(/(BS){3,}|(SB){3,}$/)) {
+            } else if (hStr.match(/(BS){3,}|(SB){3,}$/)) {
                 const m = hStr.match(/(BS){3,}|(SB){3,}$/);
                 currentLabel = "တစ်ခုကျော်စီ Pattern"; currentCount = m[0].length; css = "bg-jump border-purple-500";
-            }
-            // Streak
-            else if (hStr.match(/(B{4,}|S{4,})$/)) {
+            } else if (hStr.match(/(B{4,}|S{4,})$/)) {
                 const m = hStr.match(/(B{4,}|S{4,})$/);
                 currentLabel = m[0][0] === 'B' ? "အကြီးတောက်လျှောက်" : "အသေးတောက်လျှောက်";
                 currentCount = m[0].length; css = m[0][0] === 'B' ? "bg-big border-red-500" : "bg-small border-green-500";
             }
 
-            // PATTERN BREAK TRIGGER
-            // If we had an active pattern and the new one is different (or gone)
             if (lastActivePattern && lastActivePattern.label !== currentLabel) {
-                intelLogs.unshift({
-                    id: intelLogs.length + 1,
-                    label: lastActivePattern.label,
-                    count: lastActivePattern.count,
-                    css: lastActivePattern.css,
-                    time: `R${roll} S${stage-1}`
-                });
+                intelLogs.unshift({ id: intelLogs.length + 1, label: lastActivePattern.label, count: lastActivePattern.count, css: lastActivePattern.css, time: `R${roll} S${stage-1}` });
                 renderIntel();
             }
 
-            // Update UI & Tracking
             const warnBox = document.getElementById('streak-warning');
             if (currentLabel) {
                 warnBox.style.display = 'block';
@@ -195,9 +182,9 @@
             setTimeout(() => { t.style.display = 'none'; }, 2000);
         }
 
-        function save() { localStorage.setItem('OMNI_V17_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
+        function save() { localStorage.setItem('OMNI_V18_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
-            const d = JSON.parse(localStorage.getItem('OMNI_V17_STABLE'));
+            const d = JSON.parse(localStorage.getItem('OMNI_V18_STABLE'));
             if(d) { history=d.history; roll=d.roll; stage=d.stage; intelLogs=d.intelLogs || []; renderTable(); renderIntel(); updatePredictions(); }
         }
         function fullReset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
