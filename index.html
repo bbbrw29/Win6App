@@ -3,61 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic Elite - Unfrozen</title>
+    <title>Omni Logic - PIH Advanced</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        html, body { background-color: #010816; color: white; height: 100%; overflow-y: auto; font-family: 'Inter', sans-serif; }
         
-        /* တစ်မျက်နှာလုံးကို Scroll လုပ်ခွင့်ပေးခြင်း */
-        html, body { 
-            background-color: #010816; 
-            color: white; 
-            height: 100%;
-            overflow-y: auto; /* Screen ကို ဆွဲတင်ဆွဲချလုပ်လို့ရအောင် ပြင်လိုက်ခြင်း */
-            -webkit-overflow-scrolling: touch;
-            font-family: 'Inter', sans-serif;
-        }
-
+        /* Prediction Shapes */
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 50px; height: 50px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
+        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 50px; height: 50px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); display: block; }
-        
-        /* PIH Section - Fixed Height Scroll */
-        #intel-log-container { 
-            height: 250px; /* PIH အတွင်းထဲကို သီးသန့် scroll ဆွဲရန် */
-            overflow-y: auto; 
-            padding-right: 5px;
-        }
 
-        .log-box { padding: 12px; margin-bottom: 8px; border-radius: 12px; border-left: 6px solid rgba(0,0,0,0.3); color: white; }
-        .bg-big { background: #ff4136; } .bg-small { background: #2ecc40; } .bg-jump { background: #b10dc9; } .bg-double { background: #ffdc00; color: black; }
-        
-        .g-num { background: #ffdc00; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
-        .mini-shape { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 10px; border-width: 2px; }
+        /* PIH Styling */
+        #intel-log-container { height: 280px; overflow-y: auto; padding-right: 5px; }
+        .log-box { padding: 12px; margin-bottom: 10px; border-radius: 16px; border-left: 8px solid rgba(0,0,0,0.3); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .bg-big { background: linear-gradient(to right, #ff4136, #85144b); } 
+        .bg-small { background: linear-gradient(to right, #2ecc40, #3d9970); } 
+        .bg-jump { background: linear-gradient(to right, #b10dc9, #85144b); } 
+        .bg-double { background: linear-gradient(to right, #ffdc00, #ff851b); color: black; }
+
+        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
+        .mini-shape { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 11px; border-width: 2px; }
         
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #2ecc40; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; display: none; z-index: 10000; }
     </style>
 </head>
-<body class="p-2 pb-20"> <div id="toast">COPIED!</div>
+<body class="p-2 pb-10">
+    <div id="toast">DATA COPIED!</div>
 
     <div id="app-main" class="max-w-md mx-auto space-y-4">
         <div class="text-center pt-2">
-            <h1 class="text-xl font-black italic text-cyan-500 tracking-tighter uppercase">Omni Logic Elite</h1>
-            <div id="plan-status" class="text-[9px] text-cyan-400 font-bold uppercase tracking-widest mt-1">Premium Access Active</div>
+            <h1 class="text-2xl font-black italic text-cyan-500 tracking-tighter uppercase">Omni Logic Elite</h1>
+            <div id="plan-status" class="text-[9px] text-cyan-400 font-bold uppercase mt-1">Advanced Pattern Analysis</div>
         </div>
 
         <div id="streak-warning" class="px-2" style="display: none;">
-            <div id="warning-box" class="p-3 rounded-xl text-center border-l-4 shadow-2xl">
-                <p id="warning-text" class="font-bold text-[12px] uppercase text-white"></p>
+            <div id="warning-box" class="p-4 rounded-2xl text-center border-l-8 shadow-2xl">
+                <p id="warning-text" class="font-black text-[13px] uppercase text-white italic"></p>
             </div>
         </div>
 
-        <div class="bg-[#001d3d] p-3 grid grid-cols-3 gap-1 text-center rounded-[25px] border-b-4 border-cyan-500">
-            <div><p class="text-[8px] text-gray-500 mb-1 font-black">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
-            <div><p class="text-[8px] text-gray-500 mb-1 font-black">E-LOGIC</p><div class="box-e"><span id="pred-e">-</span></div></div>
-            <div><p class="text-[8px] text-gray-500 mb-1 font-black">S-LOGIC</p><div class="box-s"><span id="pred-s"></span></div></div>
+        <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[2rem] border-b-4 border-cyan-500">
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">P-LOGIC</p><div class="box-p"><span id="pred-p">-</span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">E-LOGIC</p><div class="box-e"><span id="pred-e">-</span></div></div>
+            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">S-LOGIC</p><div class="box-s"><span id="pred-s"></span></div></div>
         </div>
 
         <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 gap-3 shadow-lg">
@@ -68,24 +59,28 @@
             </div>
         </div>
 
-        <button onclick="copyAnalysis()" class="w-full py-3 bg-white/5 border border-white/10 rounded-2xl text-cyan-400 text-xs font-black uppercase tracking-widest">📋 Copy History Record</button>
+        <button onclick="copyAnalysis()" class="w-full py-4 bg-cyan-600/20 border-2 border-cyan-500/50 rounded-2xl text-cyan-400 text-xs font-black uppercase tracking-widest hover:bg-cyan-600/30">
+            📋 COPY RECORD & PIH DATA
+        </button>
 
         <div id="history-container" class="flex overflow-x-auto gap-3 py-1 scroll-smooth"></div>
 
         <div class="px-2">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider">Pattern Intelligence History (PIH)</h3>
-                <span id="pih-count" class="text-[9px] text-gray-500 font-bold">Patterns: 0</span>
+                <h3 class="text-yellow-500 text-[11px] font-black uppercase tracking-wider italic">Pattern Intelligence History (PIH)</h3>
+                <span id="pih-count" class="text-[9px] text-gray-500 font-bold uppercase">Stored: 0</span>
             </div>
-            <div id="intel-wrapper" class="bg-white/5 rounded-[2rem] p-4 border border-white/5">
+            <div id="intel-wrapper" class="bg-white/5 rounded-[2.5rem] p-5 border border-white/5 shadow-inner">
                 <div id="intel-log-container">
-                    <p id="no-intel" class="text-center text-gray-700 text-[10px] mt-20 italic">Waiting for patterns...</p>
+                    <p id="no-intel" class="text-center text-gray-700 text-[11px] mt-24 italic font-bold">ANALYZING TRENDS...</p>
                 </div>
             </div>
         </div>
 
-        <div class="text-center pt-4 pb-10">
-            <button onclick="fullReset()" class="text-[9px] text-red-900 font-bold uppercase tracking-widest opacity-40 hover:opacity-100">Reset Data History</button>
+        <div class="px-2 pt-4 pb-12">
+            <button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-900 text-white font-black rounded-2xl shadow-xl border-b-4 border-red-950 active:translate-y-1 active:border-b-0 transition-all uppercase tracking-widest text-xs">
+                ⚠️ RESET ALL DATA
+            </button>
         </div>
     </div>
 
@@ -93,12 +88,9 @@
         let history = []; let intelLogs = [];
         let roll = 1, stage = 1;
         let pNext = "-", eNext = "-", sNext = "-";
-        let lastDetectedPattern = null;
+        let lastPattern = null;
 
-        // Enter Key Listener
-        document.getElementById('digit-input').addEventListener('keypress', (e) => { 
-            if (e.key === 'Enter') handleManualSubmit(); 
-        });
+        document.getElementById('digit-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleManualSubmit(); });
 
         function handleManualSubmit() {
             const el = document.getElementById('digit-input');
@@ -108,30 +100,37 @@
             let num = valStr.length > 1 ? valStr.split('').map(Number).reduce((a,b)=>a+b, 0) : parseInt(valStr);
             const grp = (num % 10) >= 5 ? 'B' : 'S';
 
-            detectPattern(grp);
+            processPIH(grp);
 
-            history.push({ val: num, grp, roll, stage, p: pNext, pOk: (pNext===grp), e: eNext, eOk: (eNext===grp), s: sNext, sOk: (sNext===grp) });
+            history.push({ 
+                val: num, grp, roll, stage, 
+                p: pNext, pOk: (pNext===grp), 
+                e: eNext, eOk: (eNext===grp), 
+                s: sNext, sOk: (sNext===grp) 
+            });
+
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
-            
             updatePredictions(); renderTable(); save();
             el.value = ""; el.focus();
             document.getElementById('highlight-g').innerText = num;
         }
 
-        function detectPattern(nextGrp) {
+        function processPIH(nextGrp) {
             const hStr = history.map(h => h.grp).join('') + nextGrp;
-            let label = ""; let css = "";
+            let currentLabel = ""; let count = 0; let css = "";
 
+            // Pattern Detection Logic
             if (hStr.match(/(BBSSBBSS|SSBBSSBB)$/)) {
-                label = "အကြီး ၂ လုံး၊ အသေး ၂ လုံးစီ ကျနေသည်"; css = "bg-double border-yellow-500";
+                currentLabel = "အကြီး ၂၊ အသေး ၂ ကျနေသည်"; count = 8; css = "bg-double border-yellow-500";
             } else if (hStr.match(/(BSBSBS|SBSBSB)$/)) {
-                label = "အကြီး/အသေး တစ်ခုကျော်စီ ကျနေသည်"; css = "bg-jump border-purple-500";
+                currentLabel = "တစ်ခုကျော်စီ ကျနေသည်"; count = 6; css = "bg-jump border-purple-500";
             } else {
                 const streak = hStr.match(/(B{4,}|S{4,})$/);
                 if (streak) {
-                    const count = streak[0].length;
-                    label = `${streak[0][0]==='B'?'အကြီး (BIG)':'အသေး (SMALL)'} တောက်လျှောက်ကျနေသည် - ${count} ကြိမ်`;
-                    css = streak[0][0]==='B' ? "bg-big border-red-500" : "bg-small border-green-500";
+                    count = streak[0].length;
+                    const type = streak[0][0] === 'B' ? "အကြီး (BIG)" : "အသေး (SMALL)";
+                    currentLabel = `${type} တောက်လျှောက်ကျနေသည်`;
+                    css = streak[0][0] === 'B' ? "bg-big border-red-500" : "bg-small border-green-500";
                 }
             }
 
@@ -139,22 +138,24 @@
             const warnText = document.getElementById('warning-text');
             const warnWrap = document.getElementById('warning-box');
 
-            if (lastDetectedPattern && lastDetectedPattern.label !== label) {
-                intelLogs.unshift({ 
+            // Pattern ရပ်သွားရင် Record သွင်းမယ်
+            if (lastPattern && lastPattern.label !== currentLabel) {
+                intelLogs.unshift({
                     id: intelLogs.length + 1,
-                    label: lastDetectedPattern.label, 
-                    css: lastDetectedPattern.css, 
-                    time: `R${roll}S${stage-1}` 
+                    label: lastPattern.label,
+                    count: lastPattern.count,
+                    css: lastPattern.css,
+                    time: `Roll ${roll} / Stage ${stage-1}`
                 });
                 renderIntel();
-                lastDetectedPattern = null;
+                lastPattern = null;
             }
 
-            if (label) {
+            if (currentLabel) {
                 warnBox.style.display = 'block';
-                warnText.innerText = label;
-                warnWrap.className = `p-3 rounded-xl text-center border-l-4 ${css}`;
-                lastDetectedPattern = { label, css };
+                warnText.innerText = `${currentLabel} - ${count} ကြိမ်`;
+                warnWrap.className = `p-4 rounded-2xl text-center border-l-8 ${css} shadow-2xl`;
+                lastPattern = { label: currentLabel, count: count, css: css };
             } else {
                 warnBox.style.display = 'none';
             }
@@ -178,16 +179,18 @@
         function renderIntel() {
             const container = document.getElementById('intel-log-container');
             document.getElementById('no-intel').style.display = 'none';
-            document.getElementById('pih-count').innerText = `Patterns: ${intelLogs.length}`;
-            
+            document.getElementById('pih-count').innerText = `Stored: ${intelLogs.length}`;
             container.innerHTML = intelLogs.map(l => `
-                <div class="log-box ${l.css} shadow-lg">
+                <div class="log-box ${l.css} shadow-lg transition-all animate-in fade-in slide-in-from-left-4">
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-black/20 w-6 h-6 flex items-center justify-center rounded-full text-[9px] font-bold">#${l.id}</span>
-                            <span class="text-[11px] font-black">${l.label}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="bg-black/40 w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black italic shadow-inner">#${l.id}</span>
+                            <div>
+                                <p class="text-[11px] font-black italic uppercase">${l.label}</p>
+                                <p class="text-[12px] font-black text-white/90 underline decoration-white/30 decoration-2">${l.count} ကြိမ်တိတိ</p>
+                            </div>
                         </div>
-                        <span class="text-[8px] opacity-70 font-mono">${l.time}</span>
+                        <span class="text-[8px] font-black opacity-60 bg-black/20 px-2 py-1 rounded italic">${l.time}</span>
                     </div>
                 </div>
             `).join('');
@@ -197,15 +200,24 @@
             const container = document.getElementById('history-container');
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(rolls).map(r => `
-                <div class="flex-shrink-0 w-64 bg-white/5 p-4 rounded-3xl border border-white/5">
-                    <div class="text-[10px] text-center font-black text-cyan-500 mb-2 border-b border-white/10 pb-1 uppercase">Roll ${r}</div>
+                <div class="flex-shrink-0 w-72 bg-white/5 p-4 rounded-[2rem] border border-white/5 shadow-xl">
+                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2 uppercase tracking-widest italic">Game Roll ${r}</div>
                     ${rolls[r].map(i => `
-                        <div class="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
-                            <span class="text-[9px] text-gray-500 font-bold">${i.stage}</span>
-                            <div class="mini-shape border-red-500 text-red-500 rounded-full">${i.p}</div>
-                            <div class="mini-shape border-purple-500 text-purple-500 rounded-md">${i.e}</div>
-                            <div class="mini-shape border-green-500 text-green-500 rotate-45"><span class="-rotate-45">${i.s}</span></div>
-                            <div class="g-num">${i.val}</div>
+                        <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                            <span class="text-[9px] text-gray-500 font-black">${i.stage}</span>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <div class="mini-shape border-red-500 text-red-500 rounded-full shadow-sm">${i.p}</div>
+                                <span class="text-[8px] font-black ${i.pOk?'text-green-500':'text-red-500'}">${i.pOk?'✅':'❌'}</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <div class="mini-shape border-purple-500 text-purple-500 rounded-md shadow-sm">${i.e}</div>
+                                <span class="text-[8px] font-black ${i.eOk?'text-green-500':'text-red-500'}">${i.eOk?'✅':'❌'}</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <div class="mini-shape border-green-500 text-green-500 rotate-45 shadow-sm"><span class="-rotate-45 block">${i.s}</span></div>
+                                <span class="text-[8px] font-black ${i.sOk?'text-green-500':'text-red-500'}">${i.sOk?'✅':'❌'}</span>
+                            </div>
+                            <div class="g-num shadow-lg">${i.val}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -214,20 +226,26 @@
         }
 
         function copyAnalysis() {
-            let log = "OMNI RECORD DATA\n";
-            history.forEach(h => log += `${h.val} | P:${h.p}(${h.pOk?'ok':'x'}) E:${h.e}(${h.eOk?'ok':'x'}) S:${h.s}(${h.sOk?'ok':'x'})\n`);
+            let log = "OMNI SYSTEM RECORD\n------------------\n";
+            history.forEach(h => {
+                log += `N:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`;
+            });
+            log += "\nPIH PATTERN HISTORY\n------------------\n";
+            intelLogs.forEach(l => {
+                log += `#${l.id}: ${l.label} (${l.count} ကြိမ်) - ${l.time}\n`;
+            });
             navigator.clipboard.writeText(log).then(() => {
                 const t = document.getElementById('toast'); t.style.display='block';
                 setTimeout(()=>t.style.display='none', 2000);
             });
         }
 
-        function save() { localStorage.setItem('OMNI_V7_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
+        function save() { localStorage.setItem('OMNI_V9_ADVANCED', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
-            const d = JSON.parse(localStorage.getItem('OMNI_V7_STABLE'));
+            const d = JSON.parse(localStorage.getItem('OMNI_V9_ADVANCED'));
             if(d) { history=d.history; roll=d.roll; stage=d.stage; intelLogs=d.intelLogs || []; renderTable(); renderIntel(); updatePredictions(); }
         }
-        function fullReset() { if(confirm("Clear All Logs?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Clear everything?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
