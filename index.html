@@ -3,88 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni Logic - Professional Analysis</title>
+    <title>Omni Logic Elite - Professional Analysis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #000814; color: white; overflow-x: hidden; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow-x: hidden; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
+        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 65px; height: 65px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; position: relative; }
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 60px; height: 60px; font-size: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; position: relative; }
         .box-s span { transform: rotate(-45deg); }
-        .roll-card { flex-shrink: 0; width: 270px; background: rgba(0, 51, 102, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
-        .status-ok { color: #00ff88; font-size: 24px; font-weight: 900; }
-        .status-no { color: #ff3366; font-size: 24px; font-weight: 900; }
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; }
-        .g-display { font-size: 75px; font-weight: 900; color: #00f2ff; text-shadow: 0 0 20px rgba(0,242,255,0.5); }
-        .mini-shape { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 14px; border-width: 2px; }
-        .p-circle { border-radius: 50%; border-color: #ff4136; color: #ff4136; }
-        .e-square { border-radius: 6px; border-color: #b10dc9; color: #b10dc9; }
-        .s-diamond { transform: rotate(45deg); border-color: #2ecc40; color: #2ecc40; border-radius: 4px; }
-        .s-diamond span { transform: rotate(-45deg); }
+        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 9px; font-weight: 900; border: 1px solid rgba(251,191,36,0.3); }
+        .roll-card { flex-shrink: 0; width: 290px; background: rgba(30, 41, 59, 0.4); border-radius: 20px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .g-num { background: #ffdc00; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; }
+        .mini-shape { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 12px; border-width: 2px; }
+        .status-pulse { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .pattern-box { background: linear-gradient(90deg, #1e293b, #0f172a); border-left: 4px solid #fbbf24; }
     </style>
 </head>
 <body class="p-2 pb-10">
 
-    <div id="lock-screen" class="fixed inset-0 bg-[#000814] z-[9999] flex flex-col items-center justify-center p-6 text-center" style="display: none;">
-        <h1 class="text-5xl font-black mb-2 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">OMNI LOGIC</h1>
-        <p class="text-cyan-400 text-[10px] mb-10 tracking-[0.4em] font-bold uppercase opacity-70 italic">Universal Prediction System</p>
-        <div class="bg-red-600/10 border border-red-500/50 p-6 rounded-[2.5rem] mb-8 w-full max-w-sm">
-            <p id="lock-msg" class="text-red-500 text-lg font-black uppercase italic">Securing Access...</p>
+    <div id="lock-screen" class="fixed inset-0 bg-[#010816] z-[9999] flex flex-col items-center justify-center p-6 text-center" style="display: none;">
+        <h1 class="text-4xl font-black mb-2 text-cyan-400 italic italic">OMNI LOGIC</h1>
+        <p class="text-[10px] tracking-[0.3em] text-gray-500 mb-8 uppercase">Elite Analytical Access</p>
+
+        <div class="bg-cyan-900/20 p-6 rounded-[2.5rem] border border-cyan-500/30 text-left mb-6 w-full max-w-sm shadow-2xl">
+            <h4 class="text-yellow-400 font-black mb-3 italic">💎 PREMIUM BENEFITS:</h4>
+            <ul class="text-xs space-y-3 text-gray-300">
+                <li>✅ Unlock Professional <span class="text-purple-400 font-bold">E</span> & <span class="text-green-400 font-bold">S</span> Logics</li>
+                <li>✅ Access Pattern Analysis Section</li>
+                <li>✅ Unlimited Daily Use (No 90m Limit)</li>
+                <li>✅ Copy & Export Full History Logs</li>
+            </ul>
+            <div class="mt-5 pt-4 border-t border-white/5 text-center">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Membership Plan</p>
+                <p class="text-3xl font-black text-white">5,000 MMK <span class="text-xs text-gray-500 font-normal">/ Monthly</span></p>
+            </div>
         </div>
-        <input type="text" id="lock-license-input" class="w-full max-w-sm p-5 rounded-2xl text-black text-center font-black border-4 border-cyan-500 text-xl mb-4" placeholder="ENTER LICENSE CODE">
-        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 text-white py-5 rounded-2xl font-black text-xl shadow-[0_0_20px_rgba(6,182,212,0.5)] uppercase active:scale-95">Activate Premium</button>
-        
-        <a href="YOUR_TELEGRAM_LINK" target="_blank" class="mt-6 text-cyan-400 font-bold border-b border-cyan-400 pb-1 italic text-sm">Buy License Key via Telegram</a>
-        
-        <p class="text-gray-600 text-[10px] mt-10 font-mono uppercase" id="device-id-display"></p>
+
+        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4 text-xl" placeholder="LICENSE CODE">
+        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-2xl font-black text-xl shadow-lg active:scale-95 uppercase">Unlock Now</button>
+        <a href="YOUR_TELEGRAM_LINK" target="_blank" class="mt-6 text-cyan-400 font-bold underline italic text-sm">Contact Admin via Telegram</a>
+        <p class="text-gray-800 text-[9px] mt-10 font-mono" id="device-id-display"></p>
+        <button onclick="hideUpgrade()" id="back-btn" class="mt-4 text-gray-500 text-xs uppercase font-bold" style="display:none;">← Back</button>
     </div>
 
     <div id="app-main" style="display: none;">
         <div class="max-w-md mx-auto space-y-4">
+            
             <div class="text-center pt-4">
-                <h1 class="text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">OMNI LOGIC</h1>
-                <div id="plan-status" class="mt-2 inline-block bg-white/5 text-cyan-400 text-[10px] px-4 py-1 rounded-full border border-white/10 font-bold uppercase tracking-widest italic">Syncing Security...</div>
+                <h1 class="text-3xl font-black italic text-cyan-500 mb-2">OMNI LOGIC</h1>
+                <div id="plan-status-container" class="flex flex-col items-center gap-1">
+                    <div id="status-pill" class="flex items-center gap-2 bg-white/5 px-4 py-1 rounded-full border border-white/10">
+                        <span id="status-dot" class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span id="plan-status" class="text-[10px] font-black tracking-widest text-cyan-400 uppercase italic">Syncing Access...</span>
+                    </div>
+                    <div id="day-counter" class="text-[9px] text-gray-500 font-bold uppercase tracking-tighter">Please wait...</div>
+                </div>
             </div>
 
             <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[30px] border-b-4 border-cyan-500 shadow-2xl">
-                <div><p class="text-[10px] font-bold text-gray-500 mb-1 uppercase">P-Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
-                <div><p class="text-[10px] font-bold text-gray-400 mb-1 uppercase">E-Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
-                <div><p class="text-[10px] font-bold text-gray-500 mb-1 uppercase">S-Logic</p><div class="box-s"><span id="pred-s"></span></div></div>
+                <div>
+                    <p class="text-[9px] font-bold text-gray-500 mb-1 uppercase">P-Logic (Free)</p>
+                    <div class="box-p"><span id="pred-p">-</span></div>
+                </div>
+                <div>
+                    <p class="text-[9px] font-bold text-gray-500 mb-1 uppercase">E-Logic</p>
+                    <div class="box-e">
+                        <span id="pred-e" class="blur-sm">-</span>
+                        <div id="lock-e" class="locked-overlay">PREMIUM</div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-[9px] font-bold text-gray-500 mb-1 uppercase">S-Logic</p>
+                    <div class="box-s">
+                        <span id="pred-s" class="blur-sm"></span>
+                        <div id="lock-s" class="locked-overlay"><span>PREMIUM</span></div>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 shadow-inner">
-                <div class="text-center flex-1"><div id="highlight-g" class="g-display">-</div></div>
+                <div class="text-center flex-1"><div id="highlight-g" class="text-6xl font-black text-cyan-400">-</div></div>
                 <div class="flex flex-col gap-2 w-32">
-                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black bg-white" placeholder="?" oninput="validate(this)" disabled>
-                    <button id="btn-submit" class="w-full py-4 bg-cyan-500 text-white font-black rounded-xl text-xl shadow-lg active:scale-95 disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
+                    <input type="number" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black" placeholder="?" oninput="validate(this)">
+                    <button id="btn-submit" class="w-full py-4 bg-cyan-500 text-white font-black rounded-xl text-xl disabled:opacity-30" onclick="submit()" disabled>ENTER</button>
                 </div>
             </div>
 
-            <div id="alert-box" class="hidden"><div class="bg-red-600 border-2 border-white text-white p-3 rounded-2xl text-center animate-pulse font-black uppercase italic" id="alert-msg"></div></div>
-
-            <div class="space-y-2">
-                <h3 class="font-black text-cyan-500 text-sm italic uppercase px-2 tracking-widest">Live Record Logs</h3>
-                <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="copy()" class="bg-slate-800 py-4 text-white font-black rounded-2xl text-sm uppercase border border-white/10">📋 Copy</button>
-                <button onclick="fullReset()" class="bg-slate-800 py-4 text-red-400 font-black rounded-2xl text-sm uppercase border border-white/10">🔄 Reset</button>
-            </div>
-
-            <div id="premium-btn-box" class="space-y-3">
-                <button onclick="showUpgrade()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-4 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 italic">🚀 Upgrade to Premium</button>
-                <div class="text-center">
-                    <a href="YOUR_TELEGRAM_LINK" target="_blank" class="text-cyan-400 font-bold italic text-sm underline">Contact Admin via Telegram</a>
+            <div id="pattern-section" class="px-2" style="display: none;">
+                <div class="pattern-box p-3 rounded-xl border border-white/5">
+                    <p class="text-[10px] text-yellow-500 font-black uppercase italic mb-1">Elite Trend Analysis</p>
+                    <div id="pattern-display" class="text-xl font-black tracking-[0.3em] text-white">-</div>
                 </div>
             </div>
 
-            <div class="bg-slate-900/50 p-4 rounded-[2.5rem] border border-white/5">
-                <h3 class="font-black text-gray-500 mb-3 text-[10px] uppercase text-center tracking-[0.3em]">Pattern History</h3>
-                <div id="warning-history" class="space-y-2 max-h-40 overflow-y-auto font-bold text-[11px]"></div>
+            <div class="flex items-center justify-between px-2 pt-2">
+                <h3 class="font-black text-cyan-500 text-xs italic uppercase">Live Record Logs</h3>
+                <button onclick="copyLogs()" class="text-[10px] bg-white/5 px-3 py-1 rounded-full border border-white/10 font-black uppercase text-gray-400">📋 Copy Logs</button>
             </div>
+            <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
+
+            <button onclick="fullReset()" class="w-full bg-slate-900/50 py-3 text-red-500 font-bold rounded-xl text-[9px] uppercase border border-red-900/10">Clear Local Cache</button>
         </div>
     </div>
 
@@ -94,65 +115,88 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let deviceId = ""; let isPremium = false; let remMins = 0; let syncBuffer = 0;
-        let history = []; let warnings = []; let roll = 1, stage = 1;
-        let pNext, eNext, sNext; let timerStarted = false; let activePattern = null;
+        let history = []; let roll = 1, stage = 1; let pNext, eNext, sNext; let timerStarted = false;
 
-        async function initDevice() {
-            const info = [navigator.userAgent, screen.height, screen.width, navigator.language].join('|');
+        async function getStableId() {
+            let id = localStorage.getItem('omni_stable_id');
+            if (id) return id;
+            const canvas = document.createElement('canvas');
+            const info = [navigator.userAgent, screen.height, screen.width, canvas.toDataURL()].join('|');
             const encoder = new TextEncoder();
             const data = encoder.encode(info);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            deviceId = "OMNI-" + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
-            document.getElementById('device-id-display').innerText = "ID: " + deviceId;
+            id = "OMNI-" + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
+            localStorage.setItem('omni_stable_id', id);
+            return id;
+        }
+
+        async function init() {
+            deviceId = await getStableId();
+            document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;
             checkAccess();
         }
 
         async function checkAccess() {
-            try {
-                const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
-                if (data && data.can_access) {
-                    isPremium = data.is_premium;
-                    // Server က အချိန်ကို အမြဲဦးစားပေးယူမယ် (Data Clear တိုက်ဖျက်ရန်)
-                    const serverMins = isPremium ? data.mins : Math.min(data.mins || 90, 90);
-                    remMins = serverMins; 
-                    
-                    document.getElementById('lock-screen').style.display = 'none';
-                    document.getElementById('app-main').style.display = 'block';
-                    document.getElementById('digit-input').disabled = false;
-                    if(isPremium) document.getElementById('premium-btn-box').style.display = 'none';
-                    updateStatusUI(data);
-                } else {
-                    document.getElementById('lock-screen').style.display = 'flex';
-                    document.getElementById('lock-msg').innerText = "Limit Reached! Contact Admin for Key.";
+            const { data } = await supabaseClient.rpc('check_access_v2', { input_device_id: deviceId });
+            if (data && data.can_access) {
+                isPremium = data.is_premium;
+                remMins = isPremium ? data.mins : Math.min(data.mins, 90);
+                
+                if (!isPremium && remMins <= 0) {
+                    showUpgrade(false);
+                    document.getElementById('lock-msg').innerText = "90 MINS DAILY LIMIT REACHED";
+                    return;
                 }
-            } catch (e) { console.error(e); }
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('app-main').style.display = 'block';
+                updateUI(data);
+            } else { showUpgrade(false); }
         }
 
-        function updateStatusUI(data) {
-            const el = document.getElementById('plan-status');
-            if (isPremium) el.innerText = "💎 PREMIUM MEMBER";
-            else el.innerText = timerStarted ? `⏳ LIMIT: ${remMins} MIN LEFT` : `⏳ TRIAL: 90 MIN (WAITING INPUT)`;
+        function updateUI(data) {
+            const statusLabel = document.getElementById('plan-status');
+            const dayLabel = document.getElementById('day-counter');
+            const dot = document.getElementById('status-dot');
+            const pill = document.getElementById('status-pill');
+
+            if (isPremium) {
+                statusLabel.innerText = "Elite Membership : Active";
+                dayLabel.innerText = "Unlimited Access Granted";
+                dot.className = "w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]";
+                document.getElementById('lock-e').style.display = 'none';
+                document.getElementById('lock-s').style.display = 'none';
+                document.getElementById('pred-e').classList.remove('blur-sm');
+                document.getElementById('pred-s').classList.remove('blur-sm');
+                document.getElementById('pattern-section').style.display = 'block';
+            } else {
+                const days = data ? (data.days_left || 7) : 7;
+                dayLabel.innerText = `Trial License expires in ${days} days`;
+                
+                if (remMins <= 1) {
+                    statusLabel.innerHTML = `<span class="text-red-500 status-pulse">🚨 1 MIN LEFT FOR TODAY!</span>`;
+                    dot.className = "w-2 h-2 rounded-full bg-red-600";
+                } else if (remMins <= 5) {
+                    statusLabel.innerHTML = `<span class="text-yellow-500">⚠️ ACCESS ENDING SOON (${remMins}m)</span>`;
+                    dot.className = "w-2 h-2 rounded-full bg-yellow-500 status-pulse";
+                } else {
+                    statusLabel.innerText = `Guest Access : ${remMins} Mins Left`;
+                    dot.className = "w-2 h-2 rounded-full bg-green-500";
+                }
+            }
         }
 
         function startTimer() {
             if (timerStarted || isPremium) return;
             timerStarted = true;
-            
             setInterval(async () => {
                 if (remMins > 0) {
                     remMins--; syncBuffer++;
-                    localStorage.setItem('omni_rem_mins', remMins);
-                    updateStatusUI({});
-                    
-                    // ၃ မိနစ်တစ်ကြိမ် API Sync လုပ်မည် (API Request ချွေတာရန်)
+                    updateUI();
                     if (syncBuffer >= 3) {
-                        try {
-                            await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
-                            syncBuffer = 0;
-                        } catch(e) { console.log("Sync delayed due to network"); }
+                        await supabaseClient.rpc('sync_minutes', { input_device_id: deviceId, add_mins: syncBuffer });
+                        syncBuffer = 0;
                     }
-                    
                     if (remMins <= 0) location.reload();
                 }
             }, 60000);
@@ -165,9 +209,8 @@
             const grp = val >= 5 ? 'B' : 'S';
             const entry = { val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null };
             history.push(entry);
-            managePatternLogic();
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
-            updatePred(val); renderTable(); save();
+            updatePred(val); renderTable(); renderPattern(); save();
             input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
@@ -180,24 +223,15 @@
                 sNext = (dSum % 2 !== 0) ? 'B' : 'S';
             } else sNext = null;
             document.getElementById('pred-p').innerText = pNext || '-';
-            document.getElementById('pred-e').innerText = eNext || '-';
-            document.getElementById('pred-s').innerHTML = sNext ? `<span>${sNext}</span>` : '-';
+            document.getElementById('pred-e').innerText = isPremium ? (eNext || '-') : "?";
+            document.getElementById('pred-s').innerHTML = isPremium ? (sNext ? `<span>${sNext}</span>` : '-') : "?";
             document.getElementById('highlight-g').innerText = last;
         }
 
-        function managePatternLogic() {
-            const seq = history.map(h => h.grp).join(''); let current = null;
-            if(seq.length >= 4) {
-                let dp = 0; for(let i=seq.length-1; i>=3; i-=2) if(seq[i]===seq[i-1] && seq[i-2]===seq[i-3] && seq[i]!==seq[i-2]) dp += 2; else break;
-                if(dp >= 4) { if(seq.length % 2 !== 0 && seq[seq.length-1] === seq[seq.length-2]) dp += 1; current = { type: 'BBSS Pattern', count: dp, start: history.length - dp }; }
-            }
-            if(!current) {
-                let last = seq.slice(-1), sCount = 0; for(let i=seq.length-1; i>=0; i--) if(seq[i]===last) sCount++; else break;
-                if(sCount >= 5) current = { type: last==='B'?'Long BIG':'Long SMALL', count: sCount, start: history.length - sCount };
-            }
-            const box = document.getElementById('alert-box');
-            if(current) { activePattern = current; document.getElementById('alert-msg').innerText = `⚠️ ${current.type} x${current.count}`; box.classList.remove('hidden'); }
-            else { if(activePattern) { const s = history[activePattern.start], e = history[history.length - 2]; warnings.unshift({ text: `[${activePattern.type}] ${activePattern.count} times (R${s.roll}S${s.stage} - R${e.roll}S${e.stage})` }); renderWarnings(); activePattern = null; } box.classList.add('hidden'); }
+        function renderPattern() {
+            if (!isPremium || history.length < 5) return;
+            const last5 = history.slice(-5).map(i => i.grp).join(' ');
+            document.getElementById('pattern-display').innerText = last5;
         }
 
         function renderTable() {
@@ -205,16 +239,18 @@
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             Object.keys(rolls).forEach(r => {
                 const b = document.createElement('div'); b.className = 'roll-card';
-                b.innerHTML = `<div class="text-[10px] text-center font-black text-cyan-500 mb-2 border-b border-white/5 pb-1 uppercase tracking-widest">Roll ${r}</div>`;
+                b.innerHTML = `<div class="text-[9px] text-center font-bold text-cyan-500 mb-2 border-b border-white/5 pb-1 uppercase tracking-widest">Roll ${r}</div>`;
                 rolls[r].forEach(i => {
+                    const eShow = isPremium ? i.e : "🔒";
+                    const sShow = isPremium ? (i.s || "-") : "🔒";
                     b.innerHTML += `<div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
-                        <span class="text-[9px] font-bold text-gray-600 w-4">${i.stage}</span>
-                        <div class="mini-shape p-circle">${i.p||'-'}</div>
-                        <span class="${i.pOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
-                        <div class="mini-shape e-square">${i.e||'-'}</div>
-                        <span class="${i.eOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.eOk===null?'-':(i.eOk?'✅':'❌')}</span>
-                        <div class="mini-shape s-diamond"><span>${i.s||'-'}</span></div>
-                        <span class="${i.sOk?'status-ok':'status-no'} w-6 text-center text-xs">${i.sOk===null?'-':(i.sOk?'✅':'❌')}</span>
+                        <span class="text-[8px] text-gray-600 w-3">${i.stage}</span>
+                        <div class="mini-shape border-[#ff4136] text-[#ff4136] rounded-full">${i.p||'-'}</div>
+                        <span class="text-[10px] w-5 text-center">${i.pOk===null?'-':(i.pOk?'✅':'❌')}</span>
+                        <div class="mini-shape border-[#b10dc9] text-[#b10dc9] rounded-md">${eShow}</div>
+                        <span class="text-[10px] w-5 text-center">${isPremium?(i.eOk?'✅':'❌'):'-'}</span>
+                        <div class="mini-shape border-[#2ecc40] text-[#2ecc40] rotate-45"><span class="-rotate-45">${sShow}</span></div>
+                        <span class="text-[10px] w-5 text-center">${isPremium?(i.sOk?'✅':'❌'):'-'}</span>
                         <div class="g-num">${i.val}</div>
                     </div>`;
                 });
@@ -223,24 +259,33 @@
             container.scrollLeft = container.scrollWidth;
         }
 
-        function fullReset() { if(confirm("Clear history?")) { localStorage.removeItem('OMNI_STORE'); location.reload(); } }
-        function showUpgrade() { document.getElementById('app-main').style.display = 'none'; document.getElementById('lock-screen').style.display = 'flex'; }
-        async function activateCode() {
-            const code = document.getElementById('lock-license-input').value.trim();
-            if(!code) return;
-            const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
-            if (data?.success) { alert("Premium Activated!"); location.reload(); } else alert("Invalid Key!");
+        function copyLogs() {
+            if (!isPremium) { showUpgrade(true); return; }
+            let t = "OMNI ELITE LOGS\n";
+            history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; });
+            navigator.clipboard.writeText(t); alert("History Copied!");
         }
-        function renderWarnings() { document.getElementById('warning-history').innerHTML = warnings.map(w => `<div class="p-2 bg-white/5 rounded-xl border-l-2 border-cyan-500 mb-2 text-gray-400">${w.text}</div>`).join(''); }
+
         function validate(el) { if(el.value.length > 1) el.value = el.value.slice(-1); document.getElementById('btn-submit').disabled = el.value === ""; }
-        function save() { localStorage.setItem('OMNI_STORE', JSON.stringify({ history, warnings, roll, stage })); }
+        function save() { localStorage.setItem('OMNI_STORE', JSON.stringify({ history, roll, stage })); }
         function load() {
             const data = JSON.parse(localStorage.getItem('OMNI_STORE'));
-            if(data) { history = data.history || []; warnings = data.warnings || []; roll = data.roll || 1; stage = data.stage || 1; renderTable(); renderWarnings(); if(history.length) updatePred(history[history.length-1].val); }
+            if(data) { history = data.history || []; roll = data.roll || 1; stage = data.stage || 1; renderTable(); renderPattern(); if(history.length) updatePred(history[history.length-1].val); }
         }
-        async function copy() { let t = "OMNI LOGIC LOGS\n"; history.forEach(i => { t += `R${i.roll}S${i.stage}: [${i.val}] P:${i.pOk?'✅':'❌'} E:${i.eOk?'✅':'❌'} S:${i.sOk?'✅':'❌'}\n`; }); await navigator.clipboard.writeText(t); alert("Logs Copied!"); }
+        function fullReset() { if(confirm("Clear data?")) { localStorage.removeItem('OMNI_STORE'); location.reload(); } }
+        function showUpgrade(backable) { 
+            document.getElementById('app-main').style.display = 'none'; 
+            document.getElementById('lock-screen').style.display = 'flex';
+            document.getElementById('back-btn').style.display = backable ? 'block' : 'none';
+        }
+        function hideUpgrade() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('app-main').style.display = 'block'; }
+        async function activateCode() {
+            const code = document.getElementById('lock-license-input').value.trim();
+            const { data } = await supabaseClient.rpc('activate_v2', { input_device_id: deviceId, input_code: code });
+            if (data?.success) { alert("Elite Membership Activated!"); location.reload(); } else alert("Invalid Key!");
+        }
 
-        load(); initDevice();
+        load(); init();
     </script>
 </body>
 </html>
