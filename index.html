@@ -20,18 +20,21 @@
         .status-pulse { animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .pattern-box { background: linear-gradient(90deg, #1e293b, #0f172a); border-left: 4px solid #fbbf24; }
-        
-        /* NEW STYLES FOR PATTERN LOG */
-        #intel-log-container { height: 200px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); padding: 10px; }
-        .intel-entry { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 11px; }
-        .locked-blur { filter: blur(4px); pointer-events: none; }
+
+        /* --- NEW STYLES: PATTERN INTELLIGENCE LOG --- */
+        #intel-log-container { height: 220px; overflow-y: auto; background: rgba(15, 23, 42, 0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 12px; scroll-behavior: smooth; }
+        .intel-entry { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; display: flex; justify-content: space-between; align-items: center; }
+        .intel-entry:last-child { border: none; }
+        .intel-label { font-size: 11px; font-weight: 900; letter-spacing: 0.05em; }
+        .intel-range { font-size: 10px; font-family: monospace; color: #64748b; }
+        .intel-locked { position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; }
     </style>
 </head>
 <body class="p-2 pb-10">
 
     <div id="lock-screen" class="fixed inset-0 bg-[#010816] z-[9999] flex flex-col items-center justify-center p-6 text-center" style="display: none;">
         <h1 class="text-4xl font-black mb-2 text-cyan-400 italic">OMNI LOGIC</h1>
-        <p class="text-[10px] tracking-[0.3em] text-gray-500 mb-8 uppercase text-white" id="lock-reason">Elite Membership Required</p>
+        <p class="text-[10px] tracking-[0.3em] text-gray-500 mb-8 uppercase text-white">Elite Membership Required</p>
 
         <div class="bg-cyan-900/20 p-6 rounded-[2.5rem] border border-cyan-500/30 text-left mb-6 w-full max-w-sm shadow-2xl">
             <h4 class="text-yellow-400 font-black mb-3 italic">💎 ELITE BENEFITS:</h4>
@@ -110,13 +113,13 @@
             <div id="history-container" class="flex overflow-x-auto gap-3 pb-2"></div>
 
             <div class="px-2">
-                <h3 class="font-black text-yellow-500 text-[10px] italic uppercase mb-2">Pattern Intelligence Log</h3>
+                <h3 class="font-black text-yellow-500 text-[10px] italic uppercase mb-2 tracking-widest">Pattern Intelligence Log</h3>
                 <div id="intel-wrapper" class="relative">
                     <div id="intel-log-container">
-                        <div class="text-center text-gray-600 text-[10px] mt-20" id="no-intel">Wait for Pattern Discovery...</div>
+                        <div id="no-intel" class="text-center text-gray-600 text-[10px] mt-20 italic">Discovery in progress...</div>
                     </div>
-                    <div id="intel-lock" class="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center rounded-xl cursor-pointer" onclick="showUpgrade(true)">
-                        <div class="bg-yellow-500 text-black px-4 py-1 rounded-full font-black text-[10px] uppercase shadow-lg">🔒 Unlock History Log</div>
+                    <div id="intel-lock" class="intel-locked" onclick="showUpgrade(true)">
+                        <div class="bg-yellow-500 text-black px-4 py-1.5 rounded-full font-black text-[10px] uppercase shadow-lg">🔒 Unlock Intelligence History</div>
                     </div>
                 </div>
             </div>
@@ -126,16 +129,16 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://folxuczagcspjnypopw.supabase.co';
+        const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let deviceId = ""; let isPremium = false; let remMins = 0; let syncBuffer = 0;
         let history = []; let roll = 1, stage = 1; let pNext, eNext, sNext; let timerStarted = false;
         
-        // Pattern Tracking Logic
+        // --- PATTERN INTEL TRACKING ---
         let intelLogs = [];
-        let activeStreak = { type: null, startRoll: 1, startStage: 1, count: 0 };
+        let currentStreak = { type: null, startRoll: 1, startStage: 1, count: 0 };
 
         async function getStableId() {
             let id = localStorage.getItem('omni_stable_id');
@@ -166,7 +169,7 @@
                 document.getElementById('lock-screen').style.display = 'none';
                 document.getElementById('app-main').style.display = 'block';
                 updateUI(data);
-                renderIntelLog();
+                renderIntelLog(); // Render logs on load
             } else { showUpgrade(false); }
         }
 
@@ -184,14 +187,13 @@
                 document.getElementById('pred-e').classList.remove('blur-sm');
                 document.getElementById('pred-s').classList.remove('blur-sm');
                 document.getElementById('pattern-section').style.display = 'block';
-                document.getElementById('intel-lock').style.display = 'none';
+                document.getElementById('intel-lock').style.display = 'none'; // Unlock Intel Section
             } else {
                 const days = data ? (data.days_left || 7) : 7;
                 dayLabel.innerText = `Trial Expires in ${days} days`;
-                
-                if (remMins <= 1) {
-                    statusLabel.innerHTML = `<span class="text-red-500 status-pulse">🚨 1 MIN LEFT FOR TODAY!</span>`;
-                    dot.className = "w-2 h-2 rounded-full bg-red-600";
+                if (remMins <= 5) {
+                    statusLabel.innerHTML = `<span class="text-yellow-500">⚠️ ENDING SOON (${remMins}m)</span>`;
+                    dot.className = "w-2 h-2 rounded-full bg-yellow-500 status-pulse";
                 } else {
                     statusLabel.innerText = `Guest Access : ${remMins} Mins Left`;
                     dot.className = "w-2 h-2 rounded-full bg-green-500";
@@ -226,8 +228,8 @@
             const entry = { val, grp, roll, stage, p: pNext, pOk: pNext ? pNext === grp : null, e: eNext, eOk: eNext ? eNext === grp : null, s: sNext, sOk: sNext ? sNext === grp : null };
             history.push(entry);
             
-            // Logic for Pattern Intelligence
-            trackPatterns(grp, roll, stage);
+            // --- PATTERN TRACKING LOGIC ---
+            processPatternIntel(grp, roll, stage);
 
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             
@@ -235,27 +237,24 @@
             input.value = ''; input.focus(); document.getElementById('btn-submit').disabled = true;
         }
 
-        function trackPatterns(grp, r, s) {
-            // Simple Streak Discovery
-            if (activeStreak.type === null) {
-                activeStreak = { type: grp, startRoll: r, startStage: s, count: 1 };
-            } else if (activeStreak.type === grp) {
-                activeStreak.count++;
+        function processPatternIntel(grp, r, s) {
+            if (currentStreak.type === null) {
+                currentStreak = { type: grp, startRoll: r, startStage: s, count: 1 };
+            } else if (currentStreak.type === grp) {
+                currentStreak.count++;
             } else {
-                // Pattern Broken -> Save to Log if Streak >= 4
-                if (activeStreak.count >= 4) {
-                    const typeLabel = activeStreak.type === 'B' ? 'BIG STREAK' : 'SMALL STREAK';
-                    const color = activeStreak.type === 'B' ? 'text-red-500' : 'text-blue-500';
+                // Streak Broken - Save if count >= 4
+                if (currentStreak.count >= 4) {
                     intelLogs.push({
-                        label: typeLabel,
-                        color: color,
-                        count: activeStreak.count,
-                        start: `R${activeStreak.startRoll}S${activeStreak.startStage}`,
+                        label: currentStreak.type === 'B' ? 'BIG STREAK' : 'SMALL STREAK',
+                        color: currentStreak.type === 'B' ? 'text-red-500' : 'text-blue-500',
+                        count: currentStreak.count,
+                        start: `R${currentStreak.startRoll}S${currentStreak.startStage}`,
                         end: `R${r}S${s}`
                     });
                     renderIntelLog();
                 }
-                activeStreak = { type: grp, startRoll: r, startStage: s, count: 1 };
+                currentStreak = { type: grp, startRoll: r, startStage: s, count: 1 };
             }
         }
 
@@ -265,15 +264,15 @@
             document.getElementById('no-intel').style.display = 'none';
             container.innerHTML = '';
             
-            intelLogs.slice().reverse().forEach((log, index) => {
+            [...intelLogs].reverse().forEach((log, index) => {
                 const num = intelLogs.length - index;
                 container.innerHTML += `
-                    <div class="intel-entry flex justify-between items-center">
+                    <div class="intel-entry">
                         <div>
-                            <span class="text-gray-600 mr-2">${num < 10 ? '0'+num : num}.</span>
-                            <span class="${log.color} font-black">${log.label} (${log.count})</span>
+                            <span class="text-gray-700 mr-2 text-[10px]">${num < 10 ? '0'+num : num}.</span>
+                            <span class="${log.color} intel-label">${log.label} (${log.count})</span>
                         </div>
-                        <div class="text-[9px] text-gray-500 font-mono">${log.start} → ${log.end}</div>
+                        <div class="intel-range">${log.start} → ${log.end}</div>
                     </div>
                 `;
             });
