@@ -3,23 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V42 - Pattern Fix</title>
+    <title>Omni Logic V43</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 10px; border-bottom: 2px solid #00cfd5; }
         .main-scroll { margin-top: 365px; height: calc(100vh - 365px); overflow-y: auto; padding: 10px; }
+        
         .box-p, .box-e, .box-s { width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; transform: rotate(45deg); }
         .box-s span { transform: rotate(-45deg); display: block; }
+
         .input-container { background: #001d3d; padding: 15px; border-radius: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid rgba(255,255,255,0.1); max-width: 400px; margin: 0 auto; }
         #digit-input { width: 80px; height: 60px; border-radius: 12px; text-align: center; font-size: 36px; font-weight: 900; border: 4px solid #00cfd5; color: black; outline: none; }
         .btn-enter { background: #00cfd5; color: black; font-weight: 900; width: 90px; height: 60px; border-radius: 12px; text-transform: uppercase; font-size: 14px; }
-        .roll-card { flex-shrink: 0; width: 280px; background: #001d3d; border-radius: 20px; padding: 12px; border: 1px solid #00cfd5; margin-right: 12px; }
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; }
+
+        /* Roll Card Font Size Increases */
+        .roll-card { flex-shrink: 0; width: 300px; background: #001d3d; border-radius: 20px; padding: 15px; border: 1px solid #00cfd5; margin-right: 12px; }
+        .pred-font { font-size: 16px; font-weight: 900; } /* Prediction & Symbol ကြီးထားသည် */
+        .stage-font { font-size: 12px; color: #666; font-weight: bold; }
+        .g-num { background: #ffdc00; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 18px; }
+
         .phi-log-item { background: rgba(255, 255, 255, 0.05); border-left: 3px solid #00cfd5; margin-bottom: 5px; padding: 8px; border-radius: 0 8px 8px 0; font-size: 11px; }
     </style>
 </head>
@@ -27,8 +34,8 @@
 
     <div class="fixed-header space-y-3">
         <div class="flex justify-between items-center px-1">
-            <h1 class="text-xl font-black italic text-cyan-500">OMNI V42</h1>
-            <span class="text-[9px] font-black text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-full italic">PATTERN FIX</span>
+            <h1 class="text-xl font-black italic text-cyan-500">OMNI V43</h1>
+            <span class="text-[9px] font-black text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-full italic uppercase">Official Locked Mode</span>
         </div>
 
         <div class="bg-[#001d3d] p-3 grid grid-cols-3 gap-1 rounded-[25px] border-b-4 border-cyan-500 shadow-lg">
@@ -63,7 +70,7 @@
         </div>
         
         <div class="flex gap-2 mt-4 px-1 pb-10">
-            <button onclick="copyLogs()" class="flex-1 bg-cyan-500/10 py-4 rounded-xl font-black text-[10px] uppercase border border-cyan-500/30 text-cyan-400 italic">📋 Copy Format</button>
+            <button onclick="copyLogs()" class="flex-1 bg-cyan-500/10 py-4 rounded-xl font-black text-[10px] uppercase border border-cyan-500/30 text-cyan-400 italic">📋 Copy Custom Format</button>
             <button onclick="fullReset()" class="flex-1 bg-red-900/10 py-4 text-red-500 font-black rounded-xl text-[10px] uppercase border border-red-900/30">Reset</button>
         </div>
     </div>
@@ -93,31 +100,17 @@
         function checkPatterns(entry) {
             const seq = history.map(h => h.grp).join('');
             
-            // 1. Streak Detection (6+)
+            // Streak (6+)
             const streakMatch = seq.match(/(B{6,}|S{6,})$/);
-            // 2. Alternating Detection (6+)
+            // Alternating (6+)
             const altMatch = seq.match(/((SB){3,}|(BS){3,})$/);
-            // 3. Double Pattern Improved (Cross-Roll)
-            // It searches for repeating BBSS or SSBB and counts them.
-            const dbMatchBBSS = seq.match(/(BBSS)+$/);
-            const dbMatchSSBB = seq.match(/(SSBB)+$/);
-            const partialDouble = seq.match(/(BBSS)+(BB|SS)?$/) || seq.match(/(SSBB)+(SS|BB)?$/);
+            
+            // BBSS Logic Is Removed as per User Request
             
             let activeNow = null;
+            if (streakMatch) activeNow = { type: streakMatch[0][0] === 'B' ? "အကြီးဆက်" : "အသေးဆက်", count: streakMatch[0].length };
+            else if (altMatch) activeNow = { type: "တစ်လှည့်စီ", count: altMatch[0].length };
 
-            if (streakMatch) {
-                activeNow = { type: streakMatch[0][0] === 'B' ? "အကြီးဆက်" : "အသေးဆက်", count: streakMatch[0].length };
-            } else if (altMatch) {
-                activeNow = { type: "တစ်လှည့်စီ", count: altMatch[0].length };
-            } else if (partialDouble) {
-                // Calculate pairs by dividing total length by 4 (BBSS = 4 chars)
-                let pairCount = Math.floor(partialDouble[0].length / 4);
-                if (pairCount >= 3) {
-                    activeNow = { type: "နှစ်လုံးစီ", count: pairCount + " တွဲ" };
-                }
-            }
-
-            // Finish and Record old pattern if new one is different or none
             if (currentPattern && (!activeNow || activeNow.type !== currentPattern.type)) {
                 phiRecords.unshift({
                     id: phiRecords.length + 1,
@@ -137,19 +130,17 @@
                 label.className = "text-[8px] text-red-500 font-black uppercase italic";
                 label.innerText = "Live Warning";
                 display.innerText = `⚠️ ${activeNow.type} : ${activeNow.count} ကြိမ်မြောက် (LIVE)`;
-                display.className = "text-xs font-black text-red-500 animate-pulse italic uppercase";
             } else {
                 box.className = "bg-black/40 p-2 rounded-xl border-l-4 border-gray-500 min-h-[45px]";
                 label.className = "text-[8px] text-gray-500 font-black uppercase italic";
                 label.innerText = "Market Condition";
                 display.innerText = "Market Stable";
-                display.className = "text-xs font-bold text-gray-500 italic uppercase";
             }
         }
 
         function renderPHI() {
             const container = document.getElementById('phi-records');
-            container.innerHTML = phiRecords.map(r => `<div class="phi-log-item"><span class="text-cyan-400 font-bold">#${r.id}</span> | <span class="text-white font-bold">${r.desc}</span> <span class="text-gray-500 text-[9px] block italic uppercase">Finish @ ${r.time}</span></div>`).join('');
+            container.innerHTML = phiRecords.map(r => `<div class="phi-log-item"><span class="text-cyan-400 font-bold">#${r.id}</span> | <span class="text-white font-bold">${r.desc}</span> <span class="text-gray-500 text-[9px] block italic">Finish @ ${r.time}</span></div>`).join('');
         }
 
         function updatePredictions(last) {
@@ -177,11 +168,11 @@
                     <div class="text-[10px] font-black text-cyan-500 mb-2 border-b border-white/10 pb-1 flex justify-between uppercase italic">Roll ${rNum}</div>
                     ${groups[rNum].map(i => `
                         <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                            <span class="text-[9px] text-gray-500 w-3 font-bold">${i.stage}</span>
+                            <span class="stage-font w-3">${i.stage}</span>
                             <div class="flex gap-4 flex-1 justify-center">
-                                <span class="text-[10px] ${i.pOk?'text-green-500':'text-red-500'} font-black">${i.p}${i.pOk?'✅':'❌'}</span>
-                                <span class="text-[10px] ${i.eOk?'text-green-500':'text-red-500'} font-black">${i.e}${i.eOk?'✅':'❌'}</span>
-                                <span class="text-[10px] ${i.sOk?'text-green-500':'text-red-500'} font-black">${i.s}${i.sOk?'✅':'❌'}</span>
+                                <span class="pred-font ${i.pOk?'text-green-500':'text-red-500'}">${i.p}${i.pOk?'✅':'❌'}</span>
+                                <span class="pred-font ${i.eOk?'text-green-500':'text-red-500'}">${i.e}${i.eOk?'✅':'❌'}</span>
+                                <span class="pred-font ${i.sOk?'text-green-500':'text-red-500'}">${i.s}${i.sOk?'✅':'❌'}</span>
                             </div>
                             <div class="g-num">${i.val}</div>
                         </div>`).join('')}
@@ -195,11 +186,11 @@
             navigator.clipboard.writeText(logStr).then(() => alert("Format ကူးယူပြီးပါပြီ!"));
         }
 
-        function fullReset() { if (confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
-        function save() { localStorage.setItem('V42_DATA', JSON.stringify({ history, phiRecords, roll, stage })); }
+        function fullReset() { if (confirm("Data အားလုံးကို ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
+        function save() { localStorage.setItem('V43_FINAL_DB', JSON.stringify({ history, phiRecords, roll, stage })); }
         
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V42_DATA'));
+            const saved = JSON.parse(localStorage.getItem('V43_FINAL_DB'));
             if (saved) {
                 history = saved.history || []; phiRecords = saved.phiRecords || [];
                 roll = saved.roll || 1; stage = saved.stage || 1;
