@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic - V21</title>
+    <title>Omni Logic - V22 UI Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -12,13 +12,18 @@
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 50px; height: 50px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
         .box-s span { transform: rotate(-45deg); display: block; }
+        
+        /* New & Improved Check/Cross Icons */
+        .status-ok { color: #2ecc40; font-size: 16px; font-weight: 900; background: rgba(46, 204, 64, 0.1); padding: 2px 8px; border-radius: 99px; border: 1px solid rgba(46, 204, 64, 0.3); text-shadow: 0 0 5px #2ecc40; }
+        .status-no { color: #ff4136; font-size: 16px; font-weight: 900; background: rgba(255, 65, 54, 0.1); padding: 2px 8px; border-radius: 99px; border: 1px solid rgba(255, 65, 54, 0.3); text-shadow: 0 0 5px #ff4136; }
+
         .log-box { padding: 12px; margin-bottom: 10px; border-radius: 16px; border-left: 8px solid rgba(0,0,0,0.3); color: white; }
         .bg-big { background: linear-gradient(to right, #ff4136, #85144b); } 
         .bg-small { background: linear-gradient(to right, #2ecc40, #3d9970); } 
         .bg-jump { background: linear-gradient(to right, #b10dc9, #0074d9); } 
         .bg-double { background: linear-gradient(to right, #ffdc00, #ff851b); color: black; }
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
-        .mini-shape { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 11px; border-width: 2px; }
+        .g-num { background: #ffdc00; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid #000; color: black; font-weight: 900; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .mini-shape { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 12px; border-width: 2px; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #2ecc40; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; display: none; z-index: 9999; }
     </style>
 </head>
@@ -26,8 +31,8 @@
     <div id="toast">HISTORY COPIED!</div>
     <div id="app-main" class="max-w-md mx-auto space-y-4">
         <div class="text-center pt-2">
-            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V21</h1>
-            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic italic">Precise Warning Auto-Hide</div>
+            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V22</h1>
+            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic italic">Big Icons & Clear Status</div>
         </div>
 
         <div id="streak-warning" class="px-2" style="display: none;">
@@ -49,8 +54,6 @@
                 <button class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl active:scale-95 shadow-lg" id="btn-enter" onclick="handleManualSubmit()">ENTER</button>
             </div>
         </div>
-
-        <button onclick="copyAnalysis()" class="w-full py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg active:bg-cyan-500">📋 Copy History</button>
 
         <div id="history-container" class="flex overflow-x-auto gap-3 py-1"></div>
 
@@ -77,19 +80,13 @@
             if (valStr === "") return;
             const num = parseInt(valStr);
             const grp = num >= 5 ? 'B' : 'S';
-            
             inputEl.value = "";
             document.getElementById('highlight-g').innerText = num;
-            
-            // UI refresh cycle
-            setTimeout(() => {
-                processGame(num, grp);
-                inputEl.focus();
-            }, 10);
+            setTimeout(() => { processGame(num, grp); inputEl.focus(); }, 10);
         }
 
         function processGame(num, grp) {
-            detectAndRecord(grp); // Separate Detection & Recording
+            detectAndRecord(grp);
             history.push({ val: num, grp, roll, stage, p: pNext, pOk: (pNext===grp), e: eNext, eOk: (eNext===grp), s: sNext, sOk: (sNext===grp) });
             if(stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePredictions(); renderTable(); save();
@@ -99,7 +96,6 @@
             const hStr = history.map(h => h.grp).join('') + nextGrp;
             let currentLabel = "", currentCount = 0, currentCss = "";
 
-            // 1. Logic Check
             const dMatch = hStr.match(/((BBSS|SSBB)+(BB|SS|BBSS|SSBB)?)$/);
             if (dMatch && dMatch[1].length >= 6) {
                 currentLabel = "BBSS Pattern"; currentCount = dMatch[1].length; currentCss = "bg-double";
@@ -112,25 +108,12 @@
                 currentCount = m[0].length; currentCss = m[0][0] === 'B' ? "bg-big border-red-500" : "bg-small border-green-500";
             }
 
-            // 2. Pattern Transition & Recording Logic
             const warnBoxArea = document.getElementById('streak-warning');
-            
-            // If we had an active pattern and it just broke or changed
             if (activePattern && activePattern.label !== currentLabel) {
-                // Record the finished pattern to PIH
-                intelLogs.unshift({
-                    id: intelLogs.length + 1,
-                    label: activePattern.label,
-                    count: activePattern.count,
-                    css: activePattern.css,
-                    time: `R${roll} S${stage-1}`
-                });
-                renderIntel();
-                activePattern = null; 
-                warnBoxArea.style.display = 'none'; // Force Hide immediately
+                intelLogs.unshift({ id: intelLogs.length + 1, label: activePattern.label, count: activePattern.count, css: activePattern.css, time: `R${roll} S${stage-1}` });
+                renderIntel(); activePattern = null; warnBoxArea.style.display = 'none';
             }
 
-            // 3. Update Warning UI for the new state
             if (currentLabel) {
                 warnBoxArea.style.display = 'block';
                 document.getElementById('warning-text').innerText = `${currentLabel} - ${currentCount} ကြိမ်`;
@@ -176,35 +159,26 @@
             const container = document.getElementById('history-container');
             const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(rolls).map(r => `
-                <div class="flex-shrink-0 w-72 bg-white/5 p-4 rounded-[2.5rem] border border-white/5">
-                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2">Roll ${r}</div>
+                <div class="flex-shrink-0 w-80 bg-white/5 p-4 rounded-[2.5rem] border border-white/5 shadow-inner">
+                    <div class="text-[12px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2 italic tracking-widest uppercase">Roll ${r}</div>
                     ${rolls[r].map(i => `
-                        <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                            <span class="text-[9px] text-gray-500 font-bold">${i.stage}</span>
-                            <div class="flex flex-col items-center gap-0.5"><div class="mini-shape border-red-500 text-red-500 rounded-full">${i.p}</div><span class="text-[8px] font-black ${i.pOk?'text-green-500':'text-red-500'}">${i.pOk?'✅':'❌'}</span></div>
-                            <div class="flex flex-col items-center gap-0.5"><div class="mini-shape border-purple-500 text-purple-500 rounded-md">${i.e}</div><span class="text-[8px] font-black ${i.eOk?'text-green-500':'text-red-500'}">${i.eOk?'✅':'❌'}</span></div>
-                            <div class="flex flex-col items-center gap-0.5"><div class="mini-shape border-green-500 text-green-500 rotate-45"><span class="-rotate-45 block">${i.s}</span></div><span class="text-[8px] font-black ${i.sOk?'text-green-500':'text-red-500'}">${i.sOk?'✅':'❌'}</span></div>
-                            <div class="g-num shadow-lg">${i.val}</div>
+                        <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                            <span class="text-[10px] text-gray-500 font-black">${i.stage}</span>
+                            <div class="flex flex-col items-center gap-1.5"><div class="mini-shape border-red-500 text-red-500 rounded-full">${i.p}</div><span class="${i.pOk?'status-ok':'status-no'}">${i.pOk?'✓':'✕'}</span></div>
+                            <div class="flex flex-col items-center gap-1.5"><div class="mini-shape border-purple-500 text-purple-500 rounded-md">${i.e}</div><span class="${i.eOk?'status-ok':'status-no'}">${i.eOk?'✓':'✕'}</span></div>
+                            <div class="flex flex-col items-center gap-1.5"><div class="mini-shape border-green-500 text-green-500 rotate-45"><span class="-rotate-45 block">${i.s}</span></div><span class="${i.sOk?'status-ok':'status-no'}">${i.sOk?'✓':'✕'}</span></div>
+                            <div class="g-num">${i.val}</div>
                         </div>`).join('')}
                 </div>`).join('');
             container.scrollLeft = container.scrollWidth;
         }
 
-        function copyAnalysis() {
-            let log = "OMNI SYSTEM RECORD\n------------------\n";
-            history.forEach(h => { log += `N:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`; });
-            const ta = document.createElement("textarea"); ta.value = log; document.body.appendChild(ta);
-            ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
-            const t = document.getElementById('toast'); t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 2000);
-        }
-
-        function save() { localStorage.setItem('OMNI_V21_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
+        function save() { localStorage.setItem('OMNI_V22_STABLE', JSON.stringify({ history, roll, stage, intelLogs })); }
         function load() {
-            const d = JSON.parse(localStorage.getItem('OMNI_V21_STABLE'));
+            const d = JSON.parse(localStorage.getItem('OMNI_V22_STABLE'));
             if(d) { history=d.history; roll=d.roll; stage=d.stage; intelLogs=d.intelLogs || []; renderTable(); renderIntel(); updatePredictions(); }
         }
-        function fullReset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Clear All Data?")) { localStorage.clear(); location.reload(); } }
         load();
     </script>
 </body>
