@@ -3,190 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic - V33</title>
+    <title>Omni V34 - Ultra Slim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         html, body { background-color: #010816; color: white; height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; touch-action: manipulation; }
-        .fixed-top { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 12px; border-bottom: 2px solid #00cfd5; }
-        .main-scroll { margin-top: 300px; height: calc(100vh - 300px); overflow-y: auto; padding: 10px; }
-        .box-p { border: 3px solid #ff4136; color: #ff4136; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; font-size: 18px; }
-        .box-e { border: 3px solid #b10dc9; color: #b10dc9; border-radius: 8px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; font-size: 18px; }
-        .box-s { border: 3px solid #2ecc40; color: #2ecc40; border-radius: 6px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); background: white; font-weight: 900; margin: 0 auto; font-size: 18px; }
-        .box-s span { transform: rotate(-45deg); }
-        .roll-card { flex-shrink: 0; width: 340px; background: #001d3d; border-radius: 1.5rem; padding: 16px; border: 2px solid #00cfd5; margin-right: 18px; }
-        .g-num { background: #ffdc00; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: black; font-weight: 900; border: 2px solid #000; font-size: 18px; }
-        #pih-log { height: 160px; overflow-y: auto; background: rgba(255,255,255,0.03); border-radius: 1rem; border: 1px dashed #444; padding: 10px; }
-        .pih-active { border: 2px solid white !important; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        
+        /* Fixed Top Section */
+        .header-fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 12px; border-bottom: 2px solid #00cfd5; }
+        .main-content { margin-top: 250px; height: calc(100vh - 250px); overflow-y: auto; padding: 10px; }
+
+        /* Prediction & Input Styling */
+        .box-logic { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 22px; border-radius: 12px; border: 3px solid; }
+        .p-color { border-color: #ff4136; color: #ff4136; }
+        .e-color { border-color: #b10dc9; color: #b10dc9; }
+        .s-color { border-color: #2ecc40; color: #2ecc40; }
+
+        /* History Card Visuals */
+        .roll-card { flex-shrink: 0; width: 320px; background: #001d3d; border-radius: 1.5rem; padding: 16px; border: 2px solid #00cfd5; margin-right: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        .num-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: white; border: 2px solid #000; }
+        .bg-big { background: #ff4136; } /* Red for Big */
+        .bg-small { background: #2ecc40; } /* Green for Small */
+        
+        .status-check { font-weight: 900; font-size: 18px; }
+        .ok { color: #2ecc40; }
+        .no { color: #ff4136; }
+
+        /* Action Buttons */
+        .btn-action { padding: 10px 20px; border-radius: 12px; font-weight: 900; font-size: 12px; text-transform: uppercase; transition: transform 0.1s; }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <div class="fixed-top space-y-4">
-        <div class="flex justify-between items-center px-1">
-            <h1 class="text-xl font-black text-cyan-400 italic">OMNI V33</h1>
-            <div id="warn-area" class="hidden"><div id="warn-box" class="px-5 py-1.5 rounded-full text-xs font-black uppercase text-white animate-pulse"></div></div>
+
+    <div class="header-fixed space-y-4">
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-black text-cyan-400 italic">OMNI V34</h1>
+            <div class="flex gap-2">
+                <button onclick="copyLog()" class="btn-action bg-cyan-500 text-black">📋 Copy</button>
+                <button onclick="confirmReset()" class="btn-action bg-red-600 text-white">Reset</button>
+            </div>
         </div>
-        <div class="grid grid-cols-3 gap-3 bg-black/40 p-3 rounded-2xl border border-white/10">
-            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1 uppercase">P-Logic</p><div class="box-p" id="p-pred">-</div></div>
-            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1 uppercase">E-Logic</p><div class="box-e" id="e-pred">-</div></div>
-            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1 uppercase">S-Logic</p><div class="box-s" id="s-pred"><span>-</span></div></div>
-        </div>
-        <div class="flex gap-4 items-center">
-            <div class="bg-black border-2 border-cyan-500 flex-1 h-16 rounded-2xl flex items-center justify-center text-5xl font-black text-cyan-400" id="big-digit">-</div>
-            <input type="tel" id="main-input" maxlength="1" oninput="fastEntry(this)" class="w-28 h-16 rounded-2xl text-center text-5xl font-black text-black outline-none border-4 border-cyan-400" placeholder="?" autocomplete="off">
+
+        <div class="flex justify-around items-center bg-white/5 p-2 rounded-2xl border border-white/10">
+            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1">P</p><div id="p-next" class="box-logic p-color">-</div></div>
+            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1">E</p><div id="e-next" class="box-logic e-color">-</div></div>
+            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1">S</p><div id="s-next" class="box-logic s-color">-</div></div>
+            <div class="w-24">
+                <input type="tel" id="digit-input" maxlength="1" oninput="handleInput(this)" class="w-full h-16 rounded-2xl text-center text-5xl font-black text-black outline-none border-4 border-cyan-400 focus:bg-cyan-50" placeholder="?" autocomplete="off">
+            </div>
         </div>
     </div>
 
-    <div class="main-scroll space-y-6">
-        <section>
-            <div class="flex justify-between items-center px-1 mb-3">
-                <h3 class="text-cyan-400 text-xs font-black uppercase italic">Historical Cards</h3>
-                <button onclick="copyToClip()" class="bg-cyan-500 text-black px-5 py-2 rounded-xl text-xs font-black uppercase">Copy Log</button>
+    <div class="main-content">
+        <div id="card-container" class="flex overflow-x-auto pb-6">
             </div>
-            <div id="card-scroll" class="flex overflow-x-auto pb-6"></div>
-        </section>
-
-        <section class="px-1">
-            <h3 class="text-yellow-500 text-xs font-black uppercase mb-3 italic">Pattern Archive (PIH)</h3>
-            <div id="pih-log"><p id="pih-msg" class="text-center text-gray-600 text-xs mt-12 italic">ANALYZING TRENDS...</p></div>
-        </section>
-        <div class="pb-12"><button onclick="sysReset()" class="w-full py-4 bg-red-900/20 text-red-500 font-black rounded-2xl uppercase text-xs border border-red-900/40">Reset System</button></div>
+        <p class="text-center text-gray-600 text-xs mt-4">Roll တွေကို ဘေးတိုက် (Horizontal) ဆွဲကြည့်နိုင်ပါသည်။</p>
     </div>
 
     <script>
-        let app = { history: [], intel: [], roll: 1, stage: 1 };
-        let pNext = "-", eNext = "-", sNext = "-";
-        let currentPatternKey = null; // To track active pattern
-        const input = document.getElementById('main-input');
+        let data = { history: [], roll: 1, stage: 1 };
+        let pPred = "-", ePred = "-", sPred = "-";
+        const inputField = document.getElementById('digit-input');
 
-        function fastEntry(el) {
-            if(el.value.length === 1) {
+        function handleInput(el) {
+            if (el.value.length === 1) {
                 const val = parseInt(el.value);
-                if(!isNaN(val)) {
-                    document.getElementById('big-digit').innerText = val;
-                    runEngine(val);
+                if (!isNaN(val)) {
+                    executeLogic(val);
                 }
                 el.value = "";
-                input.focus();
-                setTimeout(() => input.focus(), 30);
+                // Fast focus recovery
+                inputField.focus();
+                setTimeout(() => inputField.focus(), 10);
             }
         }
 
-        function runEngine(num) {
+        function executeLogic(num) {
             const grp = num >= 5 ? 'B' : 'S';
-            const entry = { val: num, grp, r: app.roll, s: app.stage, p: pNext, e: eNext, sL: sNext };
-            entry.pOk = (pNext === grp); entry.eOk = (eNext === grp); entry.sOk = (sNext === grp);
-            app.history.push(entry);
-
-            syncWarningAndPIH(grp);
-
-            if(app.stage === 10) { app.roll++; app.stage = 1; } else { app.stage++; }
-            updateLogic();
-            drawUI();
-            save();
-        }
-
-        function syncWarningAndPIH(next) {
-            const seq = app.history.map(h => h.grp).join('');
-            const m = {
-                stk: seq.match(/(B{4,}|S{4,})$/),
-                alt: seq.match(/((SB){3,}|(BS){3,})$/),
-                bs: seq.match(/((BBSS|SSBB)+(BB|SS|BBSS|SSBB)?)$/)
+            
+            const entry = {
+                val: num, grp: grp, r: data.roll, s: data.stage,
+                p: pPred, pOk: (pPred === grp),
+                e: ePred, eOk: (ePred === grp),
+                sL: sPred, sOk: (sPred === grp)
             };
 
-            let found = null;
-            if(m.stk) found = { type: 'stk', label: m.stk[0][0]==='B'?'အကြီးဆက်':'အသေးဆက်', count: m.stk[0].length, css: m.stk[0][0]==='B'?'bg-red-600':'bg-green-600' };
-            else if(m.alt) found = { type: 'alt', label: 'တစ်ခုကျော်စီ', count: m.alt[0].length, css: 'bg-purple-600' };
-            else if(m.bs && m.bs[0].length >= 4) found = { type: 'bs', label: 'BBSS Pattern', count: m.bs[0].length, css: 'bg-orange-500' };
+            data.history.push(entry);
 
-            const area = document.getElementById('warn-area');
-            if(found) {
-                // Warning Box Update
-                area.classList.remove('hidden');
-                document.getElementById('warn-box').innerText = `${found.label} : ${found.count}`;
-                document.getElementById('warn-box').className = `px-5 py-1.5 rounded-full text-xs font-black uppercase text-white animate-pulse ${found.css}`;
+            if (data.stage === 10) { data.roll++; data.stage = 1; } 
+            else { data.stage++; }
 
-                // PIH Logic
-                if (currentPatternKey === found.type) {
-                    // Update existing top record
-                    app.intel[0].count = found.count;
-                    app.intel[0].status = "Active";
-                } else {
-                    // Start new record
-                    currentPatternKey = found.type;
-                    app.intel.unshift({ ...found, status: "Active", time: `R${app.roll} S${app.stage}` });
-                }
-            } else {
-                area.classList.add('hidden');
-                if (currentPatternKey && app.intel[0]) {
-                    app.intel[0].status = "Broken";
-                    currentPatternKey = null;
-                }
-            }
-            drawPIH();
+            updatePredictions();
+            renderUI();
+            saveData();
         }
 
-        function drawUI() {
-            const wrapper = document.getElementById('card-scroll');
-            const groups = app.history.reduce((acc, h) => { if(!acc[h.r]) acc[h.r]=[]; acc[h.r].push(h); return acc; }, {});
-            wrapper.innerHTML = Object.keys(groups).map(r => `
+        function updatePredictions() {
+            if (data.history.length === 0) return;
+            const last = data.history[data.history.length - 1].val;
+            
+            pPred = (last % 2 === 0) ? 'S' : 'B';
+
+            if (data.history.length >= 3) {
+                const s3 = data.history.slice(-3).reduce((a, b) => a + b.val, 0);
+                ePred = (s3 % 2 === 0) ? 'S' : 'B';
+            }
+
+            if (data.history.length >= 5) {
+                let s5 = data.history.slice(-5).reduce((a, b) => a + b.val, 0);
+                while (s5 >= 10) s5 = s5.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+                sPred = (s5 % 2 !== 0) ? 'B' : 'S';
+            }
+
+            document.getElementById('p-next').innerText = pPred;
+            document.getElementById('e-next').innerText = ePred;
+            document.getElementById('s-next').innerText = sPred;
+        }
+
+        function renderUI() {
+            const container = document.getElementById('card-container');
+            const groups = data.history.reduce((acc, h) => {
+                if (!acc[h.r]) acc[h.r] = [];
+                acc[h.r].push(h);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.keys(groups).map(rNum => `
                 <div class="roll-card">
                     <div class="flex justify-between items-center border-b-2 border-cyan-500/30 pb-3 mb-3">
-                        <span class="text-lg font-black text-cyan-400 uppercase">Roll ${r}</span>
-                        <span class="text-[10px] opacity-40 font-black uppercase tracking-widest text-white">Stg P E S G</span>
+                        <span class="text-xl font-black text-cyan-400">ROLL ${rNum}</span>
+                        <div class="text-[10px] font-bold text-white/40 uppercase">P | E | S | Digit</div>
                     </div>
-                    ${groups[r].map(i => `
+                    ${groups[rNum].map(i => `
                         <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
                             <span class="text-xs font-bold text-gray-500 w-4">${i.s}</span>
-                            <div class="flex items-center gap-4 flex-1 justify-center text-white">
-                                <div class="flex flex-col items-center"><span class="text-sm font-black">${i.p}</span><span class="${i.pOk?'text-green-500':'text-red-500'} font-black text-xs">${i.pOk?'✓':'✕'}</span></div>
-                                <div class="flex flex-col items-center"><span class="text-sm font-black">${i.e}</span><span class="${i.eOk?'text-green-500':'text-red-500'} font-black text-xs">${i.eOk?'✓':'✕'}</span></div>
-                                <div class="flex flex-col items-center"><span class="text-sm font-black">${i.sL}</span><span class="${i.sOk?'text-green-500':'text-red-500'} font-black text-xs">${i.sOk?'✓':'✕'}</span></div>
+                            <div class="flex items-center gap-6 flex-1 justify-center">
+                                <div class="text-center"><p class="text-[10px] font-black">${i.p}</p><p class="status-check ${i.pOk?'ok':'no'}">${i.pOk?'✓':'✕'}</p></div>
+                                <div class="text-center"><p class="text-[10px] font-black">${i.e}</p><p class="status-check ${i.eOk?'ok':'no'}">${i.eOk?'✓':'✕'}</p></div>
+                                <div class="text-center"><p class="text-[10px] font-black">${i.sL}</p><p class="status-check ${i.sOk?'ok':'no'}">${i.sOk?'✓':'✕'}</p></div>
                             </div>
-                            <div class="g-num">${i.val}</div>
-                        </div>`).join('')}
-                </div>`).join('');
-            wrapper.scrollLeft = wrapper.scrollWidth;
+                            <div class="num-circle ${i.grp==='B'?'bg-big':'bg-small'}">${i.val}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            container.scrollLeft = container.scrollWidth;
         }
 
-        function drawPIH() {
-            const container = document.getElementById('pih-log');
-            if(app.intel.length > 0) document.getElementById('pih-msg').style.display = 'none';
-            container.innerHTML = app.intel.map((l, idx) => `
-                <div class="flex items-center gap-3 mb-3 p-4 bg-white/5 rounded-2xl border-l-8 ${l.css} ${l.status==='Active'?'pih-active':''}">
-                    <span class="text-xs font-black text-gray-600">#${app.intel.length - idx}</span>
-                    <div class="flex-1">
-                        <p class="text-[10px] font-bold opacity-50 uppercase">${l.label}</p>
-                        <p class="text-sm font-black italic">${l.count} ကြိမ်မြောက် ${l.status==='Active'?'(ဖြစ်နေဆဲ)':'(ကျိုးသွားပြီ)'}</p>
-                    </div>
-                    <span class="text-[9px] font-black opacity-30">${l.time}</span>
-                </div>`).join('');
+        function copyLog() {
+            let str = "OMNI V34 LOG\n";
+            data.history.forEach(h => {
+                str += `R${h.r}S${h.s}: ${h.val} [P:${h.pOk?'✓':'✕'} E:${h.eOk?'✓':'✕'} S:${h.sOk?'✓':'✕'}]\n`;
+            });
+            const el = document.createElement('textarea'); el.value = str; document.body.appendChild(el);
+            el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            alert("Log copied to clipboard!");
         }
 
-        function updateLogic() {
-            if(app.history.length === 0) return;
-            const last = app.history[app.history.length-1].val;
-            pNext = (last % 2 === 0) ? 'S' : 'B';
-            if (app.history.length >= 3) {
-                const s3 = app.history.slice(-3).reduce((a,b)=>a+b.val,0);
-                eNext = (s3 % 2 === 0) ? 'S' : 'B';
+        function confirmReset() {
+            if (confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) {
+                localStorage.removeItem('OMNI_V34_STORAGE');
+                location.reload();
             }
-            if (app.history.length >= 5) {
-                let s5 = app.history.slice(-5).reduce((a,b)=>a+b.val,0);
-                while(s5 >= 10) s5 = s5.toString().split('').map(Number).reduce((a,b)=>a+b,0);
-                sNext = (s5 % 2 !== 0) ? 'B' : 'S';
-            }
-            document.getElementById('p-pred').innerText = pNext;
-            document.getElementById('e-pred').innerText = eNext;
-            document.getElementById('s-pred').innerHTML = `<span>${sNext}</span>`;
         }
 
-        function save() { localStorage.setItem('OMNI_V33_DB', JSON.stringify(app)); }
-        function sysReset() { if(confirm("Reset System?")) { localStorage.clear(); location.reload(); } }
-        window.onload = () => { 
-            const s = JSON.parse(localStorage.getItem('OMNI_V33_DB'));
-            if(s) { app = s; drawUI(); drawPIH(); if(app.history.length>0) updateLogic(); }
-            input.focus(); 
+        function saveData() { localStorage.setItem('OMNI_V34_STORAGE', JSON.stringify(data)); }
+        
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('OMNI_V34_STORAGE'));
+            if (saved) { data = saved; renderUI(); updatePredictions(); }
+            inputField.focus();
         };
     </script>
 </body>
