@@ -1,180 +1,212 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni V34 - Ultra Slim</title>
+    <title>Omni Logic Elite - V35</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        html, body { background-color: #010816; color: white; height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; touch-action: manipulation; }
-        
-        /* Fixed Top Section */
-        .header-fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 12px; border-bottom: 2px solid #00cfd5; }
-        .main-content { margin-top: 250px; height: calc(100vh - 250px); overflow-y: auto; padding: 10px; }
-
-        /* Prediction & Input Styling */
-        .box-logic { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 22px; border-radius: 12px; border: 3px solid; }
-        .p-color { border-color: #ff4136; color: #ff4136; }
-        .e-color { border-color: #b10dc9; color: #b10dc9; }
-        .s-color { border-color: #2ecc40; color: #2ecc40; }
-
-        /* History Card Visuals */
-        .roll-card { flex-shrink: 0; width: 320px; background: #001d3d; border-radius: 1.5rem; padding: 16px; border: 2px solid #00cfd5; margin-right: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
-        .num-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: white; border: 2px solid #000; }
-        .bg-big { background: #ff4136; } /* Red for Big */
-        .bg-small { background: #2ecc40; } /* Green for Small */
-        
-        .status-check { font-weight: 900; font-size: 18px; }
-        .ok { color: #2ecc40; }
-        .no { color: #ff4136; }
-
-        /* Action Buttons */
-        .btn-action { padding: 10px 20px; border-radius: 12px; font-weight: 900; font-size: 12px; text-transform: uppercase; transition: transform 0.1s; }
-        .btn-action:active { transform: scale(0.95); }
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 10px; border-bottom: 2px solid #00cfd5; }
+        .main-scroll { margin-top: 320px; height: calc(100vh - 320px); overflow-y: auto; padding: 10px; }
+        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
+        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; position: relative; margin: 0 auto; }
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 50px; height: 50px; font-size: 24px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); background: white; font-weight: 900; position: relative; margin: 0 auto; }
+        .box-s span { transform: rotate(-45deg); }
+        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); border-radius: inherit; display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 8px; font-weight: 900; }
+        .roll-card { flex-shrink: 0; width: 280px; background: #001d3d; border-radius: 20px; padding: 12px; border: 1px solid #00cfd5; margin-right: 12px; }
+        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; }
+        .pattern-box { background: linear-gradient(90deg, #1e293b, #0f172a); border-left: 4px solid #fbbf24; min-height: 50px; }
+        .status-pulse { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     </style>
 </head>
 <body>
 
-    <div class="header-fixed space-y-4">
-        <div class="flex justify-between items-center">
-            <h1 class="text-xl font-black text-cyan-400 italic">OMNI V34</h1>
-            <div class="flex gap-2">
-                <button onclick="copyLog()" class="btn-action bg-cyan-500 text-black">📋 Copy</button>
-                <button onclick="confirmReset()" class="btn-action bg-red-600 text-white">Reset</button>
+    <div id="lock-screen" class="fixed inset-0 bg-[#010816] z-[9999] flex flex-col items-center justify-center p-6" style="display: none;">
+        <h1 class="text-3xl font-black mb-2 text-cyan-400 italic">OMNI LOGIC ELITE</h1>
+        <p class="text-[10px] text-gray-500 mb-8 uppercase">Trial Limit Reached</p>
+        <input type="text" id="lock-license-input" class="w-full max-w-sm p-4 rounded-2xl text-black text-center font-black border-4 border-cyan-500 mb-4" placeholder="ENTER LICENSE CODE">
+        <button onclick="activateCode()" class="w-full max-w-sm bg-cyan-500 py-4 rounded-2xl font-black uppercase shadow-lg">Unlock Premium</button>
+        <p id="device-id-display" class="mt-8 text-[9px] text-gray-700 font-mono"></p>
+    </div>
+
+    <div class="fixed-header space-y-3">
+        <div class="flex justify-between items-center px-1">
+            <h1 class="text-xl font-black italic text-cyan-500">OMNI V35</h1>
+            <div class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                <span id="status-dot" class="w-2 h-2 rounded-full bg-green-500"></span>
+                <span id="plan-status" class="text-[9px] font-black text-cyan-400 uppercase italic">Checking...</span>
             </div>
         </div>
 
-        <div class="flex justify-around items-center bg-white/5 p-2 rounded-2xl border border-white/10">
-            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1">P</p><div id="p-next" class="box-logic p-color">-</div></div>
-            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1">E</p><div id="e-next" class="box-logic e-color">-</div></div>
-            <div class="text-center"><p class="text-[10px] text-gray-400 font-bold mb-1">S</p><div id="s-next" class="box-logic s-color">-</div></div>
-            <div class="w-24">
-                <input type="tel" id="digit-input" maxlength="1" oninput="handleInput(this)" class="w-full h-16 rounded-2xl text-center text-5xl font-black text-black outline-none border-4 border-cyan-400 focus:bg-cyan-50" placeholder="?" autocomplete="off">
+        <div class="bg-[#001d3d] p-3 grid grid-cols-3 gap-1 rounded-[25px] border-b-4 border-cyan-500">
+            <div class="text-center"><p class="text-[8px] font-bold text-gray-500 mb-1 uppercase">P-Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
+            <div class="text-center"><p class="text-[8px] font-bold text-gray-500 mb-1 uppercase">E-Logic</p><div class="box-e"><span id="pred-e">-</span><div id="lock-e" class="locked-overlay">PREMIUM</div></div></div>
+            <div class="text-center"><p class="text-[8px] font-bold text-gray-500 mb-1 uppercase">S-Logic</p><div class="box-s"><span id="pred-s"></span><div id="lock-s" class="locked-overlay">PREMIUM</div></div></div>
+        </div>
+
+        <div class="bg-[#001d3d] p-3 rounded-[2rem] flex items-center justify-between border border-white/5 shadow-xl">
+            <div id="highlight-g" class="text-5xl font-black text-cyan-400 px-4">-</div>
+            <div class="flex flex-col gap-1 w-28">
+                <input type="tel" id="digit-input" class="w-full rounded-xl text-center text-4xl font-black p-1 border-4 border-cyan-500 text-black" placeholder="?" oninput="validate(this)" maxlength="1">
+            </div>
+        </div>
+
+        <div id="pattern-section" class="px-1" style="display: none;">
+            <div class="pattern-box p-2 rounded-xl">
+                <p class="text-[8px] text-yellow-500 font-black uppercase italic">Elite Trend Feed (PHI)</p>
+                <div id="pattern-display" class="text-sm font-black text-white italic">ANALYZING PATTERNS...</div>
             </div>
         </div>
     </div>
 
-    <div class="main-content">
-        <div id="card-container" class="flex overflow-x-auto pb-6">
-            </div>
-        <p class="text-center text-gray-600 text-xs mt-4">Roll တွေကို ဘေးတိုက် (Horizontal) ဆွဲကြည့်နိုင်ပါသည်။</p>
+    <div class="main-scroll">
+        <div class="flex justify-between items-center px-1 mb-2">
+            <h3 class="font-black text-cyan-500 text-[10px] italic uppercase">Logs Collection</h3>
+            <button onclick="copyLogs()" class="text-[8px] bg-white/5 px-3 py-1 rounded-full border border-white/10 font-black uppercase text-gray-400">📋 Copy History</button>
+        </div>
+        <div id="history-container" class="flex overflow-x-auto gap-3 pb-4"></div>
+        <button onclick="fullReset()" class="w-full bg-red-900/10 py-3 text-red-500 font-bold rounded-xl text-[8px] uppercase mt-4">Full System Reset</button>
     </div>
 
     <script>
-        let data = { history: [], roll: 1, stage: 1 };
-        let pPred = "-", ePred = "-", sPred = "-";
-        const inputField = document.getElementById('digit-input');
+        [span_1](start_span)const SUPABASE_URL = 'https://folxuczagcspjnypyopw.supabase.co';[span_1](end_span)
+        [span_2](start_span)const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo';[span_2](end_span)
+        [span_3](start_span)const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;[span_3](end_span)
 
-        function handleInput(el) {
+        [span_4](start_span)let deviceId = ""; let isPremium = false;[span_4](end_span)
+        [span_5](start_span)let remMins = 0; let history = [];[span_5](end_span)
+        [span_6](start_span)let roll = 1, stage = 1; let pNext, eNext, sNext;[span_6](end_span)
+        let activePattern = null;
+
+        async function init() {
+            deviceId = localStorage.getItem('omni_stable_id') || ("OMNI-" + Math.random()[span_7](start_span).toString(36).substring(2, 10).toUpperCase());[span_7](end_span)
+            [span_8](start_span)localStorage.setItem('omni_stable_id', deviceId);[span_8](end_span)
+            [span_9](start_span)document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceId;[span_9](end_span)
+            checkAccess();
+        }
+
+        async function checkAccess() {
+            try {
+                [span_10](start_span)const { data } = await supabase.rpc('check_access_v2', { input_device_id: deviceId });[span_10](end_span)
+                if (data?.can_access) {
+                    [span_11](start_span)isPremium = data.is_premium;[span_11](end_span)
+                    [span_12](start_span)remMins = isPremium ? data.mins : Math.min(data.mins, 90);[span_12](end_span)
+                    if (!isPremium && remMins <= 0) { showLock(); return; [span_13](start_span)[span_14](start_span)}
+                    updateAccessUI();
+                } else { showLock(); }
+            } catch (e) { updateAccessUI(); } // Offline fallback
+        }
+
+        function updateAccessUI() {
+            document.getElementById('plan-status').innerText = isPremium ? "Elite Member" : `Trial: ${remMins}m Left`;[span_13](end_span)[span_14](end_span)
+            if (isPremium) {
+                [span_15](start_span)document.getElementById('lock-e').style.display = 'none';[span_15](end_span)
+                [span_16](start_span)document.getElementById('lock-s').style.display = 'none';[span_16](end_span)
+                [span_17](start_span)document.getElementById('pattern-section').style.display = 'block';[span_17](end_span)
+            }
+        }
+
+        function validate(el) {
             if (el.value.length === 1) {
                 const val = parseInt(el.value);
-                if (!isNaN(val)) {
-                    executeLogic(val);
-                }
+                if (!isNaN(val)) execute(val);
                 el.value = "";
-                // Fast focus recovery
-                inputField.focus();
-                setTimeout(() => inputField.focus(), 10);
+                el.focus();
             }
         }
 
-        function executeLogic(num) {
-            const grp = num >= 5 ? 'B' : 'S';
+        function execute(val) {
+            const grp = val >= 5 ? [span_18](start_span)'B' : 'S';[span_18](end_span)
+            [span_19](start_span)const entry = { val, grp, roll, stage, p: pNext, pOk: pNext === grp, e: eNext, eOk: eNext === grp, s: sNext, sOk: sNext === grp };[span_19](end_span)
+            history.push(entry);
+
+            syncPHI(grp);
+
+            if(stage === 10) { roll++; stage = 1; } else { stage++; [span_20](start_span)}
             
-            const entry = {
-                val: num, grp: grp, r: data.roll, s: data.stage,
-                p: pPred, pOk: (pPred === grp),
-                e: ePred, eOk: (ePred === grp),
-                sL: sPred, sOk: (sPred === grp)
-            };
-
-            data.history.push(entry);
-
-            if (data.stage === 10) { data.roll++; data.stage = 1; } 
-            else { data.stage++; }
-
-            updatePredictions();
-            renderUI();
-            saveData();
+            updatePredictions(val);[span_20](end_span)
+            [span_21](start_span)renderAll();[span_21](end_span)
+            [span_22](start_span)save();[span_22](end_span)
         }
 
-        function updatePredictions() {
-            if (data.history.length === 0) return;
-            const last = data.history[data.history.length - 1].val;
-            
-            pPred = (last % 2 === 0) ? 'S' : 'B';
+        function syncPHI(nextGrp) {
+            if (!isPremium) return;
+            const seq = history.map(h => h.grp).join('');
+            const m = seq.match(/(B{4,}|S{4,})$/); // Streak detection
+            const alt = seq.match(/((SB){3,}|(BS){3,})$/); // Alternating
 
-            if (data.history.length >= 3) {
-                const s3 = data.history.slice(-3).reduce((a, b) => a + b.val, 0);
-                ePred = (s3 % 2 === 0) ? 'S' : 'B';
+            const display = document.getElementById('pattern-display');
+            if (m) {
+                const label = m[0][0] === 'B' ? "အကြီးဆက်" : "အသေးဆက်";
+                display.innerText = `⚠️ ${label} : ${m[0].length} ကြိမ်မြောက် (LIVE)`;
+                display.className = "text-sm font-black text-red-500 animate-pulse italic";
+            } else if (alt) {
+                display.innerText = `🔄 တစ်လှည့်စီကျနေသည် : ${alt[0].length} ကြိမ်မြောက်`;
+                display.className = "text-sm font-black text-purple-400 italic";
+            } else {
+                display.innerText = "PATTERNS STABLE";
+                display.className = "text-xs font-bold text-gray-500 italic";
             }
-
-            if (data.history.length >= 5) {
-                let s5 = data.history.slice(-5).reduce((a, b) => a + b.val, 0);
-                while (s5 >= 10) s5 = s5.toString().split('').map(Number).reduce((a, b) => a + b, 0);
-                sPred = (s5 % 2 !== 0) ? 'B' : 'S';
-            }
-
-            document.getElementById('p-next').innerText = pPred;
-            document.getElementById('e-next').innerText = ePred;
-            document.getElementById('s-next').innerText = sPred;
         }
 
-        function renderUI() {
-            const container = document.getElementById('card-container');
-            const groups = data.history.reduce((acc, h) => {
-                if (!acc[h.r]) acc[h.r] = [];
-                acc[h.r].push(h);
-                return acc;
-            }, {});
+        function updatePredictions(last) {
+            pNext = last % 2 === 0 ? [span_23](start_span)'S' : 'B';[span_23](end_span)
+            if(history.length >= 3) eNext = history.slice(-3).reduce((a,b) => a+b.val, 0) % 2 === 0 ? [span_24](start_span)'S' : 'B';[span_24](end_span)
+            [span_25](start_span)if(history.length >= 10) {[span_25](end_span)
+                [span_26](start_span)let dSum = history.slice(-10).reduce((a,b) => a+b.val, 0);[span_26](end_span)
+                [span_27](start_span)while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);[span_27](end_span)
+                sNext = (dSum % 2 !== 0) ? [span_28](start_span)'B' : 'S';[span_28](end_span)
+            }
+            [span_29](start_span)document.getElementById('pred-p').innerText = pNext;[span_29](end_span)
+            document.getElementById('pred-e').innerText = isPremium ? (eNext || '-') [span_30](start_span): "?";[span_30](end_span)
+            document.getElementById('pred-s').innerText = isPremium ? (sNext || '-') [span_31](start_span): "?";[span_31](end_span)
+            [span_32](start_span)document.getElementById('highlight-g').innerText = last;[span_32](end_span)
+        }
 
-            container.innerHTML = Object.keys(groups).map(rNum => `
+        function renderAll() {
+            const container = document.getElementById('history-container');
+            [span_33](start_span)const rolls = history.reduce((acc, cur) => { if(!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});[span_33](end_span)
+            container.innerHTML = Object.keys(rolls).map(r => `
                 <div class="roll-card">
-                    <div class="flex justify-between items-center border-b-2 border-cyan-500/30 pb-3 mb-3">
-                        <span class="text-xl font-black text-cyan-400">ROLL ${rNum}</span>
-                        <div class="text-[10px] font-bold text-white/40 uppercase">P | E | S | Digit</div>
-                    </div>
-                    ${groups[rNum].map(i => `
-                        <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                            <span class="text-xs font-bold text-gray-500 w-4">${i.s}</span>
-                            <div class="flex items-center gap-6 flex-1 justify-center">
-                                <div class="text-center"><p class="text-[10px] font-black">${i.p}</p><p class="status-check ${i.pOk?'ok':'no'}">${i.pOk?'✓':'✕'}</p></div>
-                                <div class="text-center"><p class="text-[10px] font-black">${i.e}</p><p class="status-check ${i.eOk?'ok':'no'}">${i.eOk?'✓':'✕'}</p></div>
-                                <div class="text-center"><p class="text-[10px] font-black">${i.sL}</p><p class="status-check ${i.sOk?'ok':'no'}">${i.sOk?'✓':'✕'}</p></div>
+                    <div class="text-[10px] font-black text-cyan-500 mb-2 border-b border-white/10 pb-1 uppercase">Roll ${r}</div>
+                    ${rolls[r].map(i => `
+                        <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
+                            <span class="text-[8px] text-gray-600 w-3">${i.stage}</span>
+                            <div class="flex gap-4 flex-1 justify-center">
+                                <span class="text-[10px] ${i.pOk?'text-green-500':'text-red-500'} font-bold">${i.p}${i.pOk?'✓':'✕'}</span>
+                                <span class="text-[10px] ${i.eOk?'text-green-500':'text-red-500'} font-bold">${isPremium?i.e:'🔒'}${isPremium?(i.eOk?'✓':'✕'):''}</span>
+                                <span class="text-[10px] ${i.sOk?'text-green-500':'text-red-500'} font-bold">${isPremium?(i.s||'-'):'🔒'}${isPremium?(i.sOk?'✓':'✕'):''}</span>
                             </div>
-                            <div class="num-circle ${i.grp==='B'?'bg-big':'bg-small'}">${i.val}</div>
+                            <div class="g-num">${i.val}</div>
                         </div>
                     `).join('')}
                 </div>
             `).join('');
-
-            container.scrollLeft = container.scrollWidth;
+            [span_34](start_span)container.scrollLeft = container.scrollWidth;[span_34](end_span)
         }
 
-        function copyLog() {
-            let str = "OMNI V34 LOG\n";
-            data.history.forEach(h => {
-                str += `R${h.r}S${h.s}: ${h.val} [P:${h.pOk?'✓':'✕'} E:${h.eOk?'✓':'✕'} S:${h.sOk?'✓':'✕'}]\n`;
-            });
-            const el = document.createElement('textarea'); el.value = str; document.body.appendChild(el);
-            el.select(); document.execCommand('copy'); document.body.removeChild(el);
-            alert("Log copied to clipboard!");
+        function showLock() { document.getElementById('lock-screen').style.display = 'flex'; [span_35](start_span)}
+        function save() { localStorage.setItem('OMNI_V35_DB', JSON.stringify({ history, roll, stage })); }[span_35](end_span)
+        function fullReset() { if(confirm("System Data အားလုံးကို ဖျက်မလား?")) { localStorage.clear(); location.reload(); [span_36](start_span)} }[span_36](end_span)
+        function copyLogs() {
+            if(!isPremium) { alert("Premium Only!"); return; [span_37](start_span)}
+            let t = history.map(i => `R${i.roll}S${i.stage}: ${i.val} [P:${i.pOk?'✓':'✕'}]`).join('\n');[span_37](end_span)
+            [span_38](start_span)navigator.clipboard.writeText(t); alert("Copied!");[span_38](end_span)
+        }
+        async function activateCode() {
+            [span_39](start_span)const code = document.getElementById('lock-license-input').value.trim();[span_39](end_span)
+            [span_40](start_span)const { data } = await supabase.rpc('activate_v2', { input_device_id: deviceId, input_code: code });[span_40](end_span)
+            if (data?.success) { alert("Success!"); location.reload(); } else { alert("Wrong Code!"); [span_41](start_span)}
         }
 
-        function confirmReset() {
-            if (confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) {
-                localStorage.removeItem('OMNI_V34_STORAGE');
-                location.reload();
-            }
-        }
-
-        function saveData() { localStorage.setItem('OMNI_V34_STORAGE', JSON.stringify(data)); }
-        
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('OMNI_V34_STORAGE'));
-            if (saved) { data = saved; renderUI(); updatePredictions(); }
-            inputField.focus();
+            const saved = JSON.parse(localStorage.getItem('OMNI_V35_DB'));[span_41](end_span)
+            if(saved) { history = saved.history; roll = saved.roll; stage = saved.stage; renderAll(); if(history.length) updatePredictions(history[history.length-1].val); [span_42](start_span)[span_43](start_span)}
+            init(); document.getElementById('digit-input').focus();
         };
     </script>
 </body>
