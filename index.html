@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46 - V45 Logic</title>
+    <title>Omni Logic V46 - Alignment Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
         
+        /* Header Fix */
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
         .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
@@ -22,21 +23,27 @@
 
         .main-scroll { margin-top: 220px; height: calc(100vh - 220px); overflow-y: auto; padding: 10px; }
         .roll-card { flex-shrink: 0; width: 310px; background: #001d3d; border-radius: 15px; padding: 12px; border: 1px solid #00cfd5; margin-right: 12px; }
-        .row-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         
-        .col-header { color: #555; font-size: 10px; font-weight: 900; letter-spacing: 24px; padding-left: 55px; margin-bottom: 4px; }
+        /* New Alignment Logic */
+        .row-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .col-stg { width: 35px; flex-shrink: 0; }
+        .col-results { display: flex; gap: 12px; width: 185px; justify-content: center; }
+        .col-val { width: 35px; display: flex; justify-content: flex-end; }
+        
+        .header-labels { display: flex; gap: 12px; width: 185px; justify-content: center; color: #555; font-size: 11px; font-weight: 900; }
 
         .stg-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 14px; font-weight: 900; background: #1a3a5a; color: #00cfd5; cursor: pointer; }
-        .stg-start { background: #2ecc40 !important; color: white; box-shadow: 0 0 10px #2ecc40; }
-        .stg-end { background: #ff4136 !important; color: white; box-shadow: 0 0 10px #ff4136; }
+        .stg-start { background: #2ecc40 !important; color: white; }
+        .stg-end { background: #ff4136 !important; color: white; }
         .row-range { background: rgba(0, 207, 213, 0.1); }
 
-        #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,1); }
+        /* Modal & Floating */
+        #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; }
         #floating-box { position: fixed; right: 10px; bottom: 85px; width: 160px; background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 500; display: none; }
         
         .phi-container { margin-top: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); }
         .phi-scroll-box { height: 160px; overflow-y: auto; }
-        .phi-item { padding: 10px; border-radius: 8px; margin-bottom: 6px; font-weight: 900; font-size: 12px; display: flex; justify-content: space-between; color: white; }
+        .phi-item { padding: 10px; border-radius: 8px; margin-bottom: 6px; font-weight: 900; font-size: 12px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
@@ -66,7 +73,7 @@
             <div class="box-s" id="box-s">-</div>
         </div>
         <div class="flex items-center justify-center gap-2 bg-[#001d3d] p-2 rounded-xl border border-cyan-900/50">
-            <input type="tel" id="digit-input" class="w-16 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-400 outline-none" maxlength="1">
+            <input type="tel" id="digit-input" class="w-16 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-400" maxlength="1">
             <button onclick="submitDigit()" class="bg-cyan-400 text-black h-12 px-6 rounded-lg font-black text-sm">ENTER</button>
         </div>
         <div id="warning-bar" class="warn-bar warn-stable">MARKET STABLE</div>
@@ -76,12 +83,11 @@
         <div id="history-container" class="flex overflow-x-auto gap-2 pb-2"></div>
         <div class="phi-container">
             <div class="flex gap-3 mb-3">
-                <button onclick="copyLogs()" class="flex-1 p-3 bg-cyan-600 rounded-xl font-black text-xs uppercase">Copy Records</button>
-                <button onclick="fullReset()" class="flex-1 p-3 bg-red-600 rounded-xl font-black text-xs uppercase">Reset</button>
+                <button onclick="copyLogs()" class="flex-1 p-3 bg-cyan-600 rounded-xl font-black text-xs text-white">COPY</button>
+                <button onclick="fullReset()" class="flex-1 p-3 bg-red-600 rounded-xl font-black text-xs text-white">RESET</button>
             </div>
             <div id="phi-list" class="phi-scroll-box"></div>
         </div>
-        <div class="h-20"></div>
     </div>
 
     <script>
@@ -96,21 +102,18 @@
             const grp = val >= 5 ? 'B' : 'S';
             const entry = { id: Date.now(), val, grp, roll, stage, p: pNext, pOk: pNext===grp, e: eNext, eOk: eNext===grp, s: sNext, sOk: sNext===grp };
             history.push(entry);
-            
             checkPatternsV45(entry);
-            
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePredictions(val);
             renderUI();
             input.value = ""; input.focus();
-            localStorage.setItem('V46_RESTORED', JSON.stringify({history, phiRecords, roll, stage}));
+            localStorage.setItem('V46_ALIGN', JSON.stringify({history, phiRecords, roll, stage}));
         }
 
         function checkPatternsV45(entry) {
             const seq = history.map(h => h.grp).join('');
             const sMatch = seq.match(/(B{6,}|S{6,})$/);
             const aMatch = seq.match(/((SB){3,}|(BS){3,})$/);
-            
             let active = null;
             if (sMatch) active = { type: sMatch[0][0]==='B'?"အကြီးများ ဆက်တိုက်":"အသေးများ ဆက်တိုက်", count: sMatch[0].length, class: sMatch[0][0]==='B'?"bg-red-600":"bg-green-600" };
             else if (aMatch) active = { type: "အကြီး/အသေး တစ်လှည့်စီ", count: aMatch[0].length, class: "bg-purple-600" };
@@ -119,8 +122,6 @@
             if (active) {
                 bar.className = "warn-bar warn-active"; 
                 bar.innerText = `⚠️ ${active.type} : ${active.count} ကြိမ်`;
-                
-                // V45 Logic: Pattern ဖြစ်တာနဲ့ PHI ထဲကို တန်းထည့်မယ် သို့မဟုတ် Update လုပ်မယ်
                 if (!currentActivePattern || currentActivePattern.type !== active.type) {
                     phiRecords.unshift({ ...active, time: `R${entry.roll} S${entry.stage}` });
                 } else {
@@ -130,16 +131,16 @@
                 currentActivePattern = active;
                 renderPHI();
             } else {
-                bar.className = "warn-bar warn-stable"; 
-                bar.innerText = "MARKET STABLE";
+                bar.className = "warn-bar warn-stable"; bar.innerText = "MARKET STABLE";
                 currentActivePattern = null;
             }
         }
 
         function toggleMark(id) {
             const idx = history.findIndex(h => h.id === id);
-            if (markS === null || (markS !== null && markEnd !== null)) {
+            if (markS === null || (markS !== null && markE !== null)) {
                 markS = idx; markE = null;
+                document.getElementById('floating-box').style.display = 'none';
             } else {
                 markE = idx;
                 const range = [markS, markE].sort((a,b)=>a-b);
@@ -171,20 +172,23 @@
             container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
                     <div class="text-[10px] font-black text-cyan-400 italic mb-1 border-b border-cyan-900 pb-1">ROLL ${r}</div>
-                    <div class="col-header">P E S</div>
+                    <div class="flex gap-10 items-center mb-1">
+                        <div class="w-[35px]"></div>
+                        <div class="header-labels"><span>P</span><span>E</span><span>S</span></div>
+                    </div>
                     ${groups[r].map(i => {
                         const idx = history.findIndex(h => h.id === i.id);
                         let stgClass = (idx === markS) ? "stg-start" : (idx === markE ? "stg-end" : "");
                         let rowClass = (markE !== null && idx > markS && idx < markE) ? "row-range" : "";
                         return `
                         <div class="row-item ${rowClass}">
-                            <div onclick="toggleMark(${i.id})" class="stg-btn ${stgClass}">${i.stage}</div>
-                            <div class="flex gap-4 text-[22px] font-black ml-1">
-                                <span class="${i.pOk?'text-green-500':'text-red-500'}">${i.p}${i.pOk?'✅':'❌'}</span>
-                                <span class="${i.eOk?'text-green-500':'text-red-500'}">${i.e}${i.eOk?'✅':'❌'}</span>
-                                <span class="${i.sOk?'text-green-500':'text-red-500'}">${i.s}${i.sOk?'✅':'❌'}</span>
+                            <div class="col-stg"><div onclick="toggleMark(${i.id})" class="stg-btn ${stgClass}">${i.stage}</div></div>
+                            <div class="col-results text-[22px] font-black">
+                                <span class="${i.pOk?'text-green-500':'text-red-500'} w-[50px] text-center">${i.p}${i.pOk?'✅':'❌'}</span>
+                                <span class="${i.eOk?'text-green-500':'text-red-500'} w-[50px] text-center">${i.e}${i.eOk?'✅':'❌'}</span>
+                                <span class="${i.sOk?'text-green-500':'text-red-500'} w-[50px] text-center">${i.s}${i.sOk?'✅':'❌'}</span>
                             </div>
-                            <div class="w-8 h-8 rounded-full bg-yellow-400 text-black flex items-center justify-center font-black border-2 border-black">${i.val}</div>
+                            <div class="col-val"><div class="w-8 h-8 rounded-full bg-yellow-400 text-black flex items-center justify-center font-black border-2 border-black">${i.val}</div></div>
                         </div>`;
                     }).join('')}
                 </div>`).join('');
@@ -219,10 +223,10 @@
             let log = history.map(h => `R${h.roll}.S${h.stage} | P(${h.pOk?'✅':'❌'}) E(${h.eOk?'✅':'❌'}) S(${h.sOk?'✅':'❌'}) | G(${h.val})`).join('\n');
             navigator.clipboard.writeText(log); alert("Copied!");
         }
-        function fullReset() { if(confirm("Reset?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Clear Data?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V46_RESTORED'));
+            const saved = JSON.parse(localStorage.getItem('V46_ALIGN'));
             if (saved) {
                 history = saved.history || []; phiRecords = saved.phiRecords || [];
                 roll = saved.roll || 1; stage = saved.stage || 1;
