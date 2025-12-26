@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46 - Roll Card Fix</title>
+    <title>Omni Logic V46 - Ultimate Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
         
+        /* Fixed Header */
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
         .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
@@ -19,11 +20,10 @@
         .warn-active { background: rgba(255, 65, 54, 0.2); border: 1px solid #ff4136; color: #ff4136; }
         .warn-stable { color: #444; font-style: italic; }
 
-        /* Roll Card Styling */
+        /* Roll Card & Grid */
         .main-scroll { margin-top: 220px; height: calc(100vh - 220px); overflow-y: auto; padding: 10px; }
         .roll-card { flex-shrink: 0; width: 310px; background: #001d3d; border-radius: 15px; padding: 12px; border: 1px solid #00cfd5; margin-right: 12px; }
         
-        /* New Table Alignment Logic */
         .table-grid { display: grid; grid-template-columns: 45px 1fr 45px; align-items: center; text-align: center; }
         .pes-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; }
         
@@ -35,8 +35,19 @@
         .stg-end { background: #ff4136 !important; color: white; }
         .row-range { background: rgba(0, 207, 213, 0.08); }
 
+        /* Floating Box (Fixed Width & Wrap) */
+        #floating-box { 
+            position: fixed; right: 10px; bottom: 85px; width: 180px; 
+            background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; 
+            border-radius: 12px; padding: 10px; z-index: 500; display: none; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        #float-symbols { 
+            display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; 
+            padding-top: 10px; font-size: 18px; 
+        }
+
         #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; }
-        #floating-box { position: fixed; right: 10px; bottom: 85px; width: 160px; background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 500; display: none; }
         
         .phi-container { margin-top: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); }
         .phi-scroll-box { height: 160px; overflow-y: auto; }
@@ -46,7 +57,7 @@
 <body>
 
     <div id="logic-picker">
-        <h3 class="text-yellow-400 font-black mb-4 uppercase text-xs">MARKER LOGIC</h3>
+        <h3 class="text-yellow-400 font-black mb-4 uppercase text-xs">SELECT LOGIC</h3>
         <div class="flex gap-4">
             <button onclick="applyFloating('P')" class="bg-red-500 p-4 rounded-lg font-black w-14">P</button>
             <button onclick="applyFloating('E')" class="bg-purple-500 p-4 rounded-lg font-black w-14">E</button>
@@ -60,7 +71,7 @@
             <span id="float-title" class="text-[10px] font-black text-yellow-400"></span>
             <button onclick="clearMark()" class="text-red-500 font-bold px-2">X</button>
         </div>
-        <div id="float-symbols" class="text-lg text-center tracking-widest py-2"></div>
+        <div id="float-symbols"></div>
     </div>
 
     <div class="fixed-header">
@@ -104,7 +115,7 @@
             updatePredictions(val);
             renderUI();
             input.value = ""; input.focus();
-            localStorage.setItem('V46_PERFECT', JSON.stringify({history, phiRecords, roll, stage}));
+            localStorage.setItem('V46_FINAL_WRAP', JSON.stringify({history, phiRecords, roll, stage}));
         }
 
         function checkPatternsV45(entry) {
@@ -148,9 +159,13 @@
 
         function applyFloating(type) {
             const sub = history.slice(markS, markE + 1);
-            const syms = sub.map(h => (type==='P'?h.pOk : type==='E'?h.eOk : h.sOk)?'✅':'❌').join('');
+            const symbolsHTML = sub.map(h => {
+                const isOk = (type==='P'?h.pOk : type==='E'?h.eOk : h.sOk);
+                return `<span>${isOk?'✅':'❌'}</span>`;
+            }).join('');
+            
             document.getElementById('float-title').innerText = type + "-PATTERN";
-            document.getElementById('float-symbols').innerText = syms;
+            document.getElementById('float-symbols').innerHTML = symbolsHTML;
             document.getElementById('floating-box').style.display = 'block';
             document.getElementById('logic-picker').style.display = 'none';
         }
@@ -222,10 +237,10 @@
             let log = history.map(h => `R${h.roll}.S${h.stage} | P(${h.pOk?'✅':'❌'}) E(${h.eOk?'✅':'❌'}) S(${h.sOk?'✅':'❌'}) | G(${h.val})`).join('\n');
             navigator.clipboard.writeText(log); alert("Copied!");
         }
-        function fullReset() { if(confirm("Delete All Data?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Reset Data?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V46_PERFECT'));
+            const saved = JSON.parse(localStorage.getItem('V46_FINAL_WRAP'));
             if (saved) {
                 history = saved.history || []; phiRecords = saved.phiRecords || [];
                 roll = saved.roll || 1; stage = saved.stage || 1;
