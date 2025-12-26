@@ -1,514 +1,260 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic - V21</title>
+    <title>Omni Logic V46 - Marker Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        html, body { background-color: #010816; color: white; height: 100%; overflow-y: auto; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; width: 55px; height: 55px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; background: white; font-weight: 900; }
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; width: 50px; height: 50px; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto; transform: rotate(45deg); background: white; font-weight: 900; }
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
+        
+        /* Header Section (V45 Locked) */
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
+        .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
+        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
+        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 10px; }
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
         .box-s span { transform: rotate(-45deg); display: block; }
-        .log-box { padding: 12px; margin-bottom: 10px; border-radius: 16px; border-left: 8px solid rgba(0,0,0,0.3); color: white; }
-        .bg-big { background: linear-gradient(to right, #ff4136, #85144b); } 
-        .bg-small { background: linear-gradient(to right, #2ecc40, #3d9970); } 
-        .bg-jump { background: linear-gradient(to right, #b10dc9, #0074d9); } 
-        .bg-double { background: linear-gradient(to right, #ffdc00, #ff851b); color: black; }
-        .g-num { background: #ffdc00; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #000; color: black; font-weight: 900; font-size: 14px; }
-        .mini-shape { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: white; font-weight: 900; font-size: 11px; border-width: 2px; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #2ecc40; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; display: none; z-index: 9999; }
-        #streak-warning { 
-            transition: all 0.3s ease-in-out;
-            opacity: 1;
-            max-height: 100px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        #streak-warning.hidden {
-            opacity: 0;
-            max-height: 0;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
+
+        .input-bar { background: #001d3d; padding: 8px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 5px; border: 1px solid rgba(0,207,213,0.3); }
+        #digit-input { width: 60px; height: 45px; border-radius: 8px; text-align: center; font-size: 28px; font-weight: 900; border: 3px solid #00cfd5; color: black; outline: none; }
+        .btn-enter { background: #00cfd5; color: black; font-weight: 900; width: 80px; height: 45px; border-radius: 8px; font-size: 14px; }
+
+        .warn-bar { margin-top: 5px; padding: 4px; border-radius: 6px; text-align: center; min-height: 30px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; }
+        .warn-active { background: rgba(255, 65, 54, 0.2); border: 1px solid #ff4136; color: #ff4136; }
+        .warn-stable { color: #444; font-style: italic; }
+
+        /* Roll Card (V45 Styles) */
+        .main-scroll { margin-top: 215px; height: calc(100vh - 215px); overflow-y: auto; padding: 10px; }
+        .roll-card { flex-shrink: 0; width: 290px; background: #001d3d; border-radius: 15px; padding: 10px; border: 1px solid #00cfd5; margin-right: 10px; height: fit-content; }
+        .row-item { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s; }
+        .pred-text { font-size: 22px; font-weight: 900; } 
+        .symbol-text { font-size: 22px; }
+        .g-num { background: #ffdc00; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: black; font-weight: 900; font-size: 18px; border: 2px solid #000; }
+
+        /* Marking Styles */
+        .stg-btn { background: #1a3a5a; color: #00cfd5; padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; border: 1px solid transparent; }
+        .stg-start { background: #ffdc00 ! from; color: black; border: 1px solid white; animation: blink 1s infinite; }
+        .stg-range { background: rgba(0, 207, 213, 0.2); }
+
+        /* Floating Window */
+        #floating-box { position: fixed; right: 10px; bottom: 100px; width: 140px; background: rgba(0, 29, 61, 0.95); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 1000; display: none; box-shadow: 0 0 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+        .float-header { font-size: 10px; font-weight: 900; color: #ffdc00; margin-bottom: 5px; border-bottom: 1px solid #444; padding-bottom: 2px; display: flex; justify-content: space-between; }
+        .float-symbols { font-size: 18px; font-weight: 900; letter-spacing: 2px; text-align: center; }
+
+        /* PHI & Buttons (V45 Locked) */
+        .phi-container { margin-top: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .phi-scroll-box { height: 160px; overflow-y: auto; margin-top: 10px; }
+        .phi-item { padding: 10px; border-radius: 8px; margin-bottom: 6px; font-weight: 900; font-size: 12px; display: flex; justify-content: space-between; }
+        .bg-big { background: #ff4136; color: white; }
+        .bg-small { background: #2ecc40; color: white; }
+        .bg-alt { background: #b10dc9; color: white; }
+        .btn-big { flex: 1; padding: 12px; font-weight: 900; font-size: 14px; border-radius: 10px; text-align: center; }
+
+        #toast { visibility: hidden; min-width: 100px; background-color: #00cfd5; color: black; text-align: center; border-radius: 50px; padding: 8px 16px; position: fixed; z-index: 2000; bottom: 30px; left: 50%; transform: translateX(-50%); font-weight: 900; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
-<body class="p-2 pb-10">
-    <div id="toast">HISTORY COPIED!</div>
-    <div id="app-main" class="max-w-md mx-auto space-y-4">
-        <div class="text-center pt-2">
-            <h1 class="text-2xl font-black italic text-cyan-500 uppercase">Omni Logic V21</h1>
-            <div class="text-[9px] text-cyan-400 font-bold uppercase mt-1 italic">Precise Warning Auto-Hide</div>
-        </div>
+<body>
 
-        <!-- WARNING BOX -->
-        <div id="streak-warning" class="hidden">
-            <div id="warning-box" class="p-4 rounded-2xl text-center border-l-8 shadow-2xl mx-2">
-                <p id="warning-text" class="font-black text-[14px] uppercase text-white italic"></p>
+    <div id="toast">Copied!</div>
+
+    <div id="floating-box">
+        <div class="float-header">
+            <span id="float-title">P-PATTERN</span>
+            <button onclick="clearMark()" style="color:red">X</button>
+        </div>
+        <div id="float-symbols" class="float-symbols"></div>
+        <div id="float-info" style="font-size:8px; color:gray; margin-top:5px; text-align:center;"></div>
+    </div>
+
+    <div class="fixed-header">
+        <div class="flex justify-between items-center mb-2 px-2">
+            <span class="text-[10px] font-black text-cyan-500 italic">V46 MARKER MODE</span>
+            <span class="text-[9px] text-gray-600 uppercase">Interactive Logic</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1">
+            <div class="text-center"><div class="box-p" id="box-p">-</div></div>
+            <div class="text-center"><div class="box-e" id="box-e">-</div></div>
+            <div class="text-center"><div class="box-s" id="box-s">-</div></div>
+        </div>
+        <div class="input-bar">
+            <input type="tel" id="digit-input" maxlength="1" placeholder="?">
+            <button onclick="submitDigit()" class="btn-enter active:scale-95">ENTER</button>
+        </div>
+        <div id="warning-bar" class="warn-bar warn-stable">MARKET STABLE</div>
+    </div>
+
+    <div class="main-scroll">
+        <div id="history-container" class="flex overflow-x-auto gap-2 pb-2"></div>
+
+        <div class="phi-container">
+            <div class="flex gap-3 mb-3">
+                <button onclick="copyLogs()" class="btn-big bg-cyan-600 text-white shadow-lg">📋 COPY RECORDS</button>
+                <button onclick="fullReset()" class="btn-big bg-red-600 text-white shadow-lg">🗑️ RESET DATA</button>
             </div>
-        </div>
-
-        <div class="bg-[#001d3d] p-4 grid grid-cols-3 gap-1 text-center rounded-[2rem] border-b-4 border-cyan-500 shadow-lg">
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">P-Logic</p><div class="box-p"><span id="pred-p">-</span></div></div>
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">E-Logic</p><div class="box-e"><span id="pred-e">-</span></div></div>
-            <div><p class="text-[9px] text-gray-500 mb-1 font-black uppercase">S-Logic</p><div class="box-s"><span id="pred-s"></span></div></div>
-        </div>
-
-        <div class="bg-[#001d3d] p-5 rounded-[2.5rem] flex items-center justify-between border border-white/5 gap-3 shadow-2xl">
-            <div class="text-6xl font-black text-cyan-400 flex-1 text-center" id="highlight-g">-</div>
-            <div class="flex flex-col gap-2 w-32">
-                <input type="tel" id="digit-input" maxlength="1" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="w-full rounded-xl text-center text-4xl font-black p-2 border-4 border-cyan-500 text-black outline-none bg-white" placeholder="0">
-                <button class="w-full py-3 bg-cyan-500 text-white font-black rounded-xl active:scale-95 shadow-lg" id="btn-enter" onclick="handleManualSubmit()">ENTER</button>
+            <div class="flex justify-between items-center px-1">
+                <h3 class="text-[10px] font-black text-yellow-500 italic uppercase">PHI Records</h3>
             </div>
+            <div id="phi-list" class="phi-scroll-box"></div>
         </div>
-
-        <button onclick="copyAnalysis()" class="w-full py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg active:bg-cyan-500">📋 Copy History</button>
-
-        <div id="history-container" class="flex overflow-x-auto gap-3 py-1"></div>
-
-        <div class="px-2">
-            <h3 class="text-yellow-500 text-[10px] font-black uppercase tracking-wider mb-2 italic">Pattern Intelligence (PIH)</h3>
-            <div id="intel-wrapper" class="bg-white/5 rounded-[2.5rem] p-5 border border-white/5">
-                <div id="intel-log-container" class="h-[280px] overflow-y-auto"><p id="no-intel" class="text-center text-gray-700 text-[10px] mt-24 italic font-bold">READY...</p></div>
-            </div>
-        </div>
-
-        <div class="px-2 pt-4 pb-12"><button onclick="fullReset()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-900 text-white font-black rounded-2xl shadow-xl uppercase text-[10px]">Reset All Data</button></div>
+        <div class="h-20"></div>
     </div>
 
     <script>
-        let history = []; 
-        let intelLogs = [];
-        let roll = 1, stage = 1, pNext = "-", eNext = "-", sNext = "-";
-        let activePattern = null;
+        let history = [], phiRecords = [], roll = 1, stage = 1;
+        let pNext = "-", eNext = "-", sNext = "-", currentPattern = null;
+        let markStart = null, markEnd = null;
 
-        const inputEl = document.getElementById('digit-input');
-        inputEl.addEventListener('keydown', (e) => { 
-            if (e.key === 'Enter') handleManualSubmit(); 
-        });
-
-        function handleManualSubmit() {
-            const valStr = inputEl.value.trim();
-            if (valStr === "") return;
-            const num = parseInt(valStr);
-            const grp = num >= 5 ? 'B' : 'S';
+        function submitDigit() {
+            const input = document.getElementById('digit-input');
+            const val = parseInt(input.value);
+            if (isNaN(val)) return;
+            const grp = val >= 5 ? 'B' : 'S';
             
-            inputEl.value = "";
-            document.getElementById('highlight-g').innerText = num;
+            const entry = { id: Date.now(), val, grp, roll, stage, p: pNext, pOk: pNext === grp, e: eNext, eOk: eNext === grp, s: sNext, sOk: sNext === grp };
+            history.push(entry);
             
-            setTimeout(() => {
-                processGame(num, grp);
-                inputEl.focus();
-            }, 10);
-        }
-
-        function processGame(num, grp) {
-            // Detect pattern BEFORE adding to history
-            detectAndRecord(grp);
+            checkPatterns(entry);
+            if (stage === 10) { roll++; stage = 1; } else { stage++; }
             
-            history.push({ 
-                val: num, 
-                grp, 
-                roll, 
-                stage, 
-                p: pNext, 
-                pOk: (pNext===grp), 
-                e: eNext, 
-                eOk: (eNext===grp), 
-                s: sNext, 
-                sOk: (sNext===grp) 
-            });
-            
-            if(stage === 10) { 
-                roll++; 
-                stage = 1; 
-            } else { 
-                stage++; 
-            }
-            
-            updatePredictions(); 
-            renderTable(); 
+            updatePredictions(val);
+            renderUI();
+            input.value = ""; input.focus();
             save();
         }
 
-        function detectAndRecord(nextGrp) {
-            // Get current history string
-            const currentHistory = history.map(h => h.grp).join('');
-            const hStr = currentHistory + nextGrp;
-            
-            console.log('Checking pattern for:', hStr);
-            
-            // Check for ALL patterns
-            let patternFound = false;
-            let currentLabel = "";
-            let currentCount = 0;
-            let currentCss = "";
-            let patternType = "";
-            
-            // IMPORTANT: Check patterns in specific order
-            
-            // 1. First check for alternating patterns (SBSB or BSBS)
-            // SBSBSB က 6 chars ဆိုရင် (SB)3 ဖြစ်မယ်
-            const altMatch = hStr.match(/((SB){3,}|(BS){3,})$/);
-            if (altMatch) {
-                patternFound = true;
-                patternType = "alternating";
-                currentLabel = "တစ်ခုကျော်စီ Pattern";
-                currentCount = altMatch[0].length;
-                currentCss = "bg-jump border-purple-500";
-                console.log('Alternating pattern detected:', altMatch[0], 'length:', currentCount);
-            }
-            
-            // 2. Check for Big Streak (B ဆက်)
-            if (!patternFound) {
-                const bigStreak = hStr.match(/(B{4,})$/);
-                if (bigStreak) {
-                    patternFound = true;
-                    patternType = "big_streak";
-                    currentLabel = "အကြီးတောက်လျှောက်";
-                    currentCount = bigStreak[0].length;
-                    currentCss = "bg-big border-red-500";
-                    console.log('Big streak detected:', bigStreak[0]);
-                }
-            }
-            
-            // 3. Check for Small Streak (S ဆက်)
-            if (!patternFound) {
-                const smallStreak = hStr.match(/(S{4,})$/);
-                if (smallStreak) {
-                    patternFound = true;
-                    patternType = "small_streak";
-                    currentLabel = "အသေးတောက်လျှောက်";
-                    currentCount = smallStreak[0].length;
-                    currentCss = "bg-small border-green-500";
-                    console.log('Small streak detected:', smallStreak[0]);
-                }
-            }
-            
-            // 4. Check for BBSS Pattern
-            if (!patternFound) {
-                const bbssPattern = hStr.match(/((BBSS){2,}|(SSBB){2,})$/);
-                if (bbssPattern) {
-                    patternFound = true;
-                    patternType = "bbss";
-                    currentLabel = "BBSS Pattern";
-                    currentCount = bbssPattern[0].length;
-                    currentCss = "bg-double";
-                    console.log('BBSS pattern detected:', bbssPattern[0]);
-                }
-            }
-            
-            // Get warning box element
-            const warnBox = document.getElementById('streak-warning');
-            
-            if (patternFound) {
-                console.log('Pattern FOUND:', currentLabel, 'count:', currentCount);
-                
-                // Check if this is a continuation of existing pattern
-                if (activePattern) {
-                    // Check if pattern is broken
-                    const isSamePattern = activePattern.type === patternType;
-                    
-                    if (isSamePattern) {
-                        // Continue same pattern - update count
-                        activePattern.count = currentCount;
-                        activePattern.label = currentLabel;
-                        console.log('Continuing pattern, updated count to:', currentCount);
-                    } else {
-                        // Different pattern started - end old one, start new
-                        console.log('Different pattern detected, ending old pattern:', activePattern.label);
-                        savePatternToIntel(activePattern);
-                        activePattern = {
-                            type: patternType,
-                            label: currentLabel,
-                            count: currentCount,
-                            css: currentCss
-                        };
-                    }
-                } else {
-                    // No active pattern - start new one
-                    console.log('Starting NEW pattern:', currentLabel);
-                    activePattern = {
-                        type: patternType,
-                        label: currentLabel,
-                        count: currentCount,
-                        css: currentCss
-                    };
-                }
-                
-                // Show warning box
-                showWarning(currentLabel, currentCount, currentCss);
-                
+        function handleMark(id) {
+            const index = history.findIndex(h => h.id === id);
+            if (markStart === null || (markStart !== null && markEnd !== null)) {
+                markStart = index; markEnd = null;
+                showToast("စမှတ် သတ်မှတ်ပြီးပါပြီ");
             } else {
-                console.log('NO pattern detected');
-                
-                // Check if we just broke a pattern
-                if (activePattern) {
-                    console.log('Pattern BROKEN. Was:', activePattern.label);
-                    
-                    // Save the completed pattern
-                    savePatternToIntel(activePattern);
-                    
-                    // Clear active pattern
-                    activePattern = null;
-                    
-                    // Hide warning box
-                    hideWarning();
-                } else {
-                    // No pattern was active, ensure warning is hidden
-                    if (!warnBox.classList.contains('hidden')) {
-                        console.log('No active pattern, hiding warning');
-                        hideWarning();
-                    }
-                }
+                markEnd = index;
+                const range = [markStart, markEnd].sort((a,b) => a-b);
+                markStart = range[0]; markEnd = range[1];
+                askLogic(markStart, markEnd);
             }
-            
-            console.log('Active pattern after detection:', activePattern);
+            renderUI();
         }
 
-        function showWarning(label, count, cssClass) {
-            const warnBox = document.getElementById('streak-warning');
-            const warningText = document.getElementById('warning-text');
-            const warningBox = document.getElementById('warning-box');
-            
-            console.log('Showing warning:', label, count);
-            
-            warningText.textContent = `${label} - ${count} ကြိမ်`;
-            warningBox.className = `p-4 rounded-2xl text-center border-l-8 ${cssClass} shadow-2xl mx-2 animate-pulse`;
-            
-            // Remove hidden class to show
-            warnBox.classList.remove('hidden');
-            
-            // Force display block
-            setTimeout(() => {
-                warnBox.style.display = 'block';
-                warnBox.style.opacity = '1';
-                warnBox.style.maxHeight = '100px';
-            }, 10);
-        }
-
-        function hideWarning() {
-            const warnBox = document.getElementById('streak-warning');
-            
-            console.log('Hiding warning box');
-            
-            // Add hidden class
-            warnBox.classList.add('hidden');
-            
-            // Set styles to hide
-            setTimeout(() => {
-                warnBox.style.opacity = '0';
-                warnBox.style.maxHeight = '0';
-                warnBox.style.margin = '0';
-                warnBox.style.padding = '0';
+        function askLogic(s, e) {
+            const logic = prompt("ဘယ် Logic ကို Floating လုပ်မလဲ? (P, E, သို့မဟုတ် S ရိုက်ပါ)").toUpperCase();
+            if (['P','E','S'].includes(logic)) {
+                const sub = history.slice(s, e + 1);
+                const symbols = sub.map(h => {
+                    let ok = (logic === 'P') ? h.pOk : (logic === 'E' ? h.eOk : h.sOk);
+                    return ok ? '✅' : '❌';
+                }).join(' ');
                 
-                // Completely hide after transition
-                setTimeout(() => {
-                    warnBox.style.display = 'none';
-                }, 300);
-            }, 10);
-        }
-
-        function savePatternToIntel(pattern) {
-            if (pattern && pattern.count >= 4) {
-                console.log('Saving pattern to intel:', pattern.label, pattern.count);
-                
-                intelLogs.unshift({
-                    id: intelLogs.length + 1,
-                    label: pattern.label,
-                    count: pattern.count,
-                    css: pattern.css,
-                    time: `R${roll} S${stage}`
-                });
-                
-                renderIntel();
-            }
-        }
-
-        function updatePredictions() {
-            if (!history.length) return;
-            
-            const last = history[history.length-1].val;
-            
-            // P-Logic: Even/Odd
-            pNext = (last % 2 === 0) ? 'S' : 'B';
-            
-            // E-Logic: Sum of last 3
-            eNext = history.length >= 3 ? 
-                (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0 ? 'S' : 'B') : "-";
-            
-            // S-Logic: Digital root of last 5
-            if (history.length >= 5) {
-                let sum = history.slice(-5).reduce((a,b)=>a+b.val,0);
-                while(sum >= 10) {
-                    sum = sum.toString().split('').map(Number).reduce((a,b)=>a+b,0);
-                }
-                sNext = (sum % 2 !== 0) ? 'B' : 'S';
+                document.getElementById('floating-box').style.display = 'block';
+                document.getElementById('float-title').innerText = `${logic}-PATTERN`;
+                document.getElementById('float-symbols').innerText = symbols;
+                document.getElementById('float-info').innerText = `R${sub[0].roll}.S${sub[0].stage} to R${sub[sub.length-1].roll}.S${sub[sub.length-1].stage}`;
             } else {
-                sNext = "-";
-            }
-            
-            document.getElementById('pred-p').innerText = pNext;
-            document.getElementById('pred-e').innerText = eNext;
-            document.getElementById('pred-s').innerText = sNext;
-        }
-
-        function renderIntel() {
-            const container = document.getElementById('intel-log-container');
-            const noIntel = document.getElementById('no-intel');
-            
-            if (intelLogs.length === 0) {
-                noIntel.style.display = 'block';
-                container.innerHTML = '';
-            } else {
-                noIntel.style.display = 'none';
-                container.innerHTML = intelLogs.map(l => `
-                    <div class="log-box ${l.css} shadow-lg border border-white/5 mb-2">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <span class="bg-black/30 w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black italic">#${l.id}</span>
-                                <div>
-                                    <p class="text-[11px] font-black italic uppercase">${l.label}</p>
-                                    <p class="text-[12px] font-black underline">${l.count} ကြိမ် ကျခဲ့သည်</p>
-                                </div>
-                            </div>
-                            <span class="text-[8px] font-black opacity-60">${l.time}</span>
-                        </div>
-                    </div>
-                `).join('');
+                clearMark();
             }
         }
 
-        function renderTable() {
+        function clearMark() {
+            markStart = null; markEnd = null;
+            document.getElementById('floating-box').style.display = 'none';
+            renderUI();
+        }
+
+        function renderUI() {
             const container = document.getElementById('history-container');
-            const rolls = history.reduce((acc, cur) => {
-                if(!acc[cur.roll]) acc[cur.roll] = [];
-                acc[cur.roll].push(cur);
-                return acc;
-            }, {});
+            const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             
-            container.innerHTML = Object.keys(rolls).map(r => `
-                <div class="flex-shrink-0 w-72 bg-white/5 p-4 rounded-[2.5rem] border border-white/5">
-                    <div class="text-[11px] text-center font-black text-cyan-500 mb-3 border-b border-white/10 pb-2">Roll ${r}</div>
-                    ${rolls[r].map(i => `
-                        <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                            <span class="text-[9px] text-gray-500 font-bold">${i.stage}</span>
-                            <div class="flex flex-col items-center gap-0.5">
-                                <div class="mini-shape border-red-500 text-red-500 rounded-full">${i.p}</div>
-                                <span class="text-[8px] font-black ${i.pOk?'text-green-500':'text-red-500'}">${i.pOk?'✅':'❌'}</span>
+            container.innerHTML = Object.keys(groups).map(rNum => `
+                <div class="roll-card">
+                    <div class="text-[10px] font-black text-cyan-500 mb-2 border-b border-white/10 italic">ROLL ${rNum}</div>
+                    ${groups[rNum].map((i, idx) => {
+                        const globalIdx = history.findIndex(h => h.id === i.id);
+                        let markClass = (globalIdx === markStart) ? 'stg-start' : '';
+                        if (markEnd !== null && globalIdx > markStart && globalIdx < markEnd) markClass = 'stg-range';
+                        if (globalIdx === markEnd) markClass = 'stg-start';
+
+                        return `
+                        <div class="row-item ${markClass}">
+                            <div onclick="handleMark(${i.id})" class="stg-btn ${markClass}">${i.stage}</div>
+                            <div class="flex gap-4">
+                                <span class="${i.pOk?'text-green-500':'text-red-500'} pred-text">${i.p}<span class="symbol-text">${i.pOk?'✅':'❌'}</span></span>
+                                <span class="${i.eOk?'text-green-500':'text-red-500'} pred-text">${i.e}<span class="symbol-text">${i.eOk?'✅':'❌'}</span></span>
+                                <span class="${i.sOk?'text-green-500':'text-red-500'} pred-text">${i.s}<span class="symbol-text">${i.sOk?'✅':'❌'}</span></span>
                             </div>
-                            <div class="flex flex-col items-center gap-0.5">
-                                <div class="mini-shape border-purple-500 text-purple-500 rounded-md">${i.e}</div>
-                                <span class="text-[8px] font-black ${i.eOk?'text-green-500':'text-red-500'}">${i.eOk?'✅':'❌'}</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-0.5">
-                                <div class="mini-shape border-green-500 text-green-500 rotate-45">
-                                    <span class="-rotate-45 block">${i.s}</span>
-                                </div>
-                                <span class="text-[8px] font-black ${i.sOk?'text-green-500':'text-red-500'}">${i.sOk?'✅':'❌'}</span>
-                            </div>
-                            <div class="g-num shadow-lg">${i.val}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
-            
+                            <div class="g-num">${i.val}</div>
+                        </div>`;
+                    }).join('')}
+                </div>`).join('');
             container.scrollLeft = container.scrollWidth;
         }
 
-        function copyAnalysis() {
-            let log = "OMNI SYSTEM RECORD\n------------------\n";
-            history.forEach(h => {
-                log += `N:${h.val} | P:${h.p}${h.pOk?'✅':'❌'} | E:${h.e}${h.eOk?'✅':'❌'} | S:${h.s}${h.sOk?'✅':'❌'}\n`;
-            });
-            
-            const ta = document.createElement("textarea");
-            ta.value = log;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand("copy");
-            document.body.removeChild(ta);
-            
-            const t = document.getElementById('toast');
-            t.style.display = 'block';
-            setTimeout(() => {
-                t.style.display = 'none';
-            }, 2000);
+        // --- V45 Locked Logics (Don't touch) ---
+        function checkPatterns(entry) {
+            const seq = history.map(h => h.grp).join('');
+            const sMatch = seq.match(/(B{6,}|S{6,})$/);
+            const aMatch = seq.match(/((SB){3,}|(BS){3,})$/);
+            let active = null;
+            if (sMatch) active = { type: sMatch[0][0]==='B'?"အကြီးများ ဆက်တိုက်ထွက်ခြင်း":"အသေးများ ဆက်တိုက်ထွက်ခြင်း", count: sMatch[0].length, class: sMatch[0][0]==='B'?"bg-big":"bg-small" };
+            else if (aMatch) active = { type: "အကြီး/အသေး တစ်လှည့်စီထွက်ခြင်း", count: aMatch[0].length, class: "bg-alt" };
+            const bar = document.getElementById('warning-bar');
+            if (active) { bar.className = "warn-bar warn-active"; bar.innerText = `⚠️ ${active.type} : ${active.count} ကြိမ်မြောက်`; }
+            else { if (currentPattern) { phiRecords.unshift({ ...currentPattern, time: `R${entry.roll} S${entry.stage}` }); renderPHI(); }
+            bar.className = "warn-bar warn-stable"; bar.innerText = "MARKET STABLE"; }
+            currentPattern = active;
         }
 
-        function save() {
-            localStorage.setItem('OMNI_V21_STABLE', JSON.stringify({
-                history, 
-                roll, 
-                stage, 
-                intelLogs,
-                activePattern
-            }));
+        function renderPHI() {
+            document.getElementById('phi-list').innerHTML = phiRecords.map((r, idx) => `
+                <div class="phi-item ${r.class}">
+                    <span>#${phiRecords.length - idx} | ${r.type} (${r.count} ကြိမ်)</span>
+                    <span class="opacity-70 text-[10px]">${r.time}</span>
+                </div>`).join('');
         }
 
-        function load() {
-            const data = JSON.parse(localStorage.getItem('OMNI_V21_STABLE'));
-            if(data) {
-                history = data.history || [];
-                roll = data.roll || 1;
-                stage = data.stage || 1;
-                intelLogs = data.intelLogs || [];
-                activePattern = data.activePattern || null;
-                
-                renderTable();
-                renderIntel();
-                updatePredictions();
-                
-                // Restore warning box if active pattern exists
-                const warnBox = document.getElementById('streak-warning');
-                if (activePattern && activePattern.count >= 4) {
-                    console.log('Restoring active pattern:', activePattern);
-                    showWarning(
-                        activePattern.label, 
-                        activePattern.count, 
-                        activePattern.css
-                    );
-                } else {
-                    console.log('No active pattern to restore, hiding warning');
-                    hideWarning();
-                }
+        function updatePredictions(last) {
+            pNext = (last % 2 === 0) ? 'S' : 'B';
+            if (history.length >= 3) {
+                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
+                eNext = (s3 % 2 === 0) ? 'S' : 'B';
             }
-            
-            // Always focus input
-            inputEl.focus();
-        }
-
-        function fullReset() {
-            if(confirm("Clear all data? This cannot be undone.")) {
-                localStorage.clear();
-                location.reload();
+            if (history.length >= 5) {
+                let dSum = history.slice(-5).reduce((a, b) => a + b.val, 0);
+                while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+                sNext = (dSum % 2 !== 0) ? 'B' : 'S';
             }
+            document.getElementById('box-p').innerText = pNext;
+            document.getElementById('box-e').innerText = eNext;
+            document.getElementById('box-s').innerText = sNext;
         }
 
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', load);
-        
-        // Debug function to test specific sequence
-        window.testSequence = function(sequence) {
-            console.log('Testing sequence:', sequence);
-            const nums = sequence.split('').map(char => {
-                if (char === 'S') return Math.floor(Math.random() * 4) + 1;
-                if (char === 'B') return Math.floor(Math.random() * 5) + 5;
-                return 0;
-            });
-            
-            console.log('Numbers:', nums);
-            
-            // Simulate entering numbers
-            nums.forEach((num, i) => {
-                setTimeout(() => {
-                    inputEl.value = num;
-                    handleManualSubmit();
-                }, i * 100);
-            });
+        function copyLogs() {
+            if (history.length === 0) return;
+            let log = history.map(h => `R${h.roll}.S${h.stage} | P(${h.p}${h.pOk?'✅':'❌'}) E(${h.e}${h.eOk?'✅':'❌'}) S(${h.s}${h.sOk?'✅':'❌'}) | G(${h.val})`).join('\n');
+            navigator.clipboard.writeText(log).then(() => showToast("Copied!"));
+        }
+
+        function showToast(txt) {
+            const toast = document.getElementById("toast"); toast.innerText = txt;
+            toast.className = "show"; setTimeout(() => { toast.className = ""; }, 2000);
+        }
+
+        function fullReset() { if(confirm("Data အားလုံးဖျက်မှာလား?")) { localStorage.clear(); location.reload(); } }
+        function save() { localStorage.setItem('V46_MARKER', JSON.stringify({ history, phiRecords, roll, stage })); }
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('V46_MARKER'));
+            if (saved) {
+                history = saved.history || []; phiRecords = saved.phiRecords || [];
+                roll = saved.roll || 1; stage = saved.stage || 1;
+                renderUI(); renderPHI();
+                if (history.length) updatePredictions(history[history.length-1].val);
+            }
         };
     </script>
 </body>
