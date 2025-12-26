@@ -3,50 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46 - Fixed</title>
+    <title>Omni Logic V46 - Final Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
         
+        /* Header Fixed */
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
-        .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 10px; }
         .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
-        .box-s span { transform: rotate(-45deg); display: block; }
+        .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
 
-        .input-bar { background: #001d3d; padding: 8px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 5px; border: 1px solid rgba(0,207,213,0.3); }
-        #digit-input { width: 60px; height: 45px; border-radius: 8px; text-align: center; font-size: 28px; font-weight: 900; border: 3px solid #00cfd5; color: black; outline: none; }
-        .btn-enter { background: #00cfd5; color: black; font-weight: 900; width: 80px; height: 45px; border-radius: 8px; font-size: 14px; }
+        .warn-bar { margin-top: 5px; padding: 4px; border-radius: 6px; text-align: center; min-height: 30px; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+        .warn-active { background: rgba(255, 65, 54, 0.2); border: 1px solid #ff4136; color: #ff4136; }
+        .warn-stable { color: #444; font-style: italic; }
 
+        /* Roll Card */
         .main-scroll { margin-top: 215px; height: calc(100vh - 215px); overflow-y: auto; padding: 10px; }
-        .roll-card { flex-shrink: 0; width: 295px; background: #001d3d; border-radius: 15px; padding: 10px; border: 1px solid #00cfd5; margin-right: 12px; height: fit-content; }
+        .roll-card { flex-shrink: 0; width: 300px; background: #001d3d; border-radius: 15px; padding: 10px; border: 1px solid #00cfd5; margin-right: 12px; }
+        .row-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         
-        /* Fixed Clickable Stage Button */
-        .row-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .stg-btn-new { background: #00cfd5; color: black; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 14px; font-weight: 900; cursor: pointer; z-index: 50; }
-        .stg-active { background: #ffdc00 !important; box-shadow: 0 0 10px #ffdc00; }
+        /* Marking Colors */
+        .stg-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 14px; font-weight: 900; background: #1a3a5a; color: #00cfd5; cursor: pointer; }
+        .stg-start { background: #2ecc40 !important; color: white; box-shadow: 0 0 10px #2ecc40; }
+        .stg-end { background: #ff4136 !important; color: white; box-shadow: 0 0 10px #ff4136; }
         .row-range { background: rgba(0, 207, 213, 0.1); }
 
-        .pred-text { font-size: 22px; font-weight: 900; }
-        .g-num { background: #ffdc00; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: black; font-weight: 900; font-size: 18px; border: 2px solid #000; }
-
-        #floating-box { position: fixed; right: 10px; bottom: 85px; width: 160px; background: #001d3d; border: 2px solid #ffdc00; border-radius: 12px; padding: 12px; z-index: 500; display: none; }
+        /* Floating Window */
+        #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,1); }
+        #floating-box { position: fixed; right: 10px; bottom: 85px; width: 160px; background: rgba(0, 29, 61, 0.95); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 500; display: none; }
+        
+        /* PHI List */
         .phi-container { margin-top: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); }
         .phi-scroll-box { height: 160px; overflow-y: auto; }
-        .btn-big { flex: 1; padding: 12px; font-weight: 900; font-size: 14px; border-radius: 10px; text-align: center; }
+        .phi-item { padding: 10px; border-radius: 8px; margin-bottom: 6px; font-weight: 900; font-size: 12px; display: flex; justify-content: space-between; color: white; }
     </style>
 </head>
 <body>
 
+    <div id="logic-picker">
+        <h3 class="text-yellow-400 font-black mb-4">LOGIC ရွေးချယ်ပါ</h3>
+        <div class="flex gap-4">
+            <button onclick="applyFloating('P')" class="bg-red-500 p-4 rounded-lg font-black w-16">P</button>
+            <button onclick="applyFloating('E')" class="bg-purple-500 p-4 rounded-lg font-black w-16">E</button>
+            <button onclick="applyFloating('S')" class="bg-green-500 p-4 rounded-lg font-black w-16">S</button>
+        </div>
+        <button onclick="clearMark()" class="mt-4 text-gray-400 text-xs">CANCEL</button>
+    </div>
+
     <div id="floating-box">
-        <div class="flex justify-between items-center mb-2 border-b border-gray-600 pb-1">
-            <span id="float-title" class="text-[11px] font-black text-yellow-400"></span>
+        <div class="flex justify-between items-center mb-1 border-b border-gray-600 pb-1">
+            <span id="float-title" class="text-[10px] font-black text-yellow-400"></span>
             <button onclick="clearMark()" class="text-red-500 font-bold">X</button>
         </div>
-        <div id="float-symbols" class="text-xl text-center tracking-widest py-2"></div>
-        <div id="float-info" class="text-[9px] text-gray-400 text-center"></div>
+        <div id="float-symbols" class="text-lg text-center tracking-widest py-2"></div>
     </div>
 
     <div class="fixed-header">
@@ -55,19 +67,19 @@
             <div class="box-e" id="box-e">-</div>
             <div class="box-s" id="box-s">-</div>
         </div>
-        <div class="input-bar">
-            <input type="tel" id="digit-input" maxlength="1">
-            <button onclick="submitDigit()" class="btn-enter">ENTER</button>
+        <div class="flex items-center justify-center gap-2 bg-[#001d3d] p-2 rounded-xl border border-cyan-900/50">
+            <input type="tel" id="digit-input" class="w-16 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-400 outline-none" maxlength="1">
+            <button onclick="submitDigit()" class="bg-cyan-400 text-black h-12 px-6 rounded-lg font-black text-sm active:scale-95">ENTER</button>
         </div>
-        <div id="warning-bar" class="text-center text-[12px] font-bold mt-2 text-gray-500 italic">MARKET STABLE</div>
+        <div id="warning-bar" class="warn-bar warn-stable">MARKET STABLE</div>
     </div>
 
     <div class="main-scroll">
         <div id="history-container" class="flex overflow-x-auto gap-2 pb-2"></div>
         <div class="phi-container">
             <div class="flex gap-3 mb-3">
-                <button onclick="copyLogs()" class="btn-big bg-cyan-600">COPY</button>
-                <button onclick="fullReset()" class="btn-big bg-red-600">RESET</button>
+                <button onclick="copyLogs()" class="flex-1 p-3 bg-cyan-600 rounded-xl font-black text-sm">📋 COPY</button>
+                <button onclick="fullReset()" class="flex-1 p-3 bg-red-600 rounded-xl font-black text-sm">🗑️ RESET</button>
             </div>
             <div id="phi-list" class="phi-scroll-box"></div>
         </div>
@@ -76,70 +88,105 @@
 
     <script>
         let history = [], phiRecords = [], roll = 1, stage = 1;
-        let pNext = "-", eNext = "-", sNext = "-", markStart = null, markEnd = null;
+        let pNext = "-", eNext = "-", sNext = "-", markS = null, markE = null;
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             if (isNaN(val)) return;
-            const entry = { id: Date.now(), val, grp: val >= 5 ? 'B' : 'S', roll, stage, p: pNext, pOk: pNext === (val >= 5 ? 'B' : 'S'), e: eNext, eOk: eNext === (val >= 5 ? 'B' : 'S'), s: sNext, sOk: sNext === (val >= 5 ? 'B' : 'S') };
+            const grp = val >= 5 ? 'B' : 'S';
+            const entry = { id: Date.now(), val, grp, roll, stage, p: pNext, pOk: pNext===grp, e: eNext, eOk: eNext===grp, s: sNext, sOk: sNext===grp };
             history.push(entry);
+            checkPatterns(entry);
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updatePredictions(val);
             renderUI();
             input.value = ""; input.focus();
-            localStorage.setItem('V46_MARK', JSON.stringify({history, roll, stage}));
+            localStorage.setItem('V46_FINAL', JSON.stringify({history, phiRecords, roll, stage}));
         }
 
-        function setMark(id) {
+        function toggleMark(id) {
             const idx = history.findIndex(h => h.id === id);
-            if (markStart === null || (markStart !== null && markEnd !== null)) {
-                markStart = idx; markEnd = null;
-                document.getElementById('floating-box').style.display = 'none';
+            if (markS === null || (markS !== null && markE !== null)) {
+                markS = idx; markE = null;
+                document.getElementById('logic-picker').style.display = 'none';
             } else {
-                markEnd = idx;
-                const range = [markStart, markEnd].sort((a,b) => a-b);
-                markStart = range[0]; markEnd = range[1];
-                const logic = prompt("Logic ရွေးပါ (P, E, သို့မဟုတ် S)");
-                if (logic) showFloating(logic.toUpperCase());
+                markE = idx;
+                const range = [markS, markE].sort((a,b)=>a-b);
+                markS = range[0]; markE = range[1];
+                document.getElementById('logic-picker').style.display = 'block';
             }
             renderUI();
         }
 
-        function showFloating(type) {
-            const sub = history.slice(markStart, markEnd + 1);
-            const syms = sub.map(h => (type === 'P' ? h.pOk : type === 'E' ? h.eOk : h.sOk) ? '✅' : '❌').join('');
-            document.getElementById('floating-box').style.display = 'block';
+        function applyFloating(type) {
+            const sub = history.slice(markS, markE + 1);
+            const syms = sub.map(h => (type==='P'?h.pOk : type==='E'?h.eOk : h.sOk)?'✅':'❌').join('');
             document.getElementById('float-title').innerText = type + "-PATTERN";
             document.getElementById('float-symbols').innerText = syms;
-            document.getElementById('float-info').innerText = `R${sub[0].roll}.S${sub[0].stage} to R${sub[sub.length-1].roll}.S${sub[sub.length-1].stage}`;
+            document.getElementById('floating-box').style.display = 'block';
+            document.getElementById('logic-picker').style.display = 'none';
         }
 
-        function clearMark() { markStart = null; markEnd = null; document.getElementById('floating-box').style.display = 'none'; renderUI(); }
+        function clearMark() {
+            markS = null; markE = null;
+            document.getElementById('floating-box').style.display = 'none';
+            document.getElementById('logic-picker').style.display = 'none';
+            renderUI();
+        }
 
         function renderUI() {
             const container = document.getElementById('history-container');
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
-            container.innerHTML = Object.keys(groups).map(rNum => `
+            container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
-                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-white/10 italic">ROLL ${rNum}</div>
-                    ${groups[rNum].map(i => {
-                        const curIdx = history.findIndex(h => h.id === i.id);
-                        let stgClass = (curIdx === markStart || curIdx === markEnd) ? "stg-active" : "";
-                        let rowClass = (markEnd !== null && curIdx > markStart && curIdx < markEnd) ? "row-range" : "";
+                    <div class="flex justify-between items-center border-b border-cyan-900 pb-1 mb-2">
+                        <span class="text-[10px] font-black text-cyan-400 italic">ROLL ${r}</span>
+                        <span class="text-[9px] font-bold text-gray-500">P | E | S</span>
+                    </div>
+                    ${groups[r].map(i => {
+                        const idx = history.findIndex(h => h.id === i.id);
+                        let stgClass = (idx === markS) ? "stg-start" : (idx === markE ? "stg-end" : "");
+                        let rowClass = (markE !== null && idx > markS && idx < markE) ? "row-range" : "";
                         return `
                         <div class="row-item ${rowClass}">
-                            <div onclick="setMark(${i.id})" class="stg-btn-new ${stgClass}">${i.stage}</div>
-                            <div class="flex gap-4">
-                                <span class="${i.pOk?'text-green-500':'text-red-500'} pred-text">${i.p}${i.pOk?'✅':'❌'}</span>
-                                <span class="${i.eOk?'text-green-500':'text-red-500'} pred-text">${i.e}${i.eOk?'✅':'❌'}</span>
-                                <span class="${i.sOk?'text-green-500':'text-red-500'} pred-text">${i.s}${i.sOk?'✅':'❌'}</span>
+                            <div onclick="toggleMark(${i.id})" class="stg-btn ${stgClass}">${i.stage}</div>
+                            <div class="flex gap-4 text-[22px] font-black">
+                                <span class="${i.pOk?'text-green-500':'text-red-500'}">${i.p}${i.pOk?'✅':'❌'}</span>
+                                <span class="${i.eOk?'text-green-500':'text-red-500'}">${i.e}${i.eOk?'✅':'❌'}</span>
+                                <span class="${i.sOk?'text-green-500':'text-red-500'}">${i.s}${i.sOk?'✅':'❌'}</span>
                             </div>
-                            <div class="g-num">${i.val}</div>
+                            <div class="w-8 h-8 rounded-full bg-yellow-400 text-black flex items-center justify-center font-black border-2 border-black">${i.val}</div>
                         </div>`;
                     }).join('')}
                 </div>`).join('');
             container.scrollLeft = container.scrollWidth;
+        }
+
+        function checkPatterns(entry) {
+            const seq = history.map(h => h.grp).join('');
+            const sMatch = seq.match(/(B{6,}|S{6,})$/);
+            const aMatch = seq.match(/((SB){3,}|(BS){3,})$/);
+            let active = null;
+            if (sMatch) active = { type: sMatch[0][0]==='B'?"အကြီးများ ဆက်တိုက်":"အသေးများ ဆက်တိုက်", count: sMatch[0].length, class: sMatch[0][0]==='B'?"bg-red-600":"bg-green-600" };
+            else if (aMatch) active = { type: "အကြီး/အသေး တစ်လှည့်စီ", count: aMatch[0].length, class: "bg-purple-600" };
+            
+            const bar = document.getElementById('warning-bar');
+            if (active) {
+                bar.className = "warn-bar warn-active"; bar.innerText = `⚠️ ${active.type} : ${active.count} ကြိမ်`;
+                if (!history.find(h => h.id === entry.id).patternSaved) {
+                    phiRecords.unshift({ ...active, time: `R${entry.roll} S${entry.stage}` });
+                    entry.patternSaved = true; renderPHI();
+                }
+            } else { bar.className = "warn-bar warn-stable"; bar.innerText = "MARKET STABLE"; }
+        }
+
+        function renderPHI() {
+            document.getElementById('phi-list').innerHTML = phiRecords.map((r, idx) => `
+                <div class="phi-item ${r.class}">
+                    <span>#${phiRecords.length - idx} | ${r.type} (${r.count})</span>
+                    <span class="opacity-70">${r.time}</span>
+                </div>`).join('');
         }
 
         function updatePredictions(last) {
@@ -158,15 +205,20 @@
             document.getElementById('box-s').innerText = sNext;
         }
 
-        function fullReset() { localStorage.clear(); location.reload(); }
         function copyLogs() {
             let log = history.map(h => `R${h.roll}.S${h.stage} | P(${h.pOk?'✅':'❌'}) E(${h.eOk?'✅':'❌'}) S(${h.sOk?'✅':'❌'}) | G(${h.val})`).join('\n');
             navigator.clipboard.writeText(log); alert("Copied!");
         }
+        function fullReset() { if(confirm("Data ဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V46_MARK'));
-            if (saved) { history = saved.history; roll = saved.roll; stage = saved.stage; renderUI(); if(history.length) updatePredictions(history[history.length-1].val); }
+            const saved = JSON.parse(localStorage.getItem('V46_FINAL'));
+            if (saved) {
+                history = saved.history || []; phiRecords = saved.phiRecords || [];
+                roll = saved.roll || 1; stage = saved.stage || 1;
+                renderUI(); renderPHI();
+                if (history.length) updatePredictions(history[history.length-1].val);
+            }
         };
     </script>
 </body>
