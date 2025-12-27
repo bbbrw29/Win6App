@@ -3,276 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.2 - Master Fix</title>
+    <title>Omni Logic V46.4 - AI MASTER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #020c1b; color: white; overflow: hidden; touch-action: manipulation; }
         
-        /* Fixed Header */
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
-        .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
-        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
-        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 10px; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #020c1b; padding: 15px 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 20px rgba(0, 242, 255, 0.2); }
         
-        /* S-Box Fix: Shape rotate but Text stay straight */
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); overflow: visible; }
-        .box-s span { transform: rotate(-45deg); display: inline-block; }
+        /* Prediction Boxes */
+        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; text-align: center; }
+        .box-title { font-size: 12px; font-weight: 900; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+        .predict-box { width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 24px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        
+        .p-box { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
+        .e-box { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 12px; }
+        .s-box { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 8px; transform: rotate(45deg); }
+        .s-box span { transform: rotate(-45deg); display: inline-block; }
 
-        /* Custom Toast Notification for Copy */
-        #toast { position: fixed; top: 80%; left: 50%; transform: translateX(-50%); background: #00cfd5; color: black; padding: 10px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 2000; box-shadow: 0 4px 15px rgba(0,207,213,0.5); }
+        /* AI Smart Glows */
+        .glow-cyan { box-shadow: 0 0 25px #00f2ff, inset 0 0 10px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
+        .glow-red { box-shadow: 0 0 25px #ff4136, inset 0 0 10px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
 
-        .warn-bar { margin-top: 5px; padding: 4px; border-radius: 6px; text-align: center; min-height: 30px; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
-        .warn-active { background: rgba(255, 65, 54, 0.2); border: 1px solid #ff4136; color: #ff4136; }
-        .warn-stable { color: #444; font-style: italic; }
+        /* PHI Intensity Bar */
+        .phi-container { width: 100%; height: 6px; background: #111; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        #phi-bar { width: 0%; height: 100%; background: linear-gradient(to right, #00f2ff, #ff00ff); transition: width 0.5s ease; }
 
-        .main-scroll { margin-top: 220px; height: calc(100vh - 220px); overflow-y: auto; padding: 10px; }
-        .roll-card { flex-shrink: 0; width: 310px; background: #001d3d; border-radius: 15px; padding: 12px; border: 1px solid #00cfd5; margin-right: 12px; }
-        
-        .table-grid { display: grid; grid-template-columns: 45px 1fr 45px; align-items: center; text-align: center; }
-        .pes-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; }
-        .row-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .header-labels { color: #555; font-size: 11px; font-weight: 900; padding-bottom: 4px; border-bottom: 1px solid #003366; margin-bottom: 4px; }
-        
-        .stg-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 14px; font-weight: 900; background: #1a3a5a; color: #00cfd5; cursor: pointer; margin-left: 4px; }
-        .stg-start { background: #2ecc40 !important; color: white; }
-        .stg-end { background: #ff4136 !important; color: white; }
-        .row-range { background: rgba(0, 207, 213, 0.08); }
+        .win-rate { font-size: 11px; font-weight: 900; color: #00f2ff; margin-top: 8px; }
+        .status-text { font-size: 10px; color: #888; text-align: center; margin-top: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-        #floating-box { position: fixed; right: 10px; bottom: 85px; width: 180px; background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 500; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
-        #float-symbols { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; font-size: 18px; }
-        #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; }
+        .main-scroll { margin-top: 260px; height: calc(100vh - 260px); overflow-y: auto; padding: 15px; }
+        .roll-card { background: #0a192f; border-radius: 18px; padding: 15px; border: 1px solid #1e3a8a; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .phi-container { margin-top: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); }
-        .phi-scroll-box { height: 160px; overflow-y: auto; }
-        .phi-item { padding: 10px; border-radius: 8px; margin-bottom: 6px; font-weight: 900; font-size: 12px; display: flex; justify-content: space-between; }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
-    <div id="toast">Copied to Clipboard!</div>
-
-    <div id="logic-picker">
-        <h3 class="text-yellow-400 font-black mb-4 uppercase text-xs">SELECT LOGIC</h3>
-        <div class="flex gap-4">
-            <button onclick="applyFloating('P')" class="bg-red-500 p-4 rounded-lg font-black w-14">P</button>
-            <button onclick="applyFloating('E')" class="bg-purple-500 p-4 rounded-lg font-black w-14">E</button>
-            <button onclick="applyFloating('S')" class="bg-green-500 p-4 rounded-lg font-black w-14">S</button>
-        </div>
-        <button onclick="clearMark()" class="mt-4 text-gray-500 text-xs">CANCEL</button>
-    </div>
-
-    <div id="floating-box">
-        <div class="flex justify-between items-center mb-1 border-b border-gray-600 pb-1">
-            <span id="float-title" class="text-[10px] font-black text-yellow-400"></span>
-            <button onclick="clearMark()" class="text-red-500 font-bold px-2">X</button>
-        </div>
-        <div id="float-symbols"></div>
-    </div>
+    <div id="toast">Copied Success!</div>
 
     <div class="fixed-header">
-        <div class="grid grid-cols-3 gap-1 mb-2">
-            <div class="box-p" id="box-p">-</div>
-            <div class="box-e" id="box-e">-</div>
-            <div class="box-s" id="box-s"><span>-</span></div>
+        <div class="box-container">
+            <div>
+                <div class="box-title">Trend P</div>
+                <div class="predict-box p-box" id="box-p">-</div>
+                <div class="win-rate" id="p-rate">RATE: 0%</div>
+            </div>
+            <div>
+                <div class="box-title">Flow E</div>
+                <div class="predict-box e-box" id="box-e">-</div>
+                <div class="win-rate" id="e-rate">RATE: 0%</div>
+            </div>
+            <div>
+                <div class="box-title" style="margin-left: 10px;">Weight S</div>
+                <div class="predict-box s-box" id="box-s"><span>-</span></div>
+                <div class="win-rate" id="s-rate" style="margin-top: 18px;">RATE: 0%</div>
+            </div>
         </div>
-        <div class="flex items-center justify-center gap-2 bg-[#001d3d] p-2 rounded-xl border border-cyan-900/50">
-            <input type="tel" id="digit-input" class="w-16 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-400" maxlength="1">
-            <button onclick="submitDigit()" class="bg-cyan-400 text-black h-12 px-6 rounded-lg font-black text-sm">ENTER</button>
+
+        <div class="phi-container"><div id="phi-bar"></div></div>
+        
+        <div class="flex gap-2 items-center justify-center">
+            <input type="tel" id="digit-input" class="w-24 h-14 rounded-xl text-center text-4xl font-black text-black border-4 border-cyan-500 shadow-lg" maxlength="1">
+            <button onclick="submitDigit()" class="bg-cyan-500 hover:bg-cyan-400 text-black h-14 px-8 rounded-xl font-black transition-all active:scale-95">ENTER</button>
         </div>
-        <div id="warning-bar" class="warn-bar warn-stable">MARKET STABLE</div>
+        <div id="ai-status" class="status-text">Ready to Analyze Market...</div>
     </div>
 
     <div class="main-scroll">
-        <div id="history-container" class="flex overflow-x-auto gap-2 pb-2"></div>
-        <div class="phi-container">
-            <div class="flex gap-3 mb-3">
-                <button onclick="copyLogs()" class="flex-1 p-3 bg-cyan-600 rounded-xl font-black text-xs text-white uppercase">Copy Logs</button>
-                <button onclick="fullReset()" class="flex-1 p-3 bg-red-600 rounded-xl font-black text-xs text-white uppercase">Reset All</button>
-            </div>
-            <div id="phi-list" class="phi-scroll-box"></div>
+        <div class="flex gap-3 mb-6">
+            <button onclick="copyLogs()" class="flex-1 p-4 bg-slate-800 rounded-2xl font-black text-xs border border-slate-600">COPY LOGS</button>
+            <button onclick="fullReset()" class="flex-1 p-4 bg-red-900 rounded-2xl font-black text-xs border border-red-700">FULL RESET</button>
         </div>
+        <div id="history-container"></div>
     </div>
 
     <script>
-        let history = [], phiRecords = [], roll = 1, stage = 1;
-        let pNext = "-", eNext = "-", sNext = "-", markS = null, markE = null;
-        let currentActivePattern = null;
+        let history = [], roll = 1, stage = 1;
+        let pNext = "-", eNext = "-", sNext = "-";
+        let streakTracker = { p:0, e:0, s:0 }; // To track losing streaks for Emergency Red Glow
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             if (isNaN(val)) return;
             const grp = val >= 5 ? 'B' : 'S';
-            
-            const entry = { 
-                id: Date.now(), val, grp, roll, stage, 
-                p: pNext, pOk: pNext !== "-" ? pNext === grp : null,
-                e: eNext, eOk: eNext !== "-" ? eNext === grp : null,
-                s: sNext, sOk: sNext !== "-" ? sNext === grp : null
+
+            const entry = {
+                val, grp, roll, stage,
+                p: pNext, pOk: pNext === "-" ? null : pNext === grp,
+                e: eNext, eOk: eNext === "-" ? null : eNext === grp,
+                s: sNext, sOk: sNext === "-" ? null : sNext === grp
             };
-            
+
+            // Emergency Streak Tracking
+            if (entry.pOk === false) streakTracker.p++; else streakTracker.p = 0;
+            if (entry.eOk === false) streakTracker.e++; else streakTracker.e = 0;
+            if (entry.sOk === false) streakTracker.s++; else streakTracker.s = 0;
+
             history.push(entry);
-            checkPatternsV45(entry);
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
-            updatePredictions(val);
+            
+            updateAI(val);
             renderUI();
             input.value = ""; input.focus();
-            localStorage.setItem('V46_FINAL_WRAP', JSON.stringify({history, phiRecords, roll, stage}));
+            localStorage.setItem('V46_4_MASTER', JSON.stringify({history, roll, stage, streakTracker}));
         }
 
-        function checkPatternsV45(entry) {
-            const seq = history.map(h => h.grp).join('');
-            const sMatch = seq.match(/(B{6,}|S{6,})$/);
-            const aMatch = seq.match(/((SB){3,}|(BS){3,})$/);
-            let active = null;
-            if (sMatch) active = { type: sMatch[0][0]==='B'?"အကြီးများ ဆက်တိုက်":"အသေးများ ဆက်တိုက်", count: sMatch[0].length, class: sMatch[0][0]==='B'?"bg-red-600":"bg-green-600" };
-            else if (aMatch) active = { type: "အကြီး/အသေး တစ်လှည့်စီ", count: aMatch[0].length, class: "bg-purple-600" };
+        function updateAI(last) {
+            // 1. Trend-Based Logic P (Follows recent trend)
+            if (history.length >= 2) {
+                const last2 = history.slice(-2);
+                if (last2[0].grp === last2[1].grp) pNext = last2[1].grp; // Trend Follow
+                else pNext = last2[1].grp === 'B' ? 'S' : 'B'; // Zigzag Follow
+            } else { pNext = last >= 5 ? 'B' : 'S'; }
 
-            const bar = document.getElementById('warning-bar');
-            if (active) {
-                bar.className = "warn-bar warn-active"; bar.innerText = `⚠️ ${active.type} : ${active.count} ကြိမ်`;
-                if (!currentActivePattern || currentActivePattern.type !== active.type) {
-                    phiRecords.unshift({ ...active, time: `R${entry.roll} S${entry.stage}` });
-                } else {
-                    phiRecords[0].count = active.count;
-                    phiRecords[0].time = `R${entry.roll} S${entry.stage}`;
-                }
-                currentActivePattern = active;
-                renderPHI();
-            } else {
-                bar.className = "warn-bar warn-stable"; bar.innerText = "MARKET STABLE";
-                currentActivePattern = null;
+            // 2. Flow-Based Logic E (Stable 3-Sum)
+            if (history.length >= 3) {
+                const sum3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
+                eNext = (sum3 % 2 === 0) ? 'S' : 'B';
             }
+
+            // 3. Adaptive Weight Logic S (Mean Strength)
+            if (history.length >= 5) {
+                const mean = history.slice(-5).reduce((a, b) => a + b.val, 0) / 5;
+                sNext = mean >= 4.5 ? 'B' : 'S';
+            }
+
+            // Update UI Boxes
+            document.getElementById('box-p').innerText = pNext;
+            document.getElementById('box-e').innerText = eNext;
+            document.getElementById('box-s').innerHTML = `<span>${sNext}</span>`;
+
+            calculateWinRates();
+            updatePHI();
+        }
+
+        function calculateWinRates() {
+            const last15 = history.slice(-15);
+            const getRate = (type) => {
+                const valid = last15.filter(h => h[type] !== "-");
+                if (valid.length === 0) return 0;
+                return Math.round((valid.filter(h => h[type + 'Ok']).length / valid.length) * 100);
+            };
+
+            const rates = { p: getRate('p'), e: getRate('e'), s: getRate('s') };
+            document.getElementById('p-rate').innerText = `RATE: ${rates.p}%`;
+            document.getElementById('e-rate').innerText = `RATE: ${rates.e}%`;
+            document.getElementById('s-rate').innerText = `RATE: ${rates.s}%`;
+
+            // AI GLOW SYSTEM
+            const boxes = { p: 'box-p', e: 'box-e', s: 'box-s' };
+            Object.keys(boxes).forEach(key => {
+                const el = document.getElementById(boxes[key]);
+                el.classList.remove('glow-cyan', 'glow-red');
+                
+                if (streakTracker[key] >= 4) {
+                    el.classList.add('glow-red'); // Emergency Stop
+                } else if (rates[key] >= 80) {
+                    el.classList.add('glow-cyan'); // AI Recommendation
+                }
+            });
+
+            // AI Status Text
+            const status = document.getElementById('ai-status');
+            const maxRate = Math.max(rates.p, rates.e, rates.s);
+            if (Object.values(streakTracker).some(v => v >= 4)) {
+                status.innerText = "⚠️ High Risk Detected - Follow AI Glow";
+                status.style.color = "#ff4136";
+            } else if (maxRate >= 80) {
+                status.innerText = "🔥 AI Signal Strong - Follow Cyan Glow";
+                status.style.color = "#00f2ff";
+            } else {
+                status.innerText = "Market Analysis in Progress...";
+                status.style.color = "#888";
+            }
+        }
+
+        function updatePHI() {
+            if (history.length < 5) return;
+            const last5 = history.slice(-5);
+            const bCount = last5.filter(h => h.grp === 'B').length;
+            const intensity = Math.abs(bCount - 2.5) * 40; 
+            document.getElementById('phi-bar').style.width = intensity + "%";
         }
 
         function renderUI() {
             const container = document.getElementById('history-container');
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             
-            container.innerHTML = Object.keys(groups).map(r => `
+            container.innerHTML = Object.keys(groups).reverse().map(r => `
                 <div class="roll-card">
-                    <div class="text-[10px] font-black text-cyan-400 italic mb-1">ROLL ${r}</div>
-                    <div class="table-grid header-labels">
-                        <div></div><div class="pes-columns"><span>P</span><span>E</span><span>S</span></div><div></div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-black text-cyan-400">ROLL ${r}</span>
+                        <span class="text-[9px] text-slate-500 uppercase">AI Protected</span>
                     </div>
-                    ${groups[r].map(i => {
-                        const idx = history.findIndex(h => h.id === i.id);
-                        let stgClass = (idx === markS) ? "stg-start" : (idx === markE ? "stg-end" : "");
-                        let rowClass = (markE !== null && idx > markS && idx < markE) ? "row-range" : "";
-                        
-                        const getDisp = (pred, ok) => {
-                            if (pred === "-") return "<span>-</span>";
-                            return `<span class="${ok?'text-green-500':'text-red-500'}">${pred}${ok?'✅':'❌'}</span>`;
-                        };
-
-                        return `
-                        <div class="row-item ${rowClass}">
-                            <div class="table-grid">
-                                <div onclick="toggleMark(${i.id})" class="stg-btn ${stgClass}">${i.stage}</div>
-                                <div class="pes-columns text-[18px] font-black">
-                                    ${getDisp(i.p, i.pOk)}
-                                    ${getDisp(i.e, i.eOk)}
-                                    ${getDisp(i.s, i.sOk)}
-                                </div>
-                                <div class="w-8 h-8 rounded-full bg-yellow-400 text-black flex items-center justify-center font-black border-2 border-black mx-auto">${i.val}</div>
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>`).join('');
-            container.scrollLeft = container.scrollWidth;
-        }
-
-        function updatePredictions(last) {
-            pNext = (last % 2 === 0) ? 'S' : 'B';
-            if (history.length >= 3) {
-                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
-                eNext = (s3 % 2 === 0) ? 'S' : 'B';
-            } else { eNext = "-"; }
-            
-            if (history.length >= 5) {
-                let dSum = history.slice(-5).reduce((a, b) => a + b.val, 0);
-                while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);
-                sNext = (dSum % 2 !== 0) ? 'B' : 'S';
-            } else { sNext = "-"; }
-            
-            document.getElementById('box-p').innerText = pNext;
-            document.getElementById('box-e').innerText = eNext;
-            document.getElementById('box-s').innerHTML = `<span>${sNext}</span>`;
+                    ${groups[r].map(i => `
+                        <div class="grid grid-cols-5 gap-1 py-2 border-b border-white/5 items-center text-center">
+                            <div class="bg-slate-800 rounded text-[10px] py-1 font-bold text-cyan-300">${i.stage}</div>
+                            <div class="text-[13px] font-black ${i.pOk?'text-green-400':'text-red-500'}">${i.p}${i.pOk?'✅':'❌'}</div>
+                            <div class="text-[13px] font-black ${i.eOk?'text-green-400':'text-red-500'}">${i.e}${i.eOk?'✅':'❌'}</div>
+                            <div class="text-[13px] font-black ${i.sOk?'text-green-400':'text-red-500'}">${i.s}${i.sOk?'✅':'❌'}</div>
+                            <div class="text-lg font-black text-yellow-400">${i.val}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
         }
 
         function copyLogs() {
-            let logText = history.map(h => {
-                const pSt = h.p !== "-" ? `${h.p}(${h.pOk?'✅':'❌'})` : "-";
-                const eSt = h.e !== "-" ? `${h.e}(${h.eOk?'✅':'❌'})` : "-";
-                const sSt = h.s !== "-" ? `${h.s}(${h.sOk?'✅':'❌'})` : "-";
-                return `R${h.roll}.S${h.stage} | P:${pSt} E:${eSt} S:${sSt} | G:${h.val}`;
-            }).join('\n');
-
-            const tempInput = document.createElement("textarea");
-            tempInput.value = logText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            
-            // Show custom toast instead of alert
-            const t = document.getElementById('toast');
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 2000);
+            let logText = history.map(h => `R${h.roll}.S${h.stage} | P:${h.p}${h.pOk?'✅':'❌'} E:${h.e}${h.eOk?'✅':'❌'} S:${h.s}${h.sOk?'✅':'❌'} | G(${h.val})`).join('\n');
+            navigator.clipboard.writeText(logText).then(() => {
+                const t = document.getElementById('toast');
+                t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
+            });
         }
 
-        function toggleMark(id) {
-            const idx = history.findIndex(h => h.id === id);
-            if (markS === null || (markS !== null && markE !== null)) {
-                markS = idx; markE = null;
-                document.getElementById('floating-box').style.display = 'none';
-            } else {
-                markE = idx;
-                const range = [markS, markE].sort((a,b)=>a-b);
-                markS = range[0]; markE = range[1];
-                document.getElementById('logic-picker').style.display = 'block';
-            }
-            renderUI();
-        }
-
-        function applyFloating(type) {
-            const sub = history.slice(markS, markE + 1);
-            const html = sub.map(h => {
-                const ok = (type==='P'?h.pOk : type==='E'?h.eOk : h.sOk);
-                if (ok === null) return "<span>-</span>";
-                return `<span>${ok?'✅':'❌'}</span>`;
-            }).join('');
-            document.getElementById('float-title').innerText = type + "-PATTERN";
-            document.getElementById('float-symbols').innerHTML = html;
-            document.getElementById('floating-box').style.display = 'block';
-            document.getElementById('logic-picker').style.display = 'none';
-        }
-
-        function clearMark() {
-            markS = null; markE = null;
-            document.getElementById('floating-box').style.display = 'none';
-            document.getElementById('logic-picker').style.display = 'none';
-            renderUI();
-        }
-
-        function renderPHI() {
-            document.getElementById('phi-list').innerHTML = phiRecords.map((r, idx) => `
-                <div class="phi-item ${r.class}">
-                    <span>#${phiRecords.length - idx} | ${r.type} (${r.count})</span>
-                    <span class="opacity-70">${r.time}</span>
-                </div>`).join('');
-        }
-
-        function fullReset() { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Clear All Data & Reset AI?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V46_FINAL_WRAP'));
-            if (saved) {
-                history = saved.history || []; phiRecords = saved.phiRecords || [];
-                roll = saved.roll || 1; stage = saved.stage || 1;
-                renderUI(); renderPHI();
-                if (history.length) updatePredictions(history[history.length-1].val);
+            const saved = JSON.parse(localStorage.getItem('V46_4_MASTER'));
+            if (saved) { 
+                history = saved.history; roll = saved.roll; stage = saved.stage; 
+                streakTracker = saved.streakTracker || {p:0, e:0, s:0};
+                renderUI(); 
+                if(history.length) { updateAI(history[history.length-1].val); } 
             }
         };
     </script>
