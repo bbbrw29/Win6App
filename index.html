@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.1 - Master Fixed</title>
+    <title>Omni Logic V46.2 - Master Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
         
+        /* Fixed Header */
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
         .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
         .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
         .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 10px; }
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
+        
+        /* S-Box Fix: Shape rotate but Text stay straight */
+        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); overflow: visible; }
+        .box-s span { transform: rotate(-45deg); display: inline-block; }
+
+        /* Custom Toast Notification for Copy */
+        #toast { position: fixed; top: 80%; left: 50%; transform: translateX(-50%); background: #00cfd5; color: black; padding: 10px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 2000; box-shadow: 0 4px 15px rgba(0,207,213,0.5); }
 
         .warn-bar { margin-top: 5px; padding: 4px; border-radius: 6px; text-align: center; min-height: 30px; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
         .warn-active { background: rgba(255, 65, 54, 0.2); border: 1px solid #ff4136; color: #ff4136; }
@@ -24,7 +31,6 @@
         
         .table-grid { display: grid; grid-template-columns: 45px 1fr 45px; align-items: center; text-align: center; }
         .pes-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; }
-        
         .row-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .header-labels { color: #555; font-size: 11px; font-weight: 900; padding-bottom: 4px; border-bottom: 1px solid #003366; margin-bottom: 4px; }
         
@@ -33,12 +39,7 @@
         .stg-end { background: #ff4136 !important; color: white; }
         .row-range { background: rgba(0, 207, 213, 0.08); }
 
-        #floating-box { 
-            position: fixed; right: 10px; bottom: 85px; width: 180px; 
-            background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; 
-            border-radius: 12px; padding: 10px; z-index: 500; display: none; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-        }
+        #floating-box { position: fixed; right: 10px; bottom: 85px; width: 180px; background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 500; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
         #float-symbols { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; font-size: 18px; }
         #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; }
         
@@ -48,6 +49,8 @@
     </style>
 </head>
 <body>
+
+    <div id="toast">Copied to Clipboard!</div>
 
     <div id="logic-picker">
         <h3 class="text-yellow-400 font-black mb-4 uppercase text-xs">SELECT LOGIC</h3>
@@ -71,7 +74,7 @@
         <div class="grid grid-cols-3 gap-1 mb-2">
             <div class="box-p" id="box-p">-</div>
             <div class="box-e" id="box-e">-</div>
-            <div class="box-s" id="box-s">-</div>
+            <div class="box-s" id="box-s"><span>-</span></div>
         </div>
         <div class="flex items-center justify-center gap-2 bg-[#001d3d] p-2 rounded-xl border border-cyan-900/50">
             <input type="tel" id="digit-input" class="w-16 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-400" maxlength="1">
@@ -158,12 +161,9 @@
                         let stgClass = (idx === markS) ? "stg-start" : (idx === markE ? "stg-end" : "");
                         let rowClass = (markE !== null && idx > markS && idx < markE) ? "row-range" : "";
                         
-                        // Display helper function
                         const getDisp = (pred, ok) => {
                             if (pred === "-") return "<span>-</span>";
-                            const color = ok ? "text-green-500" : "text-red-500";
-                            const icon = ok ? "✅" : "❌";
-                            return `<span class="${color}">${pred}${icon}</span>`;
+                            return `<span class="${ok?'text-green-500':'text-red-500'}">${pred}${ok?'✅':'❌'}</span>`;
                         };
 
                         return `
@@ -181,6 +181,45 @@
                     }).join('')}
                 </div>`).join('');
             container.scrollLeft = container.scrollWidth;
+        }
+
+        function updatePredictions(last) {
+            pNext = (last % 2 === 0) ? 'S' : 'B';
+            if (history.length >= 3) {
+                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
+                eNext = (s3 % 2 === 0) ? 'S' : 'B';
+            } else { eNext = "-"; }
+            
+            if (history.length >= 5) {
+                let dSum = history.slice(-5).reduce((a, b) => a + b.val, 0);
+                while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+                sNext = (dSum % 2 !== 0) ? 'B' : 'S';
+            } else { sNext = "-"; }
+            
+            document.getElementById('box-p').innerText = pNext;
+            document.getElementById('box-e').innerText = eNext;
+            document.getElementById('box-s').innerHTML = `<span>${sNext}</span>`;
+        }
+
+        function copyLogs() {
+            let logText = history.map(h => {
+                const pSt = h.p !== "-" ? `${h.p}(${h.pOk?'✅':'❌'})` : "-";
+                const eSt = h.e !== "-" ? `${h.e}(${h.eOk?'✅':'❌'})` : "-";
+                const sSt = h.s !== "-" ? `${h.s}(${h.sOk?'✅':'❌'})` : "-";
+                return `R${h.roll}.S${h.stage} | P:${pSt} E:${eSt} S:${sSt} | G:${h.val}`;
+            }).join('\n');
+
+            const tempInput = document.createElement("textarea");
+            tempInput.value = logText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            
+            // Show custom toast instead of alert
+            const t = document.getElementById('toast');
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 2000);
         }
 
         function toggleMark(id) {
@@ -223,41 +262,6 @@
                     <span>#${phiRecords.length - idx} | ${r.type} (${r.count})</span>
                     <span class="opacity-70">${r.time}</span>
                 </div>`).join('');
-        }
-
-        function updatePredictions(last) {
-            pNext = (last % 2 === 0) ? 'S' : 'B';
-            if (history.length >= 3) {
-                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
-                eNext = (s3 % 2 === 0) ? 'S' : 'B';
-            } else { eNext = "-"; }
-            
-            if (history.length >= 5) {
-                let dSum = history.slice(-5).reduce((a, b) => a + b.val, 0);
-                while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);
-                sNext = (dSum % 2 !== 0) ? 'B' : 'S';
-            } else { sNext = "-"; }
-            
-            document.getElementById('box-p').innerText = pNext;
-            document.getElementById('box-e').innerText = eNext;
-            document.getElementById('box-s').innerText = sNext;
-        }
-
-        function copyLogs() {
-            let logText = history.map(h => {
-                const pSt = h.p !== "-" ? `${h.p}(${h.pOk?'✅':'❌'})` : "-";
-                const eSt = h.e !== "-" ? `${h.e}(${h.eOk?'✅':'❌'})` : "-";
-                const sSt = h.s !== "-" ? `${h.s}(${h.sOk?'✅':'❌'})` : "-";
-                return `R${h.roll}.S${h.stage} | P:${pSt} E:${eSt} S:${sSt} | G:${h.val}`;
-            }).join('\n');
-
-            const tempInput = document.createElement("textarea");
-            tempInput.value = logText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            alert("Logs copied to clipboard!");
         }
 
         function fullReset() { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
