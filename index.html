@@ -3,52 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.5 - AI ABC Master</title>
+    <title>Omni Logic V46.6 - AI Record Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; }
-        
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
-        
         .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
         .box-title { font-size: 11px; font-weight: 900; color: #aaa; margin-bottom: 4px; }
         .predict-box { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 22px; transition: all 0.3s ease; border: 4px solid; }
-        
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
-
         .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
         .glow-red { box-shadow: 0 0 20px #ff4136, inset 0 0 8px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
-
-        .phi-container { width: 100%; height: 5px; background: #111; border-radius: 10px; margin: 12px 0; overflow: hidden; }
-        #phi-bar { width: 0%; height: 100%; background: linear-gradient(to right, #00f2ff, #ff00ff); transition: width 0.5s ease; }
-
-        /* Horizontal Scroll Wrapper */
-        .main-scroll { margin-top: 250px; padding: 10px; }
-        .scroll-wrapper { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 15px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-        .roll-card { min-width: 85vw; scroll-snap-align: start; background: #0a192f; border-radius: 15px; padding: 12px; border: 1px solid #1e3a8a; }
+        .main-scroll { margin-top: 255px; padding: 10px; }
+        .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+        .roll-card { min-width: 88vw; scroll-snap-align: start; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
         .scroll-wrapper::-webkit-scrollbar { display: none; }
-
-        #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 8px; height: 20px; }
+        #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 5px; height: 20px; }
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
-
+    <div id="toast">Copied Logs!</div>
     <div class="fixed-header">
         <div class="box-container">
             <div><div class="box-title">Logic A</div><div class="predict-box a-box" id="box-a">-</div><div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div></div>
             <div><div class="box-title">Logic B</div><div class="predict-box b-box" id="box-b">-</div><div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div></div>
             <div><div class="box-title" style="margin-left:8px;">Logic C</div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div></div>
         </div>
-
-        <div class="phi-container"><div id="phi-bar"></div></div>
         <div id="ai-status">စောင့်ကြည့်နေသည်...</div>
-
         <div class="flex gap-2 items-center justify-center mt-3">
             <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500" maxlength="1">
             <button onclick="submitDigit()" class="bg-cyan-500 text-black h-12 px-6 rounded-lg font-black active:scale-95">ENTER</button>
@@ -58,8 +46,8 @@
     <div class="main-scroll">
         <div id="history-container" class="scroll-wrapper"></div>
         <div class="flex gap-3 mt-4">
-            <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[10px] font-bold">COPY LOGS</button>
-            <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[10px] font-bold">FULL RESET</button>
+            <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600">COPY RECORD</button>
+            <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700">RESET ALL</button>
         </div>
     </div>
 
@@ -67,6 +55,7 @@
         let history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
         let streakTracker = { a:0, b:0, c:0 };
+        let lastAiState = { a: "", b: "", c: "" };
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
@@ -76,46 +65,30 @@
 
             const entry = {
                 val, grp, roll, stage,
-                a: aNext, aOk: aNext === "-" ? null : aNext === grp,
-                b: bNext, bOk: bNext === "-" ? null : bNext === grp,
-                c: cNext, cOk: cNext === "-" ? null : cNext === grp
+                a: aNext, aOk: aNext === "-" ? null : aNext === grp, aState: lastAiState.a,
+                b: bNext, bOk: bNext === "-" ? null : bNext === grp, bState: lastAiState.b,
+                c: cNext, cOk: cNext === "-" ? null : cNext === grp, cState: lastAiState.c
             };
 
-            // Emergency Streak Tracker
             ['a','b','c'].forEach(k => { if(entry[k+'Ok'] === false) streakTracker[k]++; else streakTracker[k]=0; });
-
             history.push(entry);
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
-            
-            updateAI(val);
-            renderUI();
-            input.value = ""; input.focus();
-            localStorage.setItem('V46_5_ABC', JSON.stringify({history, roll, stage, streakTracker}));
+            updateAI(val); renderUI(); input.value = ""; input.focus();
+            localStorage.setItem('V46_6_FINAL', JSON.stringify({history, roll, stage, streakTracker}));
         }
 
         function updateAI(last) {
-            // Logic A: Trend Follower
+            // Logic P (A) / E (B) / S (C) Calculations ... (Same as V46.5)
             if (history.length >= 2) {
-                const last2 = history.slice(-2);
-                aNext = (last2[0].grp === last2[1].grp) ? last2[1].grp : (last2[1].grp === 'B' ? 'S' : 'B');
+                const l2 = history.slice(-2);
+                aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
             } else { aNext = last >= 5 ? 'B' : 'S'; }
-
-            // Logic B: Flow (Sum 3)
-            if (history.length >= 3) {
-                const sum3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
-                bNext = (sum3 % 2 === 0) ? 'S' : 'B';
-            }
-
-            // Logic C: Weight (Mean 5)
-            if (history.length >= 5) {
-                const mean = history.slice(-5).reduce((a, b) => a + b.val, 0) / 5;
-                cNext = mean >= 4.5 ? 'B' : 'S';
-            }
+            if (history.length >= 3) { bNext = (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0) ? 'S' : 'B'; }
+            if (history.length >= 5) { cNext = (history.slice(-5).reduce((a,b)=>a+b.val,0)/5) >= 4.5 ? 'B' : 'S'; }
 
             document.getElementById('box-a').innerText = aNext;
             document.getElementById('box-b').innerText = bNext;
             document.getElementById('box-c').innerHTML = `<span>${cNext}</span>`;
-            
             calculateStats();
         }
 
@@ -125,50 +98,42 @@
                 const v = last15.filter(h => h[k] !== "-");
                 return v.length === 0 ? 0 : Math.round((v.filter(h => h[k+'Ok']).length / v.length) * 100);
             };
-
             const rates = { a: getRate('a'), b: getRate('b'), c: getRate('c') };
-            document.getElementById('a-rate').innerText = `RATE: ${rates.a}%`;
-            document.getElementById('b-rate').innerText = `RATE: ${rates.b}%`;
-            document.getElementById('c-rate').innerText = `RATE: ${rates.c}%`;
+            ['a','b','c'].forEach(k => document.getElementById(k+'-rate').innerText = `RATE: ${rates[k]}%`);
 
             const status = document.getElementById('ai-status');
-            const boxes = { a: 'box-a', b: 'box-b', c: 'box-c' };
-            let suggestion = "ဈေးကွက်ကို စစ်ဆေးနေသည်...";
-            
-            Object.keys(boxes).forEach(k => {
-                const el = document.getElementById(boxes[k]);
+            lastAiState = { a: "", b: "", c: "" };
+            let suggestion = "ဈေးကွက်ကို စောင့်ကြည့်နေသည်...";
+
+            ['a','b','c'].forEach(k => {
+                const el = document.getElementById('box-'+k);
                 el.classList.remove('glow-cyan', 'glow-red');
                 if (streakTracker[k] >= 4) {
-                    el.classList.add('glow-red');
-                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခေတ္တရပ်နားပါ (အမှားများနေ)`;
+                    el.classList.add('glow-red'); lastAiState[k] = "⚠️Warning";
+                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခဏနားပါ (အမှားများနေ)`;
                 } else if (rates[k] >= 80) {
-                    el.classList.add('glow-cyan');
+                    el.classList.add('glow-cyan'); lastAiState[k] = "🔵Glow";
                     suggestion = `✅ Logic ${k.toUpperCase()} ကို လိုက်ရန် အကြံပြုသည်`;
                 }
             });
             status.innerText = suggestion;
-
-            // PHI Bar update
-            if (history.length >= 5) {
-                const bCount = history.slice(-5).filter(h => h.grp === 'B').length;
-                document.getElementById('phi-bar').style.width = (Math.abs(bCount - 2.5) * 40) + "%";
-            }
         }
 
         function renderUI() {
             const container = document.getElementById('history-container');
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
-            
             container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
-                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1">ROLL ${r}</div>
+                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1 flex justify-between">
+                        <span>ROLL ${r}</span><span class="text-[8px] text-slate-500">AI ANALYSED</span>
+                    </div>
                     ${groups[r].map(i => `
                         <div class="grid grid-cols-5 gap-1 py-1 text-[11px] border-b border-white/5 items-center">
                             <div class="text-slate-500 font-bold">${i.stage}</div>
-                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}</div>
-                            <div class="text-yellow-400 font-black text-right">${i.val}</div>
+                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}${i.aState?'<span class="text-[8px]">'+(i.aState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}${i.bState?'<span class="text-[8px]">'+(i.bState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}${i.cState?'<span class="text-[8px]">'+(i.cState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="text-yellow-400 font-black text-right text-[13px]">${i.val}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -176,11 +141,16 @@
             container.scrollLeft = container.scrollWidth;
         }
 
-        function copyLogs() { /* Same as previous */ }
-        function fullReset() { if(confirm("ဒေတာအားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
-        
-        window.onload = () => { /* Load Storage logic */
-            const saved = JSON.parse(localStorage.getItem('V46_5_ABC'));
+        function copyLogs() {
+            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${h.aState?'('+h.aState+')':''} B:${h.b}${h.bOk?'✅':'❌'}${h.bState?'('+h.bState+')':''} C:${h.c}${h.cOk?'✅':'❌'}${h.cState?'('+h.cState+')':''}`).join('\n');
+            navigator.clipboard.writeText(logText).then(() => {
+                const t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
+            });
+        }
+
+        function fullReset() { if(confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('V46_6_FINAL'));
             if (saved) { history=saved.history; roll=saved.roll; stage=saved.stage; streakTracker=saved.streakTracker; renderUI(); if(history.length) updateAI(history[history.length-1].val); }
         };
     </script>
