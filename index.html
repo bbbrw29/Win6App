@@ -3,277 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.2 - Master Fix</title>
+    <title>Omni Logic V46.6 PRO - AI Subscription</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010816; color: white; overflow: hidden; touch-action: manipulation; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; margin: 0; }
         
-        /* Fixed Header */
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010816; padding: 8px; border-bottom: 2px solid #00cfd5; }
-        .box-p, .box-e, .box-s { width: 45px; height: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: white; font-weight: 900; margin: 0 auto; }
-        .box-p { border: 4px solid #ff4136; color: #ff4136; border-radius: 50%; }
-        .box-e { border: 4px solid #b10dc9; color: #b10dc9; border-radius: 10px; }
+        /* --- Login & Lock UI (Cyberpunk Style) --- */
+        #auth-gate, #lock-gate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #010814; z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .gate-box {
+            width: 85%; max-width: 380px; padding: 30px; border: 2px solid #00f2ff;
+            background: rgba(0, 243, 255, 0.05); border-radius: 15px; text-align: center;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+        .gate-input {
+            width: 100%; padding: 12px; margin: 20px 0; background: #000;
+            border: 1px solid #00f2ff; color: #00f2ff; text-align: center; outline: none; border-radius: 8px;
+        }
+        .gate-btn {
+            width: 100%; padding: 12px; background: #00f2ff; color: #000;
+            font-weight: 900; cursor: pointer; border: none; transition: 0.3s; border-radius: 8px;
+        }
         
-        /* S-Box Fix: Shape rotate but Text stay straight */
-        .box-s { border: 4px solid #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); overflow: visible; }
-        .box-s span { transform: rotate(-45deg); display: inline-block; }
-
-        /* Custom Toast Notification for Copy */
-        #toast { position: fixed; top: 80%; left: 50%; transform: translateX(-50%); background: #00cfd5; color: black; padding: 10px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 2000; box-shadow: 0 4px 15px rgba(0,207,213,0.5); }
-
-        .warn-bar { margin-top: 5px; padding: 4px; border-radius: 6px; text-align: center; min-height: 30px; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
-        .warn-active { background: rgba(255, 65, 54, 0.2); border: 1px solid #ff4136; color: #ff4136; }
-        .warn-stable { color: #444; font-style: italic; }
-
-        .main-scroll { margin-top: 220px; height: calc(100vh - 220px); overflow-y: auto; padding: 10px; }
-        .roll-card { flex-shrink: 0; width: 310px; background: #001d3d; border-radius: 15px; padding: 12px; border: 1px solid #00cfd5; margin-right: 12px; }
-        
-        .table-grid { display: grid; grid-template-columns: 45px 1fr 45px; align-items: center; text-align: center; }
-        .pes-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; }
-        .row-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .header-labels { color: #555; font-size: 11px; font-weight: 900; padding-bottom: 4px; border-bottom: 1px solid #003366; margin-bottom: 4px; }
-        
-        .stg-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 14px; font-weight: 900; background: #1a3a5a; color: #00cfd5; cursor: pointer; margin-left: 4px; }
-        .stg-start { background: #2ecc40 !important; color: white; }
-        .stg-end { background: #ff4136 !important; color: white; }
-        .row-range { background: rgba(0, 207, 213, 0.08); }
-
-        #floating-box { position: fixed; right: 10px; bottom: 85px; width: 180px; background: rgba(0, 29, 61, 0.98); border: 2px solid #ffdc00; border-radius: 12px; padding: 10px; z-index: 500; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
-        #float-symbols { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; font-size: 18px; }
-        #logic-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #001d3d; border: 2px solid #00cfd5; padding: 20px; border-radius: 15px; z-index: 1000; display: none; text-align: center; }
-        
-        .phi-container { margin-top: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); }
-        .phi-scroll-box { height: 160px; overflow-y: auto; }
-        .phi-item { padding: 10px; border-radius: 8px; margin-bottom: 6px; font-weight: 900; font-size: 12px; display: flex; justify-content: space-between; }
+        /* --- Calculator Styles --- */
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
+        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
+        .box-title { font-size: 11px; font-weight: 900; color: #aaa; margin-bottom: 4px; }
+        .predict-box { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 22px; transition: all 0.3s ease; border: 4px solid; }
+        .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
+        .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
+        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
+        .c-box span { transform: rotate(-45deg); display: inline-block; }
+        .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
+        .glow-red { box-shadow: 0 0 20px #ff4136, inset 0 0 8px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+        .main-scroll { margin-top: 275px; padding: 10px; }
+        .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+        .roll-card { min-width: 88vw; scroll-snap-align: start; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
+        .scroll-wrapper::-webkit-scrollbar { display: none; }
+        #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 5px; height: 20px; }
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 1000; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="toast">Copied to Clipboard!</div>
-
-    <div id="logic-picker">
-        <h3 class="text-yellow-400 font-black mb-4 uppercase text-xs">SELECT LOGIC</h3>
-        <div class="flex gap-4">
-            <button onclick="applyFloating('P')" class="bg-red-500 p-4 rounded-lg font-black w-14">P</button>
-            <button onclick="applyFloating('E')" class="bg-purple-500 p-4 rounded-lg font-black w-14">E</button>
-            <button onclick="applyFloating('S')" class="bg-green-500 p-4 rounded-lg font-black w-14">S</button>
+    <div id="auth-gate" class="hidden">
+        <div class="gate-box">
+            <h2 style="color: #00f2ff; letter-spacing: 2px; font-weight: 900;">V46.6 PRO ACCESS</h2>
+            <div id="status-msg" style="color: #ff4136; font-size: 12px; margin-top: 10px; min-height: 15px;"></div>
+            <input type="text" id="activation-code" class="gate-input" placeholder="ACCESS CODE ရိုက်ထည့်ပါ">
+            <button class="gate-btn" onclick="handleActivation()">ACTIVATE SYSTEM</button>
+            <p style="margin-top: 20px; font-size: 12px; color: #888;">Telegram: @Admin_V46</p>
         </div>
-        <button onclick="clearMark()" class="mt-4 text-gray-500 text-xs">CANCEL</button>
     </div>
 
-    <div id="floating-box">
-        <div class="flex justify-between items-center mb-1 border-b border-gray-600 pb-1">
-            <span id="float-title" class="text-[10px] font-black text-yellow-400"></span>
-            <button onclick="clearMark()" class="text-red-500 font-bold px-2">X</button>
+    <div id="lock-gate" class="hidden">
+        <div class="gate-box" style="border-color: #ff4136;">
+            <h1 style="color: #ff4136; font-weight: 900; font-size: 24px;">SYSTEM LOCKED</h1>
+            <p style="color: white; margin-top: 15px;">မိနစ် ၉၀ အသုံးပြုမှု ပြည့်သွားပါပြီ။<br>မနက်ဖြန်မှ ပြန်လည်အသုံးပြုနိုင်ပါမည်။</p>
         </div>
-        <div id="float-symbols"></div>
     </div>
 
-    <div class="fixed-header">
-        <div class="grid grid-cols-3 gap-1 mb-2">
-            <div class="box-p" id="box-p">-</div>
-            <div class="box-e" id="box-e">-</div>
-            <div class="box-s" id="box-s"><span>-</span></div>
-        </div>
-        <div class="flex items-center justify-center gap-2 bg-[#001d3d] p-2 rounded-xl border border-cyan-900/50">
-            <input type="tel" id="digit-input" class="w-16 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-400" maxlength="1">
-            <button onclick="submitDigit()" class="bg-cyan-400 text-black h-12 px-6 rounded-lg font-black text-sm">ENTER</button>
-        </div>
-        <div id="warning-bar" class="warn-bar warn-stable">MARKET STABLE</div>
-    </div>
-
-    <div class="main-scroll">
-        <div id="history-container" class="flex overflow-x-auto gap-2 pb-2"></div>
-        <div class="phi-container">
-            <div class="flex gap-3 mb-3">
-                <button onclick="copyLogs()" class="flex-1 p-3 bg-cyan-600 rounded-xl font-black text-xs text-white uppercase">Copy Logs</button>
-                <button onclick="fullReset()" class="flex-1 p-3 bg-red-600 rounded-xl font-black text-xs text-white uppercase">Reset All</button>
+    <div id="main-content" class="hidden">
+        <div id="toast">Copied Logs!</div>
+        <div class="fixed-header">
+            <div id="debug-info" style="font-size: 9px; color: #00f2ff; text-align: center; margin-bottom: 8px; opacity: 0.6; letter-spacing: 1px;">
+                STATUS: <span id="user-status">SYNCING...</span> | ID: <span id="user-id-display">...</span>
             </div>
-            <div id="phi-list" class="phi-scroll-box"></div>
+
+            <div class="box-container">
+                <div><div class="box-title">Logic A</div><div class="predict-box a-box" id="box-a">-</div><div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div></div>
+                <div><div class="box-title">Logic B</div><div class="predict-box b-box" id="box-b">-</div><div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div></div>
+                <div><div class="box-title" style="margin-left:8px;">Logic C</div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div></div>
+            </div>
+            <div id="ai-status">ဈေးကွက်ကို စောင့်ကြည့်နေသည်...</div>
+            <div class="flex gap-2 items-center justify-center mt-3">
+                <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500" maxlength="1">
+                <button onclick="submitDigit()" class="bg-cyan-500 text-black h-12 px-6 rounded-lg font-black active:scale-95">ENTER</button>
+            </div>
+        </div>
+
+        <div class="main-scroll">
+            <div id="history-container" class="scroll-wrapper"></div>
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600">COPY RECORD</button>
+                <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700">RESET ALL</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let history = [], phiRecords = [], roll = 1, stage = 1;
-        let pNext = "-", eNext = "-", sNext = "-", markS = null, markE = null;
-        let currentActivePattern = null;
+        // --- Supabase Config ---
+        const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
+        
+        // Device Fingerprint
+        let deviceId = localStorage.getItem('v46_pro_id') || (localStorage.setItem('v46_pro_id', 'D-'+Math.random().toString(36).substr(2,9)), localStorage.getItem('v46_pro_id'));
+
+        // --- Auth & Sync Logic ---
+        async function checkStatus() {
+            document.getElementById('user-id-display').innerText = deviceId;
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
+                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
+                });
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    if (data[0].minutes_used >= 90) {
+                        document.getElementById('lock-gate').classList.remove('hidden');
+                    } else {
+                        document.getElementById('main-content').classList.remove('hidden');
+                        document.getElementById('user-status').innerText = "V46.6 PRO ACTIVE (" + data[0].plan_type.toUpperCase() + ")";
+                        startTimer(data[0].minutes_used);
+                    }
+                } else {
+                    document.getElementById('auth-gate').classList.remove('hidden');
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('auth-gate').classList.remove('hidden');
+            }
+        }
+
+        async function handleActivation() {
+            const code = document.getElementById('activation-code').value.trim();
+            const msg = document.getElementById('status-msg');
+            if(!code) return;
+            msg.style.color = "#00f2ff"; msg.innerText = "စစ်ဆေးနေသည်...";
+
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/codes?code_key=eq.${code}&is_used=eq.false`, {
+                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
+                });
+                const codes = await res.json();
+
+                if (codes.length > 0) {
+                    await fetch(`${SB_URL}/rest/v1/user_access`, {
+                        method: 'POST',
+                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ device_id: deviceId, activated_code: code, plan_type: codes[0].plan_type })
+                    });
+                    await fetch(`${SB_URL}/rest/v1/codes?code_key=eq.${code}`, {
+                        method: 'PATCH',
+                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ is_used: true })
+                    });
+                    alert("Activation အောင်မြင်ပါသည်။"); location.reload();
+                } else { msg.style.color = "#ff4136"; msg.innerText = "Code အမှား (သို့) သုံးပြီးသားဖြစ်နေသည်"; }
+            } catch (e) { msg.style.color = "#ff4136"; msg.innerText = "အင်တာနက် လိုင်းမကောင်းပါ"; }
+        }
+
+        function startTimer(currentMins) {
+            let mins = currentMins;
+            setInterval(async () => {
+                mins += 5;
+                if(mins >= 90) location.reload();
+                await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
+                    method: 'PATCH',
+                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ minutes_used: mins })
+                });
+            }, 300000); 
+        }
+
+        // --- Calculator Logic (V46.6 Final) ---
+        let history = [], roll = 1, stage = 1;
+        let aNext="-", bNext="-", cNext="-";
+        let streakTracker = { a:0, b:0, c:0 };
+        let lastAiState = { a: "", b: "", c: "" };
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             if (isNaN(val)) return;
             const grp = val >= 5 ? 'B' : 'S';
-            
-            const entry = { 
-                id: Date.now(), val, grp, roll, stage, 
-                p: pNext, pOk: pNext !== "-" ? pNext === grp : null,
-                e: eNext, eOk: eNext !== "-" ? eNext === grp : null,
-                s: sNext, sOk: sNext !== "-" ? sNext === grp : null
+
+            const entry = {
+                val, grp, roll, stage,
+                a: aNext, aOk: aNext === "-" ? null : aNext === grp, aState: lastAiState.a,
+                b: bNext, bOk: bNext === "-" ? null : bNext === grp, bState: lastAiState.b,
+                c: cNext, cOk: cNext === "-" ? null : cNext === grp, cState: lastAiState.c
             };
-            
+
+            ['a','b','c'].forEach(k => { if(entry[k+'Ok'] === false) streakTracker[k]++; else streakTracker[k]=0; });
             history.push(entry);
-            checkPatternsV45(entry);
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
-            updatePredictions(val);
-            renderUI();
-            input.value = ""; input.focus();
-            localStorage.setItem('V46_FINAL_WRAP', JSON.stringify({history, phiRecords, roll, stage}));
+            updateAI(val); renderUI(); input.value = ""; input.focus();
+            localStorage.setItem('V46_6_FINAL', JSON.stringify({history, roll, stage, streakTracker}));
         }
 
-        function checkPatternsV45(entry) {
-            const seq = history.map(h => h.grp).join('');
-            const sMatch = seq.match(/(B{6,}|S{6,})$/);
-            const aMatch = seq.match(/((SB){3,}|(BS){3,})$/);
-            let active = null;
-            if (sMatch) active = { type: sMatch[0][0]==='B'?"အကြီးများ ဆက်တိုက်":"အသေးများ ဆက်တိုက်", count: sMatch[0].length, class: sMatch[0][0]==='B'?"bg-red-600":"bg-green-600" };
-            else if (aMatch) active = { type: "အကြီး/အသေး တစ်လှည့်စီ", count: aMatch[0].length, class: "bg-purple-600" };
+        function updateAI(last) {
+            if (history.length >= 2) {
+                const l2 = history.slice(-2);
+                aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
+            } else { aNext = last >= 5 ? 'B' : 'S'; }
+            if (history.length >= 3) { bNext = (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0) ? 'S' : 'B'; }
+            if (history.length >= 5) { cNext = (history.slice(-5).reduce((a,b)=>a+b.val,0)/5) >= 4.5 ? 'B' : 'S'; }
 
-            const bar = document.getElementById('warning-bar');
-            if (active) {
-                bar.className = "warn-bar warn-active"; bar.innerText = `⚠️ ${active.type} : ${active.count} ကြိမ်`;
-                if (!currentActivePattern || currentActivePattern.type !== active.type) {
-                    phiRecords.unshift({ ...active, time: `R${entry.roll} S${entry.stage}` });
-                } else {
-                    phiRecords[0].count = active.count;
-                    phiRecords[0].time = `R${entry.roll} S${entry.stage}`;
+            document.getElementById('box-a').innerText = aNext;
+            document.getElementById('box-b').innerText = bNext;
+            document.getElementById('box-c').innerHTML = `<span>${cNext}</span>`;
+            calculateStats();
+        }
+
+        function calculateStats() {
+            const last15 = history.slice(-15);
+            const getRate = (k) => {
+                const v = last15.filter(h => h[k] !== "-");
+                return v.length === 0 ? 0 : Math.round((v.filter(h => h[k+'Ok']).length / v.length) * 100);
+            };
+            const rates = { a: getRate('a'), b: getRate('b'), c: getRate('c') };
+            ['a','b','c'].forEach(k => document.getElementById(k+'-rate').innerText = `RATE: ${rates[k]}%`);
+
+            const status = document.getElementById('ai-status');
+            lastAiState = { a: "", b: "", c: "" };
+            let suggestion = "ဈေးကွက်ကို စောင့်ကြည့်နေသည်...";
+
+            ['a','b','c'].forEach(k => {
+                const el = document.getElementById('box-'+k);
+                el.classList.remove('glow-cyan', 'glow-red');
+                if (streakTracker[k] >= 4) {
+                    el.classList.add('glow-red'); lastAiState[k] = "⚠️Warning";
+                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခဏနားပါ (အမှားများနေ)`;
+                } else if (rates[k] >= 80) {
+                    el.classList.add('glow-cyan'); lastAiState[k] = "🔵Glow";
+                    suggestion = `✅ Logic ${k.toUpperCase()} ကို လိုက်ရန် အကြံပြုသည်`;
                 }
-                currentActivePattern = active;
-                renderPHI();
-            } else {
-                bar.className = "warn-bar warn-stable"; bar.innerText = "MARKET STABLE";
-                currentActivePattern = null;
-            }
+            });
+            status.innerText = suggestion;
         }
 
         function renderUI() {
             const container = document.getElementById('history-container');
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
-            
             container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
-                    <div class="text-[10px] font-black text-cyan-400 italic mb-1">ROLL ${r}</div>
-                    <div class="table-grid header-labels">
-                        <div></div><div class="pes-columns"><span>P</span><span>E</span><span>S</span></div><div></div>
+                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1 flex justify-between">
+                        <span>ROLL ${r}</span><span class="text-[8px] text-slate-500">AI ANALYSED</span>
                     </div>
-                    ${groups[r].map(i => {
-                        const idx = history.findIndex(h => h.id === i.id);
-                        let stgClass = (idx === markS) ? "stg-start" : (idx === markE ? "stg-end" : "");
-                        let rowClass = (markE !== null && idx > markS && idx < markE) ? "row-range" : "";
-                        
-                        const getDisp = (pred, ok) => {
-                            if (pred === "-") return "<span>-</span>";
-                            return `<span class="${ok?'text-green-500':'text-red-500'}">${pred}${ok?'✅':'❌'}</span>`;
-                        };
-
-                        return `
-                        <div class="row-item ${rowClass}">
-                            <div class="table-grid">
-                                <div onclick="toggleMark(${i.id})" class="stg-btn ${stgClass}">${i.stage}</div>
-                                <div class="pes-columns text-[18px] font-black">
-                                    ${getDisp(i.p, i.pOk)}
-                                    ${getDisp(i.e, i.eOk)}
-                                    ${getDisp(i.s, i.sOk)}
-                                </div>
-                                <div class="w-8 h-8 rounded-full bg-yellow-400 text-black flex items-center justify-center font-black border-2 border-black mx-auto">${i.val}</div>
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>`).join('');
+                    ${groups[r].map(i => `
+                        <div class="grid grid-cols-5 gap-1 py-1 text-[11px] border-b border-white/5 items-center">
+                            <div class="text-slate-500 font-bold">${i.stage}</div>
+                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}${i.aState?'<span class="text-[8px]">'+(i.aState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}${i.bState?'<span class="text-[8px]">'+(i.bState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}${i.cState?'<span class="text-[8px]">'+(i.cState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="text-yellow-400 font-black text-right text-[13px]">${i.val}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
             container.scrollLeft = container.scrollWidth;
         }
 
-        function updatePredictions(last) {
-            pNext = (last % 2 === 0) ? 'S' : 'B';
-            if (history.length >= 3) {
-                const s3 = history.slice(-3).reduce((a, b) => a + b.val, 0);
-                eNext = (s3 % 2 === 0) ? 'S' : 'B';
-            } else { eNext = "-"; }
-            
-            if (history.length >= 5) {
-                let dSum = history.slice(-5).reduce((a, b) => a + b.val, 0);
-                while (dSum >= 10) dSum = dSum.toString().split('').map(Number).reduce((a, b) => a + b, 0);
-                sNext = (dSum % 2 !== 0) ? 'B' : 'S';
-            } else { sNext = "-"; }
-            
-            document.getElementById('box-p').innerText = pNext;
-            document.getElementById('box-e').innerText = eNext;
-            document.getElementById('box-s').innerHTML = `<span>${sNext}</span>`;
-        }
-
         function copyLogs() {
-            let logText = history.map(h => {
-                const pSt = h.p !== "-" ? `${h.p}(${h.pOk?'✅':'❌'})` : "-";
-                const eSt = h.e !== "-" ? `${h.e}(${h.eOk?'✅':'❌'})` : "-";
-                const sSt = h.s !== "-" ? `${h.s}(${h.sOk?'✅':'❌'})` : "-";
-                return `R${h.roll}.S${h.stage} | P:${pSt} E:${eSt} S:${sSt} | G:${h.val}`;
-            }).join('\n');
-
-            const tempInput = document.createElement("textarea");
-            tempInput.value = logText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            
-            // Show custom toast instead of alert
-            const t = document.getElementById('toast');
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 2000);
+            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'} B:${h.b}${h.bOk?'✅':'❌'} C:${h.c}${h.cOk?'✅':'❌'}`).join('\n');
+            navigator.clipboard.writeText(logText).then(() => {
+                const t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
+            });
         }
 
-        function toggleMark(id) {
-            const idx = history.findIndex(h => h.id === id);
-            if (markS === null || (markS !== null && markE !== null)) {
-                markS = idx; markE = null;
-                document.getElementById('floating-box').style.display = 'none';
-            } else {
-                markE = idx;
-                const range = [markS, markE].sort((a,b)=>a-b);
-                markS = range[0]; markE = range[1];
-                document.getElementById('logic-picker').style.display = 'block';
-            }
-            renderUI();
-        }
-
-        function applyFloating(type) {
-            const sub = history.slice(markS, markE + 1);
-            const html = sub.map(h => {
-                const ok = (type==='P'?h.pOk : type==='E'?h.eOk : h.sOk);
-                if (ok === null) return "<span>-</span>";
-                return `<span>${ok?'✅':'❌'}</span>`;
-            }).join('');
-            document.getElementById('float-title').innerText = type + "-PATTERN";
-            document.getElementById('float-symbols').innerHTML = html;
-            document.getElementById('floating-box').style.display = 'block';
-            document.getElementById('logic-picker').style.display = 'none';
-        }
-
-        function clearMark() {
-            markS = null; markE = null;
-            document.getElementById('floating-box').style.display = 'none';
-            document.getElementById('logic-picker').style.display = 'none';
-            renderUI();
-        }
-
-        function renderPHI() {
-            document.getElementById('phi-list').innerHTML = phiRecords.map((r, idx) => `
-                <div class="phi-item ${r.class}">
-                    <span>#${phiRecords.length - idx} | ${r.type} (${r.count})</span>
-                    <span class="opacity-70">${r.time}</span>
-                </div>`).join('');
-        }
-
-        function fullReset() { if(confirm("Reset All Data?")) { localStorage.clear(); location.reload(); } }
-
+        function fullReset() { if(confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
+        
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V46_FINAL_WRAP'));
-            if (saved) {
-                history = saved.history || []; phiRecords = saved.phiRecords || [];
-                roll = saved.roll || 1; stage = saved.stage || 1;
-                renderUI(); renderPHI();
-                if (history.length) updatePredictions(history[history.length-1].val);
-            }
+            checkStatus();
+            const saved = JSON.parse(localStorage.getItem('V46_6_FINAL'));
+            if (saved) { history=saved.history; roll=saved.roll; stage=saved.stage; streakTracker=saved.streakTracker; renderUI(); if(history.length) updateAI(history[history.length-1].val); }
         };
     </script>
 </body>
