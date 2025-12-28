@@ -3,32 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.6 PRO - AI Master</title>
+    <title>Omni Logic V46.6 - AI Record Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; margin: 0; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; }
         
-        /* Overlay Gates */
-        .gate-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #010814; z-index: 9999; display: flex; align-items: center; justify-content: center;
-        }
-        .gate-box {
-            width: 85%; max-width: 380px; padding: 30px; border: 2px solid #00f2ff;
-            background: rgba(0, 242, 255, 0.05); border-radius: 15px; text-align: center;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-        }
-        .gate-input {
-            width: 100%; padding: 12px; margin: 20px 0; background: #000;
-            border: 1px solid #00f2ff; color: #00f2ff; text-align: center; outline: none; border-radius: 8px;
-        }
-        .gate-btn {
-            width: 100%; padding: 12px; background: #00f2ff; color: #000;
-            font-weight: 900; cursor: pointer; border: none; border-radius: 8px;
-        }
-
-        /* Calculator UI Styles */
+        /* Activation Overlay Design */
+        #auth-gate { position: fixed; inset: 0; background: #010814; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .gate-box { background: #0a192f; border: 2px solid #00f2ff; padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 350px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
+        
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
         .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
         .box-title { font-size: 11px; font-weight: 900; color: #aaa; margin-bottom: 4px; }
@@ -37,46 +21,47 @@
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
-        .main-scroll { margin-top: 280px; padding: 10px; height: calc(100vh - 280px); overflow-y: auto; }
-        .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; }
-        .roll-card { min-width: 88vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
+        .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
+        .glow-red { box-shadow: 0 0 20px #ff4136, inset 0 0 8px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+        .main-scroll { margin-top: 255px; padding: 10px; }
+        .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+        .roll-card { min-width: 88vw; scroll-snap-align: start; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
+        .scroll-wrapper::-webkit-scrollbar { display: none; }
+        #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 5px; height: 20px; }
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 1000; }
         .hidden { display: none !important; }
-        .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; }
-        .glow-red { box-shadow: 0 0 15px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; }
     </style>
 </head>
 <body>
 
-    <div id="auth-gate" class="gate-overlay hidden">
+    <div id="auth-gate" class="hidden">
         <div class="gate-box">
-            <h2 style="color: #00f2ff; letter-spacing: 2px; font-weight: 900;">V46.6 PRO ACCESS</h2>
-            <div id="status-msg" style="color: #ff4136; font-size: 12px; margin-top: 10px; min-height: 15px;"></div>
-            <input type="text" id="activation-code" class="gate-input" placeholder="ACCESS CODE ရိုက်ထည့်ပါ">
-            <button class="gate-btn" onclick="handleActivation()">ACTIVATE SYSTEM</button>
-            <p style="margin-top: 20px; font-size: 11px; color: #666;">DEVICE ID: <span id="id-preview"></span></p>
+            <h2 class="text-cyan-400 font-black text-2xl mb-2">OMNI LOGIC</h2>
+            <p id="auth-msg" class="text-gray-400 text-xs mb-6">စနစ်ကိုအသုံးပြုရန် Activation Code လိုအပ်ပါသည်</p>
+            
+            <a href="https://t.me/omni_logic_bot" target="_blank" class="block w-full p-4 bg-blue-600 text-white font-bold rounded-xl mb-6 shadow-lg active:scale-95 transition-all text-center">
+                GET CODE (Telegram Bot)
+            </a>
+
+            <input type="tel" id="activation-code" class="w-full p-4 bg-black border-2 border-cyan-500 text-cyan-400 text-center text-2xl font-black rounded-xl mb-6 focus:outline-none" placeholder="------" maxlength="6">
+            
+            <button onclick="handleActivation()" class="w-full p-4 bg-cyan-500 text-black font-black rounded-xl shadow-xl active:scale-95 transition-all">ACTIVATE NOW</button>
+            
+            <p class="mt-8 text-[9px] text-gray-600 font-mono tracking-widest uppercase">ID: <span id="hw-display"></span></p>
         </div>
     </div>
 
-    <div id="lock-gate" class="gate-overlay hidden">
-        <div class="gate-box" style="border-color: #ff4136;">
-            <h1 style="color: #ff4136; font-weight: 900; font-size: 24px;">SYSTEM LOCKED</h1>
-            <p style="color: white; margin-top: 15px;">ယနေ့အတွက် မိနစ် ၉၀ ပြည့်သွားပါပြီ။<br>ည ၁၂:၀၀ ထိုးပြီးမှ ပြန်လည်အသုံးပြုနိုင်ပါမယ် ခင်ဗျာ။</p>
-        </div>
-    </div>
-
-    <div id="main-content" class="hidden">
-        <div id="toast" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#00f2ff; color:#000; padding:8px 20px; border-radius:20px; font-weight:900; display:none; z-index:1000;">Copied Logs!</div>
-        
+    <div id="main-ui" class="hidden">
+        <div id="toast">Copied Logs!</div>
         <div class="fixed-header">
-            <div style="font-size: 9px; color: #00f2ff; text-align: center; margin-bottom: 8px; opacity: 0.6;">
-                STATUS: <span id="user-status">SYNCING...</span> | ID: <span id="user-id-display">...</span>
-            </div>
             <div class="box-container">
-                <div><div class="box-title">Logic A</div><div class="predict-box a-box" id="box-a">-</div><div id="a-rate" style="font-size:10px; margin-top:4px;">RATE: 0%</div></div>
-                <div><div class="box-title">Logic B</div><div class="predict-box b-box" id="box-b">-</div><div id="b-rate" style="font-size:10px; margin-top:4px;">RATE: 0%</div></div>
-                <div><div class="box-title" style="margin-left:8px;">Logic C</div><div class="predict-box c-box" id="box-c"><span>-</span></div><div id="c-rate" style="font-size:10px; margin-top:15px;">RATE: 0%</div></div>
+                <div><div class="box-title">Logic A</div><div class="predict-box a-box" id="box-a">-</div><div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div></div>
+                <div><div class="box-title">Logic B</div><div class="predict-box b-box" id="box-b">-</div><div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div></div>
+                <div><div class="box-title" style="margin-left:8px;">Logic C</div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div></div>
             </div>
-            <div id="ai-status" style="font-size:13px; font-weight:700; color:#00f2ff; text-align:center; margin-top:8px;">ဈေးကွက်ကို စောင့်ကြည့်နေသည်...</div>
+            <div id="ai-status">စောင့်ကြည့်နေသည်...</div>
             <div class="flex gap-2 items-center justify-center mt-3">
                 <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500" maxlength="1">
                 <button onclick="submitDigit()" class="bg-cyan-500 text-black h-12 px-6 rounded-lg font-black active:scale-95">ENTER</button>
@@ -93,89 +78,65 @@
     </div>
 
     <script>
+        // --- DATABASE SETTINGS ---
         const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
-        
-        let deviceId = localStorage.getItem('v46_pro_id') || (localStorage.setItem('v46_pro_id', 'D-'+Math.random().toString(36).substr(2,9)), localStorage.getItem('v46_pro_id'));
-        document.getElementById('id-preview').innerText = deviceId;
-        document.getElementById('user-id-display').innerText = deviceId;
 
-        // --- Auth Core Logic ---
-        async function checkStatus() {
+        // --- HARDWARE ID GENERATOR ---
+        function getHWID() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = "top"; ctx.font = "14px Arial"; ctx.fillText("V46PRO", 2, 2);
+            const hash = canvas.toDataURL().length;
+            const raw = screen.width + screen.height + navigator.hardwareConcurrency + hash;
+            let h = 0; for(let i=0; i<raw.length; i++) h = ((h << 5) - h) + raw.charCodeAt(i);
+            return "HW-" + Math.abs(h).toString(36).toUpperCase();
+        }
+        const deviceId = getHWID();
+        document.getElementById('hw-display').innerText = deviceId;
+
+        // --- AUTH CHECK ---
+        async function checkAccess() {
             try {
                 const res = await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
                     headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
                 });
                 const data = await res.json();
-
-                if (data && data.length > 0) {
-                    if (data[0].minutes_used >= 90) {
-                        document.getElementById('lock-gate').classList.remove('hidden');
-                    } else {
-                        unlockApp(data[0].plan_type, data[0].minutes_used);
-                    }
+                if (data.length > 0) {
+                    document.getElementById('main-ui').classList.remove('hidden');
                 } else {
                     document.getElementById('auth-gate').classList.remove('hidden');
                 }
             } catch (e) { document.getElementById('auth-gate').classList.remove('hidden'); }
         }
 
-        function unlockApp(plan, mins) {
-            document.getElementById('auth-gate').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            document.getElementById('user-status').innerText = "V46.6 ACTIVE (" + plan.toUpperCase() + ")";
-            startTimer(mins);
-        }
-
         async function handleActivation() {
             const code = document.getElementById('activation-code').value.trim();
-            const msg = document.getElementById('status-msg');
-            if(!code) return;
-            msg.style.color = "#00f2ff"; msg.innerText = "စစ်ဆေးနေသည်...";
+            const msg = document.getElementById('auth-msg');
+            if (code.length < 6) return;
 
+            msg.innerText = "စစ်ဆေးနေပါသည်...";
             try {
-                const res = await fetch(`${SB_URL}/rest/v1/codes?code_key=eq.${code}&is_used=eq.false`, {
+                const res = await fetch(`${SB_URL}/rest/v1/pending_codes?code_key=eq.${code}`, {
                     headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
                 });
-                const codes = await res.json();
+                const data = await res.json();
 
-                if (codes.length > 0) {
-                    msg.innerText = "အောင်မြင်ပါသည်! ဖွင့်လှစ်နေသည်...";
-                    
-                    // Instant Transition - Database response မစောင့်ဘဲ UI ဖွင့်မယ်
-                    unlockApp(codes[0].plan_type, 0);
-
-                    // Background Database Operations
-                    fetch(`${SB_URL}/rest/v1/user_access`, {
+                if (data.length > 0) {
+                    await fetch(`${SB_URL}/rest/v1/user_access`, {
                         method: 'POST',
                         headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ device_id: deviceId, activated_code: code, plan_type: codes[0].plan_type })
+                        body: JSON.stringify({ device_id: deviceId, telegram_id: data[0].tg_id })
                     });
-                    fetch(`${SB_URL}/rest/v1/codes?code_key=eq.${code}`, {
-                        method: 'PATCH',
-                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ is_used: true })
-                    });
+                    location.reload();
                 } else {
-                    msg.style.color = "#ff4136"; msg.innerText = "Code အမှား (သို့) သုံးပြီးသားဖြစ်နေသည်";
+                    msg.innerText = "❌ ကုဒ်မှားယွင်းနေပါသည်။";
+                    msg.classList.add('text-red-500');
                 }
-            } catch (e) { msg.innerText = "Connection Error"; }
+            } catch (e) { msg.innerText = "Connection Error!"; }
         }
 
-        function startTimer(currentMins) {
-            let m = currentMins;
-            setInterval(async () => {
-                m += 5;
-                if(m >= 90) location.reload();
-                await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
-                    method: 'PATCH',
-                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ minutes_used: m })
-                });
-            }, 300000); // 5 Mins Sync
-        }
-
-        // --- Calculator Master Logic ---
+        // --- ORIGINAL APP LOGIC (A, B, C) ---
         let history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
         let streakTracker = { a:0, b:0, c:0 };
@@ -226,17 +187,17 @@
 
             const status = document.getElementById('ai-status');
             lastAiState = { a: "", b: "", c: "" };
-            let suggestion = "ရလာဒ်ကို စောင့်ကြည့်နေသည်...";
+            let suggestion = "ဈေးကွက်ကို စောင့်ကြည့်နေသည်...";
 
             ['a','b','c'].forEach(k => {
                 const el = document.getElementById('box-'+k);
                 el.classList.remove('glow-cyan', 'glow-red');
                 if (streakTracker[k] >= 4) {
-                    el.classList.add('glow-red'); lastAiState[k] = "W";
-                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခဏနားပါ`;
+                    el.classList.add('glow-red'); lastAiState[k] = "⚠️Warning";
+                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခဏနားပါ (အမှားများနေ)`;
                 } else if (rates[k] >= 80) {
-                    el.classList.add('glow-cyan'); lastAiState[k] = "G";
-                    suggestion = `✅ Logic ${k.toUpperCase()} အခြေအနေကောင်းသည်`;
+                    el.classList.add('glow-cyan'); lastAiState[k] = "🔵Glow";
+                    suggestion = `✅ Logic ${k.toUpperCase()} ကို လိုက်ရန် အကြံပြုသည်`;
                 }
             });
             status.innerText = suggestion;
@@ -247,14 +208,16 @@
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
-                    <div style="font-size:10px; font-weight:900; color:#00f2ff; margin-bottom:8px; border-bottom:1px solid #1e3a8a; padding-bottom:4px;">ROLL ${r}</div>
+                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1 flex justify-between">
+                        <span>ROLL ${r}</span><span class="text-[8px] text-slate-500">AI ANALYSED</span>
+                    </div>
                     ${groups[r].map(i => `
                         <div class="grid grid-cols-5 gap-1 py-1 text-[11px] border-b border-white/5 items-center">
-                            <div class="text-slate-500">${i.stage}</div>
-                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aOk?'✅':'❌'}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bOk?'✅':'❌'}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cOk?'✅':'❌'}</div>
-                            <div class="text-yellow-400 font-black text-right">${i.val}</div>
+                            <div class="text-slate-500 font-bold">${i.stage}</div>
+                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}${i.aState?'<span class="text-[8px]">'+(i.aState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}${i.bState?'<span class="text-[8px]">'+(i.bState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}${i.cState?'<span class="text-[8px]">'+(i.cState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="text-yellow-400 font-black text-right text-[13px]">${i.val}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -263,16 +226,16 @@
         }
 
         function copyLogs() {
-            let log = history.map(h => `R${h.roll} S${h.stage}: ${h.val} (A:${h.a}${h.aOk?'✅':'❌'} B:${h.b}${h.bOk?'✅':'❌'} C:${h.c}${h.cOk?'✅':'❌'})`).join('\n');
-            navigator.clipboard.writeText(log).then(() => {
+            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${h.aState?'('+h.aState+')':''} B:${h.b}${h.bOk?'✅':'❌'}${h.bState?'('+h.bState+')':''} C:${h.c}${h.cOk?'✅':'❌'}${h.cState?'('+h.cState+')':''}`).join('\n');
+            navigator.clipboard.writeText(logText).then(() => {
                 const t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
             });
         }
 
-        function fullReset() { if(confirm("Data များအားလုံးဖျက်မလား?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            checkStatus();
+            checkAccess(); // First check activation
             const saved = JSON.parse(localStorage.getItem('V46_6_FINAL'));
             if (saved) { history=saved.history; roll=saved.roll; stage=saved.stage; streakTracker=saved.streakTracker; renderUI(); if(history.length) updateAI(history[history.length-1].val); }
         };
