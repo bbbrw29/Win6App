@@ -7,12 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; }
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background-color: #010814; 
+            color: white; 
+            overflow: hidden; 
+            /* 🛑 Copy ကူးလို့မရအောင် ပိတ်ထားခြင်း */
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+        }
         
-        /* Activation Overlay */
         #auth-gate { position: fixed; inset: 0; background: #010814; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .gate-box { background: #0a192f; border: 2px solid #00f2ff; padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 350px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
-        
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
         .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
         .box-title { font-size: 11px; font-weight: 900; color: #aaa; margin-bottom: 4px; }
@@ -21,6 +29,11 @@
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
+        
+        /* ✨ VIP Logic Styling */
+        .blur-locked { filter: blur(6px); opacity: 0.3; pointer-events: none; }
+        .vip-tag { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fbbf24; font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 4px; white-space: nowrap; z-index: 20; }
+        
         .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
         .glow-red { box-shadow: 0 0 20px #ff4136, inset 0 0 8px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -28,27 +41,18 @@
         .main-scroll { margin-top: 255px; padding: 10px; }
         .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
         .roll-card { min-width: 88vw; scroll-snap-align: start; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
-        .scroll-wrapper::-webkit-scrollbar { display: none; }
         #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 5px; height: 20px; }
         #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 1000; }
         .hidden { display: none !important; }
     </style>
 </head>
-<body>
-
-    <div id="auth-gate" class="hidden">
+<body oncontextmenu="return false;"> <div id="auth-gate" class="hidden">
         <div class="gate-box">
             <h2 class="text-cyan-400 font-black text-2xl mb-2 italic">OMNI LOGIC</h2>
-            <p id="auth-msg" class="text-gray-400 text-xs mb-6 font-bold">V46.6 PRO အသုံးပြုရန် ကုဒ်လိုအပ်ပါသည်</p>
-            
-            <a href="https://t.me/omni_logic_bot" target="_blank" class="block w-full p-4 bg-blue-600 text-white font-bold rounded-xl mb-6 shadow-lg active:scale-95 transition-all text-center">
-                GET ACTIVATION CODE
-            </a>
-
+            <p id="auth-msg" class="text-gray-400 text-xs mb-6 font-bold">၅ ရက် Trial အသုံးပြုရန် ကုဒ်လိုအပ်ပါသည်</p>
+            <a href="https://t.me/omni_logic_bot" target="_blank" class="block w-full p-4 bg-blue-600 text-white font-bold rounded-xl mb-6 shadow-lg active:scale-95 transition-all text-center">GET ACTIVATION CODE</a>
             <input type="tel" id="activation-code" class="w-full p-4 bg-black border-2 border-cyan-500 text-cyan-400 text-center text-3xl font-black rounded-xl mb-6 focus:ring-2 focus:ring-cyan-300 outline-none" placeholder="------" maxlength="6">
-            
             <button onclick="handleActivation()" class="w-full p-4 bg-cyan-500 text-black font-black rounded-xl shadow-xl active:scale-95 transition-all uppercase">Activate System</button>
-            
             <p class="mt-8 text-[9px] text-gray-600 font-mono tracking-widest uppercase">Your ID: <span id="hw-display"></span></p>
         </div>
     </div>
@@ -57,13 +61,31 @@
         <div id="toast">Copied Logs!</div>
         <div class="fixed-header">
             <div class="box-container">
-                <div><div class="box-title">Logic A</div><div class="predict-box a-box" id="box-a">-</div><div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div></div>
-                <div><div class="box-title">Logic B</div><div class="predict-box b-box" id="box-b">-</div><div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div></div>
-                <div><div class="box-title" style="margin-left:8px;">Logic C</div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div></div>
+                <div>
+                    <div class="box-title">Logic A</div>
+                    <div class="predict-box a-box" id="box-a">-</div>
+                    <div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div>
+                </div>
+                <div class="relative">
+                    <div class="box-title">Logic B</div>
+                    <div id="container-b">
+                        <div class="predict-box b-box" id="box-b">-</div>
+                        <div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div>
+                    </div>
+                    <div id="lock-b" class="vip-tag hidden">🔒 VIP ONLY</div>
+                </div>
+                <div class="relative">
+                    <div class="box-title" style="margin-left:8px;">Logic C</div>
+                    <div id="container-c">
+                        <div class="predict-box c-box" id="box-c"><span>-</span></div>
+                        <div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div>
+                    </div>
+                    <div id="lock-c" class="vip-tag hidden">🔒 VIP ONLY</div>
+                </div>
             </div>
             <div id="ai-status">စောင့်ကြည့်နေသည်...</div>
             <div class="flex gap-2 items-center justify-center mt-3">
-                <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500" maxlength="1">
+                <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500 outline-none" maxlength="1">
                 <button onclick="submitDigit()" class="bg-cyan-500 text-black h-12 px-6 rounded-lg font-black active:scale-95">ENTER</button>
             </div>
         </div>
@@ -71,18 +93,17 @@
         <div class="main-scroll">
             <div id="history-container" class="scroll-wrapper"></div>
             <div class="flex gap-3 mt-4">
-                <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600 shadow-md">COPY RECORD</button>
+                <button id="copy-btn" onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600 shadow-md transition-opacity">COPY RECORD</button>
                 <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700 shadow-md">RESET ALL</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 🔑 DATABASE CONFIGURATION
         const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
+        let isVIP = false;
 
-        // 🆔 HARDWARE ID GENERATOR
         function getHWID() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -95,7 +116,6 @@
         const deviceId = getHWID();
         document.getElementById('hw-display').innerText = deviceId;
 
-        // 🛡️ SECURITY & ACTIVATION LOGIC
         async function checkAccess() {
             try {
                 const res = await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
@@ -103,14 +123,39 @@
                 });
                 const data = await res.json();
                 if (data && data.length > 0) {
-                    document.getElementById('main-ui').classList.remove('hidden');
-                    document.getElementById('auth-gate').classList.add('hidden');
+                    const expiry = new Date(data[0].expires_at);
+                    if (expiry > new Date()) {
+                        document.getElementById('main-ui').classList.remove('hidden');
+                        document.getElementById('auth-gate').classList.add('hidden');
+                        
+                        // 💎 VIP Check: သက်တမ်းကျန်ရက် ၆ ရက်ထက်ပိုရင် VIP လို့ယူဆမယ် (Trial က ၅ ရက်မို့လို့)
+                        const diffDays = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
+                        isVIP = diffDays > 6;
+                        applyRestrictions();
+                    } else {
+                        document.getElementById('auth-gate').classList.remove('hidden');
+                    }
                 } else {
                     document.getElementById('auth-gate').classList.remove('hidden');
                 }
-            } catch (e) { 
-                console.error("Auth Error");
-                document.getElementById('auth-gate').classList.remove('hidden');
+            } catch (e) { document.getElementById('auth-gate').classList.remove('hidden'); }
+        }
+
+        function applyRestrictions() {
+            if (!isVIP) {
+                // Trial User: Logic B နဲ့ C ကို Blur လုပ်မယ်
+                document.getElementById('container-b').classList.add('blur-locked');
+                document.getElementById('container-c').classList.add('blur-locked');
+                document.getElementById('lock-b').classList.remove('hidden');
+                document.getElementById('lock-c').classList.remove('hidden');
+                
+                // Copy ခလုတ်ကို ပိတ်မယ်
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.disabled = true;
+                copyBtn.style.opacity = "0.3";
+                copyBtn.innerText = "LOCKED (VIP)";
+                
+                document.getElementById('ai-status').innerText = "⚠️ Trial Mode: Logic A သာ ရရှိပါမည်";
             }
         }
 
@@ -118,47 +163,34 @@
             const codeInput = document.getElementById('activation-code');
             const code = codeInput.value.trim();
             const msg = document.getElementById('auth-msg');
-            
             if (code.length < 6) return;
             msg.innerText = "စစ်ဆေးနေပါသည်...";
 
             try {
-                // Check if code exists in pending_codes
                 const res = await fetch(`${SB_URL}/rest/v1/pending_codes?code_key=eq.${code}`, {
                     headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
                 });
                 const data = await res.json();
 
                 if (data && data.length > 0) {
-                    // Save access to database
                     const saveRes = await fetch(`${SB_URL}/rest/v1/user_access`, {
                         method: 'POST',
-                        headers: { 
-                            "apikey": SB_KEY, 
-                            "Authorization": `Bearer ${SB_KEY}`, 
-                            "Content-Type": "application/json",
-                            "Prefer": "return=minimal" 
-                        },
-                        body: JSON.stringify({ device_id: deviceId, telegram_id: data[0].tg_id })
+                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ 
+                            device_id: deviceId, 
+                            telegram_id: data[0].tg_id,
+                            expires_at: data[0].expires_at // Bot ဆီကပါလာတဲ့ ၅ ရက် သက်တမ်းကို သုံးမယ်
+                        })
                     });
-
-                    if (saveRes.ok) {
-                        alert("✅ Activation အောင်မြင်ပါပြီ!");
-                        location.reload();
-                    } else {
-                        const err = await saveRes.text();
-                        alert("Database Error: စာရေးခွင့်မရှိပါ။ (SQL Editor တွင် Security Disable လုပ်ပေးရန်လိုသည်)");
-                    }
+                    if (saveRes.ok) { location.reload(); }
                 } else {
                     msg.innerText = "❌ ကုဒ်မှားယွင်းနေပါသည်။";
                     msg.style.color = "#ff4136";
                 }
-            } catch (e) {
-                alert("Network Error: " + e.message);
-            }
+            } catch (e) { alert("Error: " + e.message); }
         }
 
-        // 🧠 ORIGINAL OMNI LOGIC (A, B, C)
+        // --- OMNI CORE LOGIC ---
         let history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
         let streakTracker = { a:0, b:0, c:0 };
@@ -189,6 +221,8 @@
                 const l2 = history.slice(-2);
                 aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
             } else { aNext = last >= 5 ? 'B' : 'S'; }
+            
+            // Logic B, C တွက်ချက်မှု (VIP မဟုတ်ရင်လည်း နောက်ကွယ်မှာ တွက်နေမယ်၊ ဒါပေမဲ့ UI မှာ ဝါးထားမယ်)
             if (history.length >= 3) { bNext = (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0) ? 'S' : 'B'; }
             if (history.length >= 5) { cNext = (history.slice(-5).reduce((a,b)=>a+b.val,0)/5) >= 4.5 ? 'B' : 'S'; }
 
@@ -205,24 +239,23 @@
                 return v.length === 0 ? 0 : Math.round((v.filter(h => h[k+'Ok']).length / v.length) * 100);
             };
             const rates = { a: getRate('a'), b: getRate('b'), c: getRate('c') };
-            ['a','b','c'].forEach(k => document.getElementById(k+'-rate').innerText = `RATE: ${rates[k]}%`);
+            document.getElementById('a-rate').innerText = `RATE: ${rates.a}%`;
+            document.getElementById('b-rate').innerText = `RATE: ${rates.b}%`;
+            document.getElementById('c-rate').innerText = `RATE: ${rates.c}%`;
 
             const status = document.getElementById('ai-status');
+            if (!isVIP) { status.innerText = "⚠️ Trial Mode: Logic A သာ ရရှိပါမည်"; }
+            
             lastAiState = { a: "", b: "", c: "" };
-            let suggestion = "ဈေးကွက်ကို စောင့်ကြည့်နေသည်...";
-
             ['a','b','c'].forEach(k => {
                 const el = document.getElementById('box-'+k);
                 el.classList.remove('glow-cyan', 'glow-red');
                 if (streakTracker[k] >= 4) {
                     el.classList.add('glow-red'); lastAiState[k] = "⚠️Warning";
-                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခဏနားပါ (အမှားများနေ)`;
                 } else if (rates[k] >= 80) {
                     el.classList.add('glow-cyan'); lastAiState[k] = "🔵Glow";
-                    suggestion = `✅ Logic ${k.toUpperCase()} ကို လိုက်ရန် အကြံပြုသည်`;
                 }
             });
-            status.innerText = suggestion;
         }
 
         function renderUI() {
@@ -236,9 +269,9 @@
                     ${groups[r].map(i => `
                         <div class="grid grid-cols-5 gap-1 py-1 text-[11px] border-b border-white/5 items-center">
                             <div class="text-slate-500 font-bold">${i.stage}</div>
-                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}${i.aState?'<span class="text-[8px]">'+(i.aState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}${i.bState?'<span class="text-[8px]">'+(i.bState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}${i.cState?'<span class="text-[8px]">'+(i.cState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
+                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}</div>
+                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black ${isVIP?'':'blur-[3px]'}">${i.b}${i.bOk?'✅':'❌'}</div>
+                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black ${isVIP?'':'blur-[3px]'}">${i.c}${i.cOk?'✅':'❌'}</div>
                             <div class="text-yellow-400 font-black text-right text-[13px]">${i.val}</div>
                         </div>
                     `).join('')}
@@ -248,7 +281,8 @@
         }
 
         function copyLogs() {
-            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${h.aState?'('+h.aState+')':''} B:${h.b}${h.bOk?'✅':'❌'}${h.bState?'('+h.bState+')':''} C:${h.c}${h.cOk?'✅':'❌'}${h.cState?'('+h.cState+')':''}`).join('\n');
+            if (!isVIP) return;
+            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'} B:${h.b}${h.bOk?'✅':'❌'} C:${h.c}${h.cOk?'✅':'❌'}`).join('\n');
             navigator.clipboard.writeText(logText).then(() => {
                 const t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
             });
