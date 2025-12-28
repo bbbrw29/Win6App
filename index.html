@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; }
         
-        /* Activation Overlay Design */
+        /* Activation Overlay */
         #auth-gate { position: fixed; inset: 0; background: #010814; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .gate-box { background: #0a192f; border: 2px solid #00f2ff; padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 350px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
         
@@ -38,18 +38,18 @@
 
     <div id="auth-gate" class="hidden">
         <div class="gate-box">
-            <h2 class="text-cyan-400 font-black text-2xl mb-2">OMNI LOGIC</h2>
-            <p id="auth-msg" class="text-gray-400 text-xs mb-6">စနစ်ကိုအသုံးပြုရန် Activation Code လိုအပ်ပါသည်</p>
+            <h2 class="text-cyan-400 font-black text-2xl mb-2 italic">OMNI LOGIC</h2>
+            <p id="auth-msg" class="text-gray-400 text-xs mb-6 font-bold">V46.6 PRO အသုံးပြုရန် ကုဒ်လိုအပ်ပါသည်</p>
             
             <a href="https://t.me/omni_logic_bot" target="_blank" class="block w-full p-4 bg-blue-600 text-white font-bold rounded-xl mb-6 shadow-lg active:scale-95 transition-all text-center">
-                GET CODE (Telegram Bot)
+                GET ACTIVATION CODE
             </a>
 
-            <input type="tel" id="activation-code" class="w-full p-4 bg-black border-2 border-cyan-500 text-cyan-400 text-center text-2xl font-black rounded-xl mb-6 focus:outline-none" placeholder="------" maxlength="6">
+            <input type="tel" id="activation-code" class="w-full p-4 bg-black border-2 border-cyan-500 text-cyan-400 text-center text-3xl font-black rounded-xl mb-6 focus:ring-2 focus:ring-cyan-300 outline-none" placeholder="------" maxlength="6">
             
-            <button onclick="handleActivation()" class="w-full p-4 bg-cyan-500 text-black font-black rounded-xl shadow-xl active:scale-95 transition-all">ACTIVATE NOW</button>
+            <button onclick="handleActivation()" class="w-full p-4 bg-cyan-500 text-black font-black rounded-xl shadow-xl active:scale-95 transition-all uppercase">Activate System</button>
             
-            <p class="mt-8 text-[9px] text-gray-600 font-mono tracking-widest uppercase">ID: <span id="hw-display"></span></p>
+            <p class="mt-8 text-[9px] text-gray-600 font-mono tracking-widest uppercase">Your ID: <span id="hw-display"></span></p>
         </div>
     </div>
 
@@ -71,18 +71,18 @@
         <div class="main-scroll">
             <div id="history-container" class="scroll-wrapper"></div>
             <div class="flex gap-3 mt-4">
-                <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600">COPY RECORD</button>
-                <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700">RESET ALL</button>
+                <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600 shadow-md">COPY RECORD</button>
+                <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700 shadow-md">RESET ALL</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DATABASE SETTINGS ---
+        // 🔑 DATABASE CONFIGURATION
         const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
 
-        // --- HARDWARE ID GENERATOR ---
+        // 🆔 HARDWARE ID GENERATOR
         function getHWID() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -95,48 +95,70 @@
         const deviceId = getHWID();
         document.getElementById('hw-display').innerText = deviceId;
 
-        // --- AUTH CHECK ---
+        // 🛡️ SECURITY & ACTIVATION LOGIC
         async function checkAccess() {
             try {
                 const res = await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
                     headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
                 });
                 const data = await res.json();
-                if (data.length > 0) {
+                if (data && data.length > 0) {
                     document.getElementById('main-ui').classList.remove('hidden');
+                    document.getElementById('auth-gate').classList.add('hidden');
                 } else {
                     document.getElementById('auth-gate').classList.remove('hidden');
                 }
-            } catch (e) { document.getElementById('auth-gate').classList.remove('hidden'); }
+            } catch (e) { 
+                console.error("Auth Error");
+                document.getElementById('auth-gate').classList.remove('hidden');
+            }
         }
 
         async function handleActivation() {
-            const code = document.getElementById('activation-code').value.trim();
+            const codeInput = document.getElementById('activation-code');
+            const code = codeInput.value.trim();
             const msg = document.getElementById('auth-msg');
+            
             if (code.length < 6) return;
-
             msg.innerText = "စစ်ဆေးနေပါသည်...";
+
             try {
+                // Check if code exists in pending_codes
                 const res = await fetch(`${SB_URL}/rest/v1/pending_codes?code_key=eq.${code}`, {
                     headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
                 });
                 const data = await res.json();
 
-                if (data.length > 0) {
-                    await fetch(`${SB_URL}/rest/v1/user_access`, {
+                if (data && data.length > 0) {
+                    // Save access to database
+                    const saveRes = await fetch(`${SB_URL}/rest/v1/user_access`, {
                         method: 'POST',
-                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+                        headers: { 
+                            "apikey": SB_KEY, 
+                            "Authorization": `Bearer ${SB_KEY}`, 
+                            "Content-Type": "application/json",
+                            "Prefer": "return=minimal" 
+                        },
                         body: JSON.stringify({ device_id: deviceId, telegram_id: data[0].tg_id })
                     });
-                    location.reload();
+
+                    if (saveRes.ok) {
+                        alert("✅ Activation အောင်မြင်ပါပြီ!");
+                        location.reload();
+                    } else {
+                        const err = await saveRes.text();
+                        alert("Database Error: စာရေးခွင့်မရှိပါ။ (SQL Editor တွင် Security Disable လုပ်ပေးရန်လိုသည်)");
+                    }
                 } else {
                     msg.innerText = "❌ ကုဒ်မှားယွင်းနေပါသည်။";
-                    msg.classList.add('text-red-500');
+                    msg.style.color = "#ff4136";
                 }
-            } catch (e) { msg.innerText = "Connection Error!"; }
+            } catch (e) {
+                alert("Network Error: " + e.message);
+            }
         }
 
-        // --- ORIGINAL APP LOGIC (A, B, C) ---
+        // 🧠 ORIGINAL OMNI LOGIC (A, B, C)
         let history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
         let streakTracker = { a:0, b:0, c:0 };
@@ -235,7 +257,7 @@
         function fullReset() { if(confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            checkAccess(); // First check activation
+            checkAccess();
             const saved = JSON.parse(localStorage.getItem('V46_6_FINAL'));
             if (saved) { history=saved.history; roll=saved.roll; stage=saved.stage; streakTracker=saved.streakTracker; renderUI(); if(history.length) updateAI(history[history.length-1].val); }
         };
