@@ -3,97 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.7-BETA FIXED</title>
+    <title>Omni Logic V46.7-BETA Optimized</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; -webkit-user-select: none; user-select: none; height: 100vh; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; -webkit-user-select: none; user-select: none; }
         
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 350px; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; }
         .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
-        .predict-box { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 20px; border: 4px solid; transition: all 0.3s ease; }
+        .predict-box { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 20px; border: 4px solid; transition: all 0.2s; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
 
-        /* 💡 Glow အလုပ်လုပ်ရန် CSS */
-        .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        /* AI Glow */
+        .glow-cyan { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; transform: scale(1.05); }
 
-        /* Bet Section */
-        .bet-section { background: #0a192f; border: 1px solid #1e3a8a; padding: 8px; margin-top: 8px; border-radius: 10px; }
-        .bet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 5px; }
-        .bet-item { background: #010814; border: 1px solid #1e293b; border-radius: 6px; padding: 4px; text-align: center; }
+        /* Bet Section Touched Fix */
+        .bet-section { background: #0a192f; border: 1px solid #1e3a8a; padding: 10px; margin-top: 10px; border-radius: 12px; }
+        .bet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+        .bet-item { background: #010814; border: 1px solid #1e293b; border-radius: 6px; padding: 8px 4px; text-align: center; position: relative; pointer-events: auto; }
         .bet-item.lost { border-color: #ff4136 !important; background: #451a1a !important; }
-        .bet-item.active { border-color: #10b981 !important; background: #064e3b !important; box-shadow: 0 0 8px #10b981; }
-        .bet-val-input { width: 100%; background: transparent; color: white; font-size: 11px; text-align: center; border: none; outline: none; }
+        .bet-item.active { border-color: #10b981 !important; background: #064e3b !important; box-shadow: 0 0 10px #10b981; }
+        .bet-val-input { width: 100%; background: transparent; color: white; font-size: 11px; text-align: center; border: none; outline: none; pointer-events: none; }
+        .bet-item.unlocked .bet-val-input { pointer-events: auto; }
 
-        /* 📏 Roll Card Height & Horizontal Scroll */
-        .main-scroll { position: absolute; top: 355px; left: 0; right: 0; bottom: 0; padding: 10px; overflow: hidden; }
-        .scroll-wrapper { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 20px; scroll-snap-type: x mandatory; height: 100%; }
+        /* Scrollable Roll Cards */
+        .main-scroll { margin-top: 360px; padding: 10px; height: calc(100vh - 360px); display: flex; flex-direction: column; }
+        .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; flex-grow: 1; scroll-behavior: smooth; }
         .scroll-wrapper::-webkit-scrollbar { display: none; }
-        .roll-card { min-width: 85vw; scroll-snap-align: start; background: #0a192f; border-radius: 15px; padding: 15px; border: 1px solid #1e3a8a; height: calc(100% - 60px); }
+        .roll-card { min-width: 90vw; background: #0a192f; border-radius: 12px; padding: 15px; border: 1px solid #1e3a8a; }
     </style>
 </head>
 <body>
 
     <div class="fixed-header">
-        <div class="flex justify-between items-center text-[10px] font-bold text-cyan-400 mb-2 uppercase px-1">
-            <span>V46.7-BETA</span>
+        <div class="flex justify-between items-center text-[9px] font-bold text-cyan-400 mb-2 px-1">
             <span>ID: 6401717718</span>
+            <span class="bg-cyan-500 text-black px-2 rounded">V46.7-BETA</span>
         </div>
 
         <div class="box-container">
-            <div><div class="predict-box a-box" id="box-a">-</div><div class="text-[10px] mt-1" id="a-rate">A: 0%</div></div>
-            <div><div class="predict-box b-box" id="box-b">-</div><div class="text-[10px] mt-1" id="b-rate">B: 0%</div></div>
+            <div><div class="predict-box a-box" id="box-a">-</div><div class="text-[9px] mt-1" id="a-rate">A: 0%</div></div>
+            <div><div class="predict-box b-box" id="box-b">-</div><div class="text-[9px] mt-1" id="b-rate">B: 0%</div></div>
             <div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[12px]" id="c-rate">C: 0%</div></div>
         </div>
 
         <div class="bet-section">
-            <div class="flex justify-between items-center px-1">
+            <div class="flex justify-between items-center mb-2">
                 <div class="flex gap-2">
-                    <select id="max-steps" onchange="initBetGrid()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-1 outline-none">
+                    <select id="max-steps" onchange="initGrid()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-1">
                         <option value="5">5S</option><option value="6">6S</option><option value="7">7S</option><option value="8" selected>8S</option>
                     </select>
-                    <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-white text-[10px] px-3 py-1 rounded font-black">LOCK: OFF</button>
+                    <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-[9px] px-3 py-1 rounded font-black">LOCK: OFF</button>
                 </div>
-                <span id="total-sum" class="text-[10px] font-black text-yellow-400">SUM: 0</span>
+                <span id="total-sum" class="text-yellow-400 text-[10px] font-bold">TOTAL: 0</span>
             </div>
             <div id="bet-grid-container" class="bet-grid"></div>
         </div>
 
-        <div class="flex gap-2 items-center justify-center mt-3">
-            <input type="tel" id="digit-input" class="w-16 h-10 rounded-xl text-center text-3xl font-black text-black border-2 border-cyan-500 outline-none" maxlength="1">
-            <button onclick="submitDigit()" class="bg-cyan-500 text-black h-10 px-8 rounded-xl font-black active:scale-95">ENTER</button>
+        <div class="flex gap-3 items-center justify-center mt-3">
+            <input type="tel" id="digit-input" class="w-24 h-14 rounded-xl text-center text-4xl font-black text-black border-4 border-cyan-500 shadow-[0_0_15px_rgba(0,242,255,0.5)]" maxlength="1">
+            <button onclick="submitDigit()" class="bg-cyan-500 text-black h-14 px-10 rounded-xl font-black active:scale-90 text-xl">ENTER</button>
         </div>
     </div>
 
     <div class="main-scroll">
-        <div id="history-container" class="scroll-wrapper"></div>
-        <div class="flex gap-3 mt-4 px-2">
-            <button onclick="copyLogs()" class="flex-1 p-2 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600">COPY</button>
-            <button onclick="fullReset()" class="flex-1 p-2 bg-red-900/30 rounded-lg text-[11px] font-black border border-red-700 text-red-500">RESET</button>
+        <div id="history-container" class="scroll-wrapper no-scrollbar"></div>
+        
+        <div class="flex gap-3 mt-4 pb-2">
+            <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600">COPY RECORD</button>
+            <button onclick="fullReset()" class="flex-1 p-3 bg-red-900/50 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
         </div>
     </div>
 
     <script>
         let betValues = [100, 200, 400, 800, 1600, 3200, 6400, 12800];
-        let isLocked = false;
-        let history = [], roll = 1, stage = 1;
+        let isLocked = false, history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
 
-        function initBetGrid() {
+        function initGrid() {
             const count = document.getElementById('max-steps').value;
             const container = document.getElementById('bet-grid-container');
             container.innerHTML = '';
             for(let i=0; i<count; i++) {
                 container.innerHTML += `
-                    <div class="bet-item" id="step-${i}" onclick="handleStepTouch(${i})">
-                        <div class="text-[8px] text-slate-500">S${i+1}</div>
-                        <input type="tel" value="${betValues[i]}" oninput="updateVal(${i}, this.value)" class="bet-val-input" ${isLocked ? 'disabled' : ''}>
-                    </div>
-                `;
+                    <div class="bet-item ${isLocked ? '' : 'unlocked'}" id="step-${i}" onmousedown="handleTouch(${i})">
+                        <div class="text-[7px] text-slate-500 font-bold mb-1">S${i+1}</div>
+                        <input type="tel" value="${betValues[i]}" oninput="betValues[${i}]=parseInt(this.value)||0;calculateTotal()" class="bet-val-input">
+                    </div>`;
             }
             calculateTotal();
         }
@@ -103,10 +102,10 @@
             const btn = document.getElementById('lock-btn');
             btn.innerText = isLocked ? "LOCK: ON" : "LOCK: OFF";
             btn.style.backgroundColor = isLocked ? "#10b981" : "#dc2626";
-            initBetGrid();
+            initGrid();
         }
 
-        function handleStepTouch(index) {
+        function handleTouch(index) {
             if (!isLocked) return;
             const count = document.getElementById('max-steps').value;
             for(let i=0; i<count; i++) {
@@ -117,82 +116,76 @@
             }
         }
 
-        function updateVal(i, v) { betValues[i] = parseInt(v) || 0; calculateTotal(); }
         function calculateTotal() {
             let s = 0; const c = document.getElementById('max-steps').value;
             for(let i=0; i<c; i++) s += (betValues[i] || 0);
-            document.getElementById('total-sum').innerText = "SUM: " + s.toLocaleString();
+            document.getElementById('total-sum').innerText = "TOTAL: " + s.toLocaleString();
         }
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
-            const val = parseInt(input.value);
-            if (isNaN(val)) return;
+            const val = parseInt(input.value); if (isNaN(val)) return;
             const grp = val >= 5 ? 'B' : 'S';
-
-            const entry = { val, grp, roll, stage, a: aNext, aOk: aNext === grp, b: bNext, bOk: bNext === grp, c: cNext, cOk: cNext === grp };
-            history.push(entry);
+            history.push({ val, grp, roll, stage, a: aNext, aOk: aNext === grp, b: bNext, bOk: bNext === grp, c: cNext, cOk: cNext === grp });
             
+            const prevRoll = roll;
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             
             updateAI(val);
-            renderUI();
-            input.value = "";
-            input.focus();
+            renderUI(prevRoll);
+            input.value = ""; input.focus();
         }
 
         function updateAI(last) {
-            // A Logic
             if (history.length >= 2) {
                 const l2 = history.slice(-2);
                 aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
             } else { aNext = last >= 5 ? 'B' : 'S'; }
-            
-            // B & C Logic
             bNext = (history.slice(-3).reduce((acc,h)=>acc+h.val,0) % 2 === 0) ? 'S' : 'B';
             cNext = (history.slice(-5).reduce((acc,h)=>acc+h.val,0)/5) >= 4.5 ? 'B' : 'S';
 
             ['a','b','c'].forEach(k => {
                 const box = document.getElementById('box-'+k);
-                const nextVal = (k === 'a') ? aNext : (k === 'b' ? bNext : cNext);
-                box.innerText = nextVal;
-
+                box.innerText = (k==='a'?aNext:(k==='b'?bNext:cNext));
                 const hists = history.filter(h => h[k] !== "-");
-                const winRate = hists.length ? Math.round(hists.filter(h => h[k+'Ok']).length / hists.length * 100) : 0;
-                document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${winRate}%`;
-                
-                // 💡 AI Glow Fix (68%)
-                if (winRate >= 68) box.classList.add('glow-cyan'); 
-                else box.classList.remove('glow-cyan');
+                const rate = hists.length ? Math.round(hists.filter(h => h[k+'Ok']).length / hists.length * 100) : 0;
+                document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
+                if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
             });
         }
 
-        function renderUI() {
+        function renderUI(targetRoll) {
             const container = document.getElementById('history-container');
-            const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[acc.roll] = []; if(!acc[cur.roll]) acc[cur.roll]=[]; acc[cur.roll].push(cur); return acc; }, {});
+            const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             
             container.innerHTML = Object.keys(groups).map(r => `
-                <div class="roll-card">
-                    <div class="text-[11px] font-black text-cyan-400 mb-3 border-b border-cyan-900 pb-1">ROLL DATA ${r}</div>
-                    <div class="flex flex-col gap-1 overflow-y-auto h-[80%] no-scrollbar">
+                <div class="roll-card" id="roll-card-${r}">
+                    <div class="text-[11px] font-black text-cyan-400 mb-3 border-b border-cyan-900 pb-1 flex justify-between">
+                        <span>ROLL HISTORY ${r}</span>
+                        <span class="text-slate-500">V46.7</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
                         ${groups[r].map(i => `
-                            <div class="grid grid-cols-5 gap-2 py-2 text-[13px] border-b border-white/5">
+                            <div class="grid grid-cols-5 gap-2 py-2 text-[14px] border-b border-white/5 items-center">
                                 <div class="text-slate-500 font-bold">${i.stage}</div>
                                 <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}</div>
                                 <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}</div>
                                 <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}</div>
-                                <div class="text-yellow-400 font-black text-right">${i.val}</div>
+                                <div class="text-yellow-400 font-black text-right text-lg">${i.val}</div>
                             </div>
                         `).join('')}
                     </div>
                 </div>
             `).join('');
-            container.scrollLeft = container.scrollWidth;
+            
+            // Auto Scroll only to the current roll card
+            const activeCard = document.getElementById(`roll-card-${targetRoll}`);
+            if (activeCard) activeCard.scrollIntoView({ behavior: 'smooth', inline: 'start' });
         }
 
         function copyLogs() { alert("Copied!"); }
-        function fullReset() { if(confirm("Reset?")) location.reload(); }
-        window.onload = () => initBetGrid();
+        function fullReset() { if(confirm("Clear All?")) location.reload(); }
+        window.onload = () => initGrid();
     </script>
 </body>
 </html>
