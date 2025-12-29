@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.9-FINAL</title>
+    <title>Omni Logic V47.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; margin: 0; }
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; }
-        .shape-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; }
+        
+        /* Header Fix */
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 340px; }
+        
+        /* Shapes */
         .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
@@ -17,28 +20,31 @@
         .c-box span { transform: rotate(-45deg); display: inline-block; }
         .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; }
 
+        /* Split Layout 55/42 */
         .main-split { display: flex; gap: 8px; margin-top: 15px; }
-        .left-betting { flex: 0 0 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; align-content: start; }
+        .left-betting { flex: 0 0 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
         .right-input { flex: 0 0 42%; display: flex; flex-direction: column; gap: 4px; }
 
-        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 35px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
+        /* Betting System */
+        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; }
 
+        /* Input & Total */
         #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; outline: none; }
         #enter-btn { height: 50px; border-radius: 6px; font-weight: 900; font-size: 18px; background: #00f2ff; color: black; }
-        .total-box { border: 1.5px solid #fbbf24; background: rgba(251,191,36,0.15); border-radius: 4px; padding: 6px; text-align: center; font-size: 12px; font-weight: 900; color: #fbbf24; }
+        .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
 
-        .ai-status-box { background: rgba(30,41,59,0.8); border: 1px solid #00f2ff; border-radius: 6px; padding: 8px; text-align: center; font-size: 11px; font-weight: bold; margin-top: 12px; }
-        .status-warn { border-color: #ff4136; color: #ff4136; background: rgba(69, 26, 26, 0.8); }
+        /* Roll Card - Strictly Bordered 1 to 10 */
+        .card-container { margin-top: 350px; padding: 10px; height: calc(100vh - 420px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
+        .roll-card { min-width: 90vw; background: #0a192f; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; display: flex; flex-direction: column; }
+        
+        .t-row { display: grid; grid-template-columns: 40px 1fr 1fr 1fr 45px; width: 100%; border-bottom: 1px solid #1e40af; height: 32px; align-items: center; text-align: center; }
+        .t-head { background: #1e40af; color: white; height: 35px; border-bottom: 2px solid #00f2ff; }
+        .t-col { border-right: 1px solid #1e40af; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
+        .t-col:last-child { border-right: none; }
 
-        .card-container { margin-top: 345px; padding: 10px; height: calc(100vh - 415px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
-        .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 8px; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
-        .t-row { display: grid; grid-template-columns: 30px 1fr 1fr 1fr 35px; gap: 4px; align-items: center; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding: 7px 0; }
-        .t-row:last-child { border-bottom: none; }
-        .t-head { border-bottom: 2.5px solid #00f2ff; margin-bottom: 4px; padding-bottom: 5px; }
-
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 101; }
     </style>
 </head>
 <body>
@@ -46,10 +52,10 @@
     <div class="fixed-header">
         <div class="flex justify-between items-center text-[10px] mb-2 px-1">
             <span class="text-slate-500">ID: 6401717718</span>
-            <span class="text-cyan-400 font-black">V46.9-FINAL</span>
+            <span class="text-cyan-400 font-black">V47.1-STRICT</span>
         </div>
 
-        <div class="shape-container">
+        <div class="shape-container grid grid-cols-3 gap-2 text-center">
             <div><div class="p-box a-box" id="box-a">-</div><div class="text-[9px] mt-1 text-slate-400" id="a-rate">A: 0%</div></div>
             <div><div class="p-box b-box" id="box-b">-</div><div class="text-[9px] mt-1 text-slate-400" id="b-rate">B: 0%</div></div>
             <div><div class="p-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
@@ -58,27 +64,26 @@
         <div class="main-split">
             <div class="left-betting">
                 <div class="col-span-2 flex justify-between items-center mb-1">
-                    <select id="step-selector" onchange="initBetting()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-2 py-0.5 outline-none">
-                        <option value="5">5 STEPS</option><option value="6">6 STEPS</option><option value="7">7 STEPS</option><option value="8" selected>8 STEPS</option>
+                    <select id="step-selector" onchange="initBetting()" class="bg-black text-cyan-400 text-[11px] border border-slate-700 rounded px-2 py-0.5">
+                        <option value="5">5S</option><option value="6">6S</option><option value="7">7S</option><option value="8" selected>8S</option>
                     </select>
-                    <button onclick="toggleLock()" id="lock-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase">LOCK: OFF</button>
+                    <button onclick="toggleLock()" id="lock-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black">LOCK: OFF</button>
                 </div>
                 <div id="bet-grid" class="contents"></div>
             </div>
-            
             <div class="right-input">
                 <input type="tel" id="digit-input" maxlength="1" placeholder="?">
                 <button id="enter-btn" onclick="submitDigit()">ENTER</button>
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        <div id="ai-notif" class="ai-status-box" style="color:#fbbf24">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-notif" class="bg-slate-800/80 border border-cyan-500 rounded p-2 text-center text-[10px] mt-3 font-bold text-yellow-400">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
     <div class="card-container no-scrollbar" id="hist-cont"></div>
 
     <div class="footer">
-        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600 active:bg-slate-700">COPY RECORD</button>
+        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600">COPY RECORD</button>
         <button onclick="resetAll()" class="flex-1 p-3 bg-red-900/30 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
     </div>
 
@@ -89,29 +94,27 @@
 
         function initBetting() {
             const count = parseInt(document.getElementById('step-selector').value);
-            const grid = document.getElementById('bet-grid');
-            grid.innerHTML = '';
-            let currentTotal = 0;
+            const grid = document.getElementById('bet-grid'); grid.innerHTML = '';
+            let t = 0;
             for(let i=0; i<count; i++) {
                 grid.innerHTML += `<div class="bet-btn" id="s-${i}" onclick="handleBetClick(${i})">${betValues[i].toLocaleString()}</div>`;
-                currentTotal += betValues[i];
+                t += betValues[i];
             }
-            document.getElementById('total-val').innerText = "TOTAL: " + currentTotal.toLocaleString();
+            document.getElementById('total-val').innerText = "TOTAL: " + t.toLocaleString();
+            renderHistory();
         }
 
         function toggleLock() {
             lock = !lock;
-            const btn = document.getElementById('lock-btn');
-            btn.innerText = lock ? "LOCK: ON" : "LOCK: OFF";
-            btn.className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black uppercase" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase";
+            document.getElementById('lock-btn').innerText = lock ? "LOCK: ON" : "LOCK: OFF";
+            document.getElementById('lock-btn').className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black";
         }
 
         function handleBetClick(idx) {
             if (!lock) return;
             const count = parseInt(document.getElementById('step-selector').value);
             for(let i=0; i<count; i++) {
-                const el = document.getElementById(`s-${i}`);
-                if(!el) continue;
+                const el = document.getElementById(`s-${i}`); if(!el) continue;
                 el.classList.remove('active', 'lost');
                 if (i < idx) el.classList.add('lost');
                 if (i === idx) el.classList.add('active');
@@ -122,49 +125,56 @@
             const input = document.getElementById('digit-input');
             const v = parseInt(input.value); if (isNaN(v)) return;
             const g = v >= 5 ? 'B' : 'S';
-            hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, aG: aR >= 68, b: bN, bO: bN === g, bG: bR >= 68, c: cN, cO: cN === g, cG: cR >= 68 });
+            hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, b: bN, bO: bN === g, c: cN, cO: cN === g });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
         function updateAI(last) {
-            aN = last >= 5 ? 'S' : 'B';
-            bN = (hist.length > 0 && hist[hist.length-1].v % 2 === 0) ? 'S' : 'B';
-            cN = last > 3 ? 'B' : 'S';
+            // Strict Logic Pattern
+            if (hist.length >= 2) {
+                const l2 = hist.slice(-2);
+                aN = (l2[0].g === l2[1].g) ? l2[1].g : (l2[1].g === 'B' ? 'S' : 'B');
+            } else { aN = last >= 5 ? 'B' : 'S'; }
+            bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
+            cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
+
             ['a','b','c'].forEach(k => {
-                const box = document.getElementById('box-'+k);
-                box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 const hits = hist.filter(h => h[k] !== "-");
                 const rate = hits.length ? Math.round(hits.filter(h => h[k+'O']).length / hits.length * 100) : 0;
                 if(k==='a') aR=rate; if(k==='b') bR=rate; if(k==='c') cR=rate;
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
+                const box = document.getElementById('box-'+k);
+                box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
             });
-            const status = document.getElementById('ai-notif');
-            const maxR = Math.max(aR, bR, cR);
-            if (hist.length > 3 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည် (Warning)"; status.classList.add('status-warn'); }
-            else if (maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.classList.remove('status-warn'); status.style.color = "#10b981"; }
-            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.classList.remove('status-warn'); status.style.color = "#fbbf24"; }
         }
 
         function renderHistory() {
             const cont = document.getElementById('hist-cont');
             const grps = hist.reduce((acc, cur) => { if (!acc[cur.r]) acc[cur.r] = []; acc[cur.r].push(cur); return acc; }, {});
-            cont.innerHTML = Object.keys(grps).map(r => `
-                <div class="roll-card">
+            
+            // Current roll or at least Roll 1
+            const maxRoll = Math.max(roll, ...Object.keys(grps).map(Number));
+            let html = "";
+            for(let r=1; r<=maxRoll; r++) {
+                html += `<div class="roll-card">
                     <div class="t-row t-head">
-                        <span class="text-[9px] font-bold text-cyan-400">ROLL-${r}</span>
-                        <div class="shape-h h-a">A</div><div class="shape-h h-b">B</div><div class="shape-h h-c"><span>C</span></div>
-                        <span class="text-[9px] text-slate-500 font-bold uppercase">Digit</span>
-                    </div>
-                    ${grps[r].map(i => `<div class="t-row">
-                        <div class="text-slate-500 text-[10px] text-left">${i.s}</div>
-                        <div class="${i.aO?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aO?'✅':'❌'}${i.aG?'🔵':''}</div>
-                        <div class="${i.bO?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bO?'✅':'❌'}${i.bG?'🔵':''}</div>
-                        <div class="${i.cO?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cO?'✅':'❌'}${i.cG?'🔵':''}</div>
-                        <div class="text-yellow-400 font-black text-right text-base">${i.v}</div>
-                    </div>`).join('')}
-                </div>`).join('');
+                        <div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">DIGIT</div>
+                    </div>`;
+                for(let s=1; s<=10; s++) {
+                    const data = (grps[r] || []).find(i => i.s === s);
+                    html += `<div class="t-row">
+                        <div class="t-col text-slate-400">${s}</div>
+                        <div class="t-col ${data ? (data.aO?'text-green-400':'text-red-500') : ''}">${data ? data.a+(data.aO?'✅':'❌') : ''}</div>
+                        <div class="t-col ${data ? (data.bO?'text-green-400':'text-red-500') : ''}">${data ? data.b+(data.bO?'✅':'❌') : ''}</div>
+                        <div class="t-col ${data ? (data.cO?'text-green-400':'text-red-500') : ''}">${data ? data.c+(data.cO?'✅':'❌') : ''}</div>
+                        <div class="t-col text-yellow-400 font-black">${data ? data.v : ''}</div>
+                    </div>`;
+                }
+                html += `</div>`;
+            }
+            cont.innerHTML = html;
             cont.scrollLeft = cont.scrollWidth;
         }
 
