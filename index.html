@@ -3,198 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.6 - AI Record Master</title>
+    <title>Omni Logic V46.6 - Bypass Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { 
-            font-family: 'Pyidaungsu', sans-serif; 
-            background-color: #010814; 
-            color: white; 
-            overflow: hidden; 
-            /* 🛑 Copy ကူးလို့မရအောင် ပိတ်ထားခြင်း */
-            -webkit-user-select: none; 
-            -moz-user-select: none; 
-            -ms-user-select: none; 
-            user-select: none; 
-        }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; -webkit-user-select: none; user-select: none; }
         
-        #auth-gate { position: fixed; inset: 0; background: #010814; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .gate-box { background: #0a192f; border: 2px solid #00f2ff; padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 350px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
+        /* Header & Main UI */
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; }
         .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
-        .box-title { font-size: 11px; font-weight: 900; color: #aaa; margin-bottom: 4px; }
-        .predict-box { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 22px; transition: all 0.3s ease; border: 4px solid; }
+        .predict-box { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 20px; border: 4px solid; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
+
+        /* 🟢 Bet Section (New Addition) */
+        .bet-section { background: #0a192f; border-top: 1px solid #1e3a8a; padding: 10px; margin-top: 10px; }
+        .bet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+        .bet-item { background: #010814; border: 1px solid #1e293b; border-radius: 6px; padding: 4px; text-align: center; transition: 0.3s; }
+        .bet-item.lost { border-color: #ff4136; background: #451a1a; } /* အနီလင်း */
+        .bet-item.active { border-color: #10b981; background: #064e3b; box-shadow: 0 0 10px #10b981; } /* အစိမ်းလင်း */
+        .bet-val-input { width: 100%; background: transparent; color: white; font-size: 10px; text-align: center; border: none; outline: none; font-weight: bold; }
+        .step-num { font-size: 8px; color: #64748b; font-weight: bold; }
         
-        /* ✨ VIP Logic Styling */
-        .blur-locked { filter: blur(6px); opacity: 0.3; pointer-events: none; }
-        .vip-tag { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fbbf24; font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 4px; white-space: nowrap; z-index: 20; }
-        
-        .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
-        .glow-red { box-shadow: 0 0 20px #ff4136, inset 0 0 8px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
-        .main-scroll { margin-top: 255px; padding: 10px; }
+        /* Roll Cards (Unchanged) */
+        .main-scroll { margin-top: 360px; padding: 10px; height: calc(100vh - 360px); overflow-y: auto; }
         .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
         .roll-card { min-width: 88vw; scroll-snap-align: start; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
-        #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 5px; height: 20px; }
-        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 1000; }
-        .hidden { display: none !important; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div id="auth-gate" class="hidden">
-        <div class="gate-box">
-            <h2 class="text-cyan-400 font-black text-2xl mb-2 italic">OMNI LOGIC</h2>
-            <p id="auth-msg" class="text-gray-400 text-xs mb-6 font-bold">၅ ရက် Trial အသုံးပြုရန် ကုဒ်လိုအပ်ပါသည်</p>
-            <a href="https://t.me/omni_logic_bot" target="_blank" class="block w-full p-4 bg-blue-600 text-white font-bold rounded-xl mb-6 shadow-lg active:scale-95 transition-all text-center">GET ACTIVATION CODE</a>
-            <input type="tel" id="activation-code" class="w-full p-4 bg-black border-2 border-cyan-500 text-cyan-400 text-center text-3xl font-black rounded-xl mb-6 focus:ring-2 focus:ring-cyan-300 outline-none" placeholder="------" maxlength="6">
-            <button onclick="handleActivation()" class="w-full p-4 bg-cyan-500 text-black font-black rounded-xl shadow-xl active:scale-95 transition-all uppercase">Activate System</button>
-            <p class="mt-8 text-[9px] text-gray-600 font-mono tracking-widest uppercase">Your ID: <span id="hw-display"></span></p>
-        </div>
-    </div>
+<body>
 
-    <div id="main-ui" class="hidden">
-        <div id="toast">Copied Logs!</div>
+    <div id="main-ui">
         <div class="fixed-header">
-            <div class="box-container">
-                <div>
-                    <div class="box-title">Logic A</div>
-                    <div class="predict-box a-box" id="box-a">-</div>
-                    <div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div>
-                </div>
-                <div class="relative">
-                    <div class="box-title">Logic B</div>
-                    <div id="container-b">
-                        <div class="predict-box b-box" id="box-b">-</div>
-                        <div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div>
-                    </div>
-                    <div id="lock-b" class="vip-tag hidden">🔒 VIP ONLY</div>
-                </div>
-                <div class="relative">
-                    <div class="box-title" style="margin-left:8px;">Logic C</div>
-                    <div id="container-c">
-                        <div class="predict-box c-box" id="box-c"><span>-</span></div>
-                        <div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div>
-                    </div>
-                    <div id="lock-c" class="vip-tag hidden">🔒 VIP ONLY</div>
-                </div>
+            <div class="flex justify-between items-center text-[9px] font-bold text-cyan-400 mb-2 px-1">
+                <span>TG-ID: <span id="tg-id-display">6401717718</span></span>
+                <span>HWID: <span id="hw-display-top">---</span></span>
             </div>
-            <div id="ai-status">စောင့်ကြည့်နေသည်...</div>
+
+            <div class="box-container">
+                <div><div class="predict-box a-box" id="box-a">-</div><div class="text-[9px] mt-1" id="a-rate">A: 0%</div></div>
+                <div><div class="predict-box b-box" id="box-b">-</div><div class="text-[9px] mt-1" id="b-rate">B: 0%</div></div>
+                <div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[12px]" id="c-rate">C: 0%</div></div>
+            </div>
+
+            <div class="bet-section rounded-xl mt-2">
+                <div class="flex justify-between items-center px-1">
+                    <select id="max-steps" onchange="updateStepView(this.value)" class="bg-transparent text-cyan-400 text-[10px] font-black outline-none border border-slate-700 rounded px-1">
+                        <option value="5">5 STEPS</option>
+                        <option value="6">6 STEPS</option>
+                        <option value="7">7 STEPS</option>
+                        <option value="8" selected>8 STEPS</option>
+                    </select>
+                    <span id="total-sum" class="text-[10px] font-black text-yellow-400">TOTAL: 0</span>
+                </div>
+                
+                <div id="bet-grid-container" class="bet-grid">
+                    </div>
+            </div>
+
             <div class="flex gap-2 items-center justify-center mt-3">
-                <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500 outline-none" maxlength="1">
-                <button onclick="submitDigit()" class="bg-cyan-500 text-black h-12 px-6 rounded-lg font-black active:scale-95">ENTER</button>
+                <input type="tel" id="digit-input" class="w-16 h-10 rounded-lg text-center text-2xl font-black text-black border-2 border-cyan-500 outline-none" maxlength="1">
+                <button onclick="submitDigit()" class="bg-cyan-500 text-black h-10 px-6 rounded-lg font-black active:scale-95">ENTER</button>
             </div>
         </div>
 
-        <div class="main-scroll">
+        <div class="main-scroll no-scrollbar">
             <div id="history-container" class="scroll-wrapper"></div>
             <div class="flex gap-3 mt-4">
-                <button id="copy-btn" onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600 shadow-md transition-opacity">COPY RECORD</button>
+                <button id="copy-btn" onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600 shadow-md">COPY RECORD</button>
                 <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700 shadow-md">RESET ALL</button>
             </div>
         </div>
     </div>
 
     <script>
-        const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
-        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
-        let isVIP = false;
+        // --- ⚙️ Bet Section Logic (New) ---
+        let betValues = [100, 200, 400, 800, 1600, 3200, 6400, 12800];
+        let currentActiveStep = -1;
 
-        function getHWID() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = "top"; ctx.font = "14px Arial"; ctx.fillText("V46PRO", 2, 2);
-            const hash = canvas.toDataURL().length;
-            const raw = screen.width + screen.height + navigator.hardwareConcurrency + hash;
-            let h = 0; for(let i=0; i<raw.length; i++) h = ((h << 5) - h) + raw.charCodeAt(i);
-            return "HW-" + Math.abs(h).toString(36).toUpperCase();
-        }
-        const deviceId = getHWID();
-        document.getElementById('hw-display').innerText = deviceId;
-
-        async function checkAccess() {
-            try {
-                const res = await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
-                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
-                });
-                const data = await res.json();
-                if (data && data.length > 0) {
-                    const expiry = new Date(data[0].expires_at);
-                    if (expiry > new Date()) {
-                        document.getElementById('main-ui').classList.remove('hidden');
-                        document.getElementById('auth-gate').classList.add('hidden');
-                        
-                        // 💎 VIP Check: သက်တမ်းကျန်ရက် ၆ ရက်ထက်ပိုရင် VIP လို့ယူဆမယ် (Trial က ၅ ရက်မို့လို့)
-                        const diffDays = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
-                        isVIP = diffDays > 6;
-                        applyRestrictions();
-                    } else {
-                        document.getElementById('auth-gate').classList.remove('hidden');
-                    }
-                } else {
-                    document.getElementById('auth-gate').classList.remove('hidden');
-                }
-            } catch (e) { document.getElementById('auth-gate').classList.remove('hidden'); }
+        function updateStepView(count) {
+            const container = document.getElementById('bet-grid-container');
+            container.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                container.innerHTML += `
+                    <div class="bet-item" id="step-${i}" onclick="setActiveStep(${i})">
+                        <div class="step-num">S${i+1}</div>
+                        <input type="tel" maxlength="6" value="${betValues[i] || 0}" 
+                               onchange="updateSingleBet(${i}, this.value)" 
+                               onclick="event.stopPropagation()"
+                               class="bet-val-input">
+                    </div>
+                `;
+            }
+            calculateTotal();
         }
 
-        function applyRestrictions() {
-            if (!isVIP) {
-                // Trial User: Logic B နဲ့ C ကို Blur လုပ်မယ်
-                document.getElementById('container-b').classList.add('blur-locked');
-                document.getElementById('container-c').classList.add('blur-locked');
-                document.getElementById('lock-b').classList.remove('hidden');
-                document.getElementById('lock-c').classList.remove('hidden');
-                
-                // Copy ခလုတ်ကို ပိတ်မယ်
-                const copyBtn = document.getElementById('copy-btn');
-                copyBtn.disabled = true;
-                copyBtn.style.opacity = "0.3";
-                copyBtn.innerText = "LOCKED (VIP)";
-                
-                document.getElementById('ai-status').innerText = "⚠️ Trial Mode: Logic A သာ ရရှိပါမည်";
+        function setActiveStep(index) {
+            currentActiveStep = index;
+            const count = document.getElementById('max-steps').value;
+            for(let i=0; i<count; i++) {
+                const el = document.getElementById(`step-${i}`);
+                el.classList.remove('active', 'lost');
+                if (i < index) el.classList.add('lost');
+                if (i === index) el.classList.add('active');
             }
         }
 
-        async function handleActivation() {
-            const codeInput = document.getElementById('activation-code');
-            const code = codeInput.value.trim();
-            const msg = document.getElementById('auth-msg');
-            if (code.length < 6) return;
-            msg.innerText = "စစ်ဆေးနေပါသည်...";
-
-            try {
-                const res = await fetch(`${SB_URL}/rest/v1/pending_codes?code_key=eq.${code}`, {
-                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
-                });
-                const data = await res.json();
-
-                if (data && data.length > 0) {
-                    const saveRes = await fetch(`${SB_URL}/rest/v1/user_access`, {
-                        method: 'POST',
-                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ 
-                            device_id: deviceId, 
-                            telegram_id: data[0].tg_id,
-                            expires_at: data[0].expires_at // Bot ဆီကပါလာတဲ့ ၅ ရက် သက်တမ်းကို သုံးမယ်
-                        })
-                    });
-                    if (saveRes.ok) { location.reload(); }
-                } else {
-                    msg.innerText = "❌ ကုဒ်မှားယွင်းနေပါသည်။";
-                    msg.style.color = "#ff4136";
-                }
-            } catch (e) { alert("Error: " + e.message); }
+        function updateSingleBet(i, val) {
+            betValues[i] = parseInt(val) || 0;
+            calculateTotal();
         }
 
-        // --- OMNI CORE LOGIC ---
+        function calculateTotal() {
+            const count = document.getElementById('max-steps').value;
+            let sum = 0;
+            for(let i=0; i<count; i++) sum += (betValues[i] || 0);
+            document.getElementById('total-sum').innerText = "TOTAL: " + sum.toLocaleString();
+        }
+
+        // --- 🧠 Original V46.6 Logic (Unchanged) ---
         let history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
-        let streakTracker = { a:0, b:0, c:0 };
-        let lastAiState = { a: "", b: "", c: "" };
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
@@ -204,57 +137,36 @@
 
             const entry = {
                 val, grp, roll, stage,
-                a: aNext, aOk: aNext === "-" ? null : aNext === grp, aState: lastAiState.a,
-                b: bNext, bOk: bNext === "-" ? null : bNext === grp, bState: lastAiState.b,
-                c: cNext, cOk: cNext === "-" ? null : cNext === grp, cState: lastAiState.c
+                a: aNext, aOk: aNext === "-" ? null : aNext === grp,
+                b: bNext, bOk: bNext === "-" ? null : bNext === grp,
+                c: cNext, cOk: cNext === "-" ? null : cNext === grp
             };
 
-            ['a','b','c'].forEach(k => { if(entry[k+'Ok'] === false) streakTracker[k]++; else streakTracker[k]=0; });
             history.push(entry);
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(val); renderUI(); input.value = ""; input.focus();
-            localStorage.setItem('V46_6_FINAL', JSON.stringify({history, roll, stage, streakTracker}));
         }
 
         function updateAI(last) {
+            // Original Formula A
             if (history.length >= 2) {
                 const l2 = history.slice(-2);
                 aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
             } else { aNext = last >= 5 ? 'B' : 'S'; }
             
-            // Logic B, C တွက်ချက်မှု (VIP မဟုတ်ရင်လည်း နောက်ကွယ်မှာ တွက်နေမယ်၊ ဒါပေမဲ့ UI မှာ ဝါးထားမယ်)
-            if (history.length >= 3) { bNext = (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0) ? 'S' : 'B'; }
-            if (history.length >= 5) { cNext = (history.slice(-5).reduce((a,b)=>a+b.val,0)/5) >= 4.5 ? 'B' : 'S'; }
+            // Original Formula B, C
+            if (history.length >= 3) bNext = (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0) ? 'S' : 'B';
+            if (history.length >= 5) cNext = (history.slice(-5).reduce((a,b)=>a+b.val,0)/5) >= 4.5 ? 'B' : 'S';
 
             document.getElementById('box-a').innerText = aNext;
             document.getElementById('box-b').innerText = bNext;
             document.getElementById('box-c').innerHTML = `<span>${cNext}</span>`;
-            calculateStats();
-        }
-
-        function calculateStats() {
-            const last15 = history.slice(-15);
-            const getRate = (k) => {
-                const v = last15.filter(h => h[k] !== "-");
-                return v.length === 0 ? 0 : Math.round((v.filter(h => h[k+'Ok']).length / v.length) * 100);
-            };
-            const rates = { a: getRate('a'), b: getRate('b'), c: getRate('c') };
-            document.getElementById('a-rate').innerText = `RATE: ${rates.a}%`;
-            document.getElementById('b-rate').innerText = `RATE: ${rates.b}%`;
-            document.getElementById('c-rate').innerText = `RATE: ${rates.c}%`;
-
-            const status = document.getElementById('ai-status');
-            if (!isVIP) { status.innerText = "⚠️ Trial Mode: Logic A သာ ရရှိပါမည်"; }
             
-            lastAiState = { a: "", b: "", c: "" };
+            // Update Rates
             ['a','b','c'].forEach(k => {
-                const el = document.getElementById('box-'+k);
-                el.classList.remove('glow-cyan', 'glow-red');
-                if (streakTracker[k] >= 4) {
-                    el.classList.add('glow-red'); lastAiState[k] = "⚠️Warning";
-                } else if (rates[k] >= 80) {
-                    el.classList.add('glow-cyan'); lastAiState[k] = "🔵Glow";
-                }
+                const rates = history.filter(h => h[k] !== "-");
+                const ok = rates.filter(h => h[k+'Ok']).length;
+                document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rates.length ? Math.round(ok/rates.length*100) : 0}%`;
             });
         }
 
@@ -263,16 +175,14 @@
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
-                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1 flex justify-between">
-                        <span>ROLL ${r}</span><span class="text-[8px] text-slate-500">AI ANALYSED</span>
-                    </div>
+                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1">ROLL ${r}</div>
                     ${groups[r].map(i => `
                         <div class="grid grid-cols-5 gap-1 py-1 text-[11px] border-b border-white/5 items-center">
-                            <div class="text-slate-500 font-bold">${i.stage}</div>
+                            <div class="text-slate-500">${i.stage}</div>
                             <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black ${isVIP?'':'blur-[3px]'}">${i.b}${i.bOk?'✅':'❌'}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black ${isVIP?'':'blur-[3px]'}">${i.c}${i.cOk?'✅':'❌'}</div>
-                            <div class="text-yellow-400 font-black text-right text-[13px]">${i.val}</div>
+                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}</div>
+                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}</div>
+                            <div class="text-yellow-400 font-black text-right">${i.val}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -281,19 +191,16 @@
         }
 
         function copyLogs() {
-            if (!isVIP) return;
-            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'} B:${h.b}${h.bOk?'✅':'❌'} C:${h.c}${h.cOk?'✅':'❌'}`).join('\n');
-            navigator.clipboard.writeText(logText).then(() => {
-                const t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
-            });
+            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}`).join('\n');
+            navigator.clipboard.writeText(logText);
+            alert("Copied!");
         }
 
-        function fullReset() { if(confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
+        function fullReset() { if(confirm("Clear all?")) { history=[]; roll=1; stage=1; renderUI(); location.reload(); } }
 
         window.onload = () => {
-            checkAccess();
-            const saved = JSON.parse(localStorage.getItem('V46_6_FINAL'));
-            if (saved) { history=saved.history; roll=saved.roll; stage=saved.stage; streakTracker=saved.streakTracker; renderUI(); if(history.length) updateAI(history[history.length-1].val); }
+            updateStepView(8);
+            document.getElementById('hw-display-top').innerText = "HW-" + Math.random().toString(36).substr(2, 5).toUpperCase();
         };
     </script>
 </body>
