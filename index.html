@@ -3,155 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.6 - AI Record Master</title>
+    <title>Omni Logic PRO - AI Calculator Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; }
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
-        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
-        .box-title { font-size: 11px; font-weight: 900; color: #aaa; margin-bottom: 4px; }
-        .predict-box { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 22px; transition: all 0.3s ease; border: 4px solid; }
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background-color: #010814; 
+            color: white; 
+            overflow-x: hidden; 
+            -webkit-user-select: none; user-select: none; 
+        }
+        
+        /* Layout Styling */
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 1px solid #00f2ff44; }
+        .main-content { margin-top: 320px; padding: 10px; padding-bottom: 100px; }
+        
+        /* Step Tracker Styling */
+        .step-container { background: #0a192f; border: 1px solid #1e3a8a; border-radius: 12px; padding: 10px; margin-top: 10px; }
+        .bet-box { background: #010814; border: 1px solid #1e293b; padding: 5px 2px; border-radius: 6px; text-align: center; transition: all 0.3s; }
+        .bet-box.active { border-color: #10b981; background: #064e3b; box-shadow: 0 0 10px #10b98155; }
+        .bet-input { width: 100%; background: transparent; color: white; font-size: 11px; font-weight: 900; text-align: center; border: none; outline: none; }
+        
+        /* Prediction Box Styling */
+        .predict-box { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 20px; border: 3px solid; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
-        .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
-        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
-        .c-box span { transform: rotate(-45deg); display: inline-block; }
-        .glow-cyan { box-shadow: 0 0 20px #00f2ff, inset 0 0 8px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
-        .glow-red { box-shadow: 0 0 20px #ff4136, inset 0 0 8px #ff4136; border-color: #ff4136 !important; background: #ffdada !important; animation: shake 0.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
-        .main-scroll { margin-top: 255px; padding: 10px; }
-        .scroll-wrapper { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
-        .roll-card { min-width: 88vw; scroll-snap-align: start; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; }
-        .scroll-wrapper::-webkit-scrollbar { display: none; }
-        #ai-status { font-size: 13px; font-weight: 700; color: #00f2ff; text-align: center; margin-top: 5px; height: 20px; }
-        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 1000; }
+        .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
+        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
+        .c-box span { transform: rotate(-45deg); }
+
+        /* VIP Blur */
+        .blur-locked { filter: blur(5px); opacity: 0.3; pointer-events: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
-    <div id="toast">Copied Logs!</div>
-    <div class="fixed-header">
-        <div class="box-container">
-            <div><div class="box-title">Logic A</div><div class="predict-box a-box" id="box-a">-</div><div class="text-[10px] mt-1" id="a-rate">RATE: 0%</div></div>
-            <div><div class="box-title">Logic B</div><div class="predict-box b-box" id="box-b">-</div><div class="text-[10px] mt-1" id="b-rate">RATE: 0%</div></div>
-            <div><div class="box-title" style="margin-left:8px;">Logic C</div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[10px] mt-[15px]" id="c-rate">RATE: 0%</div></div>
-        </div>
-        <div id="ai-status">စောင့်ကြည့်နေသည်...</div>
-        <div class="flex gap-2 items-center justify-center mt-3">
-            <input type="tel" id="digit-input" class="w-20 h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500" maxlength="1">
-            <button onclick="submitDigit()" class="bg-cyan-500 text-black h-12 px-6 rounded-lg font-black active:scale-95">ENTER</button>
+
+    <div id="auth-gate" class="fixed inset-0 z-[1000] bg-[#010814] flex items-center justify-center p-5 hidden">
+        <div class="bg-[#0a192f] border-2 border-cyan-500 p-8 rounded-2xl text-center w-full max-w-sm shadow-[0_0_30px_#00f2ff33]">
+            <h2 class="text-cyan-400 font-black text-2xl mb-2">OMNI LOGIC <span class="text-white">PRO</span></h2>
+            <p id="auth-msg" class="text-gray-400 text-[10px] mb-6 uppercase tracking-widest">Device-Locked Activation Required</p>
+            <input type="tel" id="activation-code" class="w-full p-4 bg-black border-2 border-cyan-500 text-cyan-400 text-center text-2xl font-black rounded-xl mb-4 outline-none" placeholder="Enter Code">
+            <button onclick="handleActivation()" class="w-full p-4 bg-cyan-500 text-black font-black rounded-xl shadow-lg active:scale-95 transition-all">ACTIVATE SYSTEM</button>
+            <p class="mt-6 text-[9px] text-gray-600 uppercase font-bold">HWID: <span id="hw-display"></span></p>
         </div>
     </div>
 
-    <div class="main-scroll">
-        <div id="history-container" class="scroll-wrapper"></div>
-        <div class="flex gap-3 mt-4">
-            <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[11px] font-black border border-slate-600">COPY RECORD</button>
-            <button onclick="fullReset()" class="flex-1 p-3 bg-red-900 rounded-lg text-[11px] font-black border border-red-700">RESET ALL</button>
+    <div id="main-ui" class="hidden">
+        <div class="fixed-header">
+            <div class="flex justify-between items-center px-2 mb-3">
+                <div class="flex flex-col">
+                    <span id="user-status" class="text-[10px] font-black text-yellow-400 uppercase tracking-tighter">💎 VIP MEMBER</span>
+                    <span id="hw-id-small" class="text-[8px] text-slate-500 font-mono">ID: --</span>
+                </div>
+                <div class="text-right">
+                    <span id="expiry-display" class="text-[10px] font-bold text-red-400">EXP: --/--/--</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-center mb-4">
+                <div>
+                    <div class="text-[10px] text-gray-500 font-black mb-1">LOGIC A</div>
+                    <div class="predict-box a-box" id="box-a">-</div>
+                </div>
+                <div class="relative">
+                    <div class="text-[10px] text-gray-500 font-black mb-1">LOGIC B</div>
+                    <div id="container-b" class=""><div class="predict-box b-box" id="box-b">-</div></div>
+                </div>
+                <div class="relative">
+                    <div class="text-[10px] text-gray-500 font-black mb-1">LOGIC C</div>
+                    <div id="container-c" class=""><div class="predict-box c-box" id="box-c"><span>-</span></div></div>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <select id="step-count" onchange="changeMaxSteps(this.value)" class="bg-transparent text-cyan-400 text-[10px] font-black outline-none border border-slate-700 rounded px-1">
+                        <option value="5">5 STEPS</option>
+                        <option value="8" selected>8 STEPS</option>
+                    </select>
+                    <span id="total-budget-display" class="text-[10px] font-black text-yellow-400">TOTAL: 0</span>
+                </div>
+                <div id="dynamic-step-grid" class="flex gap-1 overflow-x-auto no-scrollbar mb-3">
+                    </div>
+                <div class="flex gap-2">
+                    <button onclick="nextStep()" class="flex-1 bg-emerald-600 py-2 rounded font-black text-[11px] active:scale-95">NEXT STEP</button>
+                    <button onclick="resetSteps()" class="w-12 bg-slate-800 py-2 rounded font-black text-[11px] text-red-500 active:scale-95">R</button>
+                </div>
+            </div>
+
+            <div class="flex gap-2 items-center justify-center mt-3 bg-black/40 p-2 rounded-xl border border-white/5">
+                <input type="tel" id="digit-input" class="w-16 h-10 rounded-lg text-center text-2xl font-black text-black border-2 border-cyan-500 outline-none" maxlength="1">
+                <button onclick="submitDigit()" class="bg-cyan-500 text-black h-10 flex-1 rounded-lg font-black active:scale-95">SUBMIT DIGIT</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="history-container" class="flex flex-col gap-3"></div>
+            <button onclick="fullReset()" class="w-full mt-6 p-3 bg-red-900/30 rounded-lg text-[10px] font-black text-red-500 border border-red-900/50 uppercase">Reset All Records</button>
         </div>
     </div>
 
     <script>
+        const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
+        
         let history = [], roll = 1, stage = 1;
-        let aNext="-", bNext="-", cNext="-";
-        let streakTracker = { a:0, b:0, c:0 };
-        let lastAiState = { a: "", b: "", c: "" };
+        let currentStep = 0;
+        let maxSteps = 8;
+        let betValues = JSON.parse(localStorage.getItem('omni_bets')) || [100, 200, 400, 800, 1600, 3200, 6400, 12800];
+        let isVIP = false;
+
+        function getHWID() {
+            const raw = screen.width + screen.height + navigator.hardwareConcurrency;
+            return "ID-" + Math.abs(raw).toString(36).toUpperCase();
+        }
+        const deviceId = getHWID();
+        document.getElementById('hw-display').innerText = deviceId;
+        document.getElementById('hw-id-small').innerText = "ID: " + deviceId;
+
+        async function checkAccess() {
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/user_access?device_id=eq.${deviceId}`, {
+                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
+                });
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    const expiry = new Date(data[0].expires_at);
+                    if (expiry > new Date()) {
+                        document.getElementById('main-ui').classList.remove('hidden');
+                        document.getElementById('expiry-display').innerText = "EXP: " + expiry.toLocaleDateString();
+                        const diffDays = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
+                        isVIP = diffDays > 6;
+                        document.getElementById('user-status').innerText = isVIP ? "💎 VIP MEMBER" : `🕒 TRIAL USER (${diffDays} Days)`;
+                        if(!isVIP) {
+                            document.getElementById('container-b').classList.add('blur-locked');
+                            document.getElementById('container-c').classList.add('blur-locked');
+                        }
+                    } else { document.getElementById('auth-gate').classList.remove('hidden'); }
+                } else { document.getElementById('auth-gate').classList.remove('hidden'); }
+            } catch (e) { document.getElementById('auth-gate').classList.remove('hidden'); }
+        }
+
+        async function handleActivation() {
+            const code = document.getElementById('activation-code').value.trim();
+            if (code.length < 6) return;
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/pending_codes?code_key=eq.${code}`, {
+                    headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}` }
+                });
+                const data = await res.json();
+                if (data.length > 0) {
+                    await fetch(`${SB_URL}/rest/v1/user_access`, {
+                        method: 'POST',
+                        headers: { "apikey": SB_KEY, "Authorization": `Bearer ${SB_KEY}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ device_id: deviceId, expires_at: data[0].expires_at })
+                    });
+                    location.reload();
+                } else { alert("Code Incorrect!"); }
+            } catch (e) { alert("Error connecting to server."); }
+        }
+
+        function renderSteps() {
+            const grid = document.getElementById('dynamic-step-grid');
+            const budgetDisp = document.getElementById('total-budget-display');
+            grid.innerHTML = '';
+            let total = 0;
+            for(let i=0; i<maxSteps; i++) {
+                total += betValues[i] || 0;
+                grid.innerHTML += `
+                    <div class="bet-box ${i === currentStep ? 'active' : 'opacity-30'}">
+                        <div class="text-[7px] text-gray-500 font-bold">S${i+1}</div>
+                        <input type="number" value="${betValues[i]}" onchange="updateBet(${i}, this.value)" class="bet-input">
+                    </div>
+                `;
+            }
+            budgetDisp.innerText = "TOTAL: " + total.toLocaleString();
+        }
+
+        function updateBet(i, val) {
+            betValues[i] = parseInt(val) || 0;
+            localStorage.setItem('omni_bets', JSON.stringify(betValues));
+            renderSteps();
+        }
+
+        function nextStep() { currentStep = (currentStep + 1) % maxSteps; renderSteps(); }
+        function resetSteps() { currentStep = 0; renderSteps(); }
+        function changeMaxSteps(v) { maxSteps = parseInt(v); currentStep = 0; renderSteps(); }
 
         function submitDigit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value);
             if (isNaN(val)) return;
             const grp = val >= 5 ? 'B' : 'S';
-
-            const entry = {
-                val, grp, roll, stage,
-                a: aNext, aOk: aNext === "-" ? null : aNext === grp, aState: lastAiState.a,
-                b: bNext, bOk: bNext === "-" ? null : bNext === grp, bState: lastAiState.b,
-                c: cNext, cOk: cNext === "-" ? null : cNext === grp, cState: lastAiState.c
-            };
-
-            ['a','b','c'].forEach(k => { if(entry[k+'Ok'] === false) streakTracker[k]++; else streakTracker[k]=0; });
-            history.push(entry);
+            
+            // Basic Logic (As per your old version)
+            const aNext = history.length > 0 ? (history[history.length-1].grp === 'B' ? 'S' : 'B') : 'B';
+            
+            history.push({ val, grp, roll, stage, aNext, aOk: aNext === grp });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
-            updateAI(val); renderUI(); input.value = ""; input.focus();
-            localStorage.setItem('V46_6_FINAL', JSON.stringify({history, roll, stage, streakTracker}));
-        }
-
-        function updateAI(last) {
-            // Logic P (A) / E (B) / S (C) Calculations ... (Same as V46.5)
-            if (history.length >= 2) {
-                const l2 = history.slice(-2);
-                aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
-            } else { aNext = last >= 5 ? 'B' : 'S'; }
-            if (history.length >= 3) { bNext = (history.slice(-3).reduce((a,b)=>a+b.val,0) % 2 === 0) ? 'S' : 'B'; }
-            if (history.length >= 5) { cNext = (history.slice(-5).reduce((a,b)=>a+b.val,0)/5) >= 4.5 ? 'B' : 'S'; }
-
+            
+            input.value = ""; renderHistory(); 
             document.getElementById('box-a').innerText = aNext;
-            document.getElementById('box-b').innerText = bNext;
-            document.getElementById('box-c').innerHTML = `<span>${cNext}</span>`;
-            calculateStats();
+            localStorage.setItem('omni_history', JSON.stringify({history, roll, stage}));
         }
 
-        function calculateStats() {
-            const last15 = history.slice(-15);
-            const getRate = (k) => {
-                const v = last15.filter(h => h[k] !== "-");
-                return v.length === 0 ? 0 : Math.round((v.filter(h => h[k+'Ok']).length / v.length) * 100);
-            };
-            const rates = { a: getRate('a'), b: getRate('b'), c: getRate('c') };
-            ['a','b','c'].forEach(k => document.getElementById(k+'-rate').innerText = `RATE: ${rates[k]}%`);
-
-            const status = document.getElementById('ai-status');
-            lastAiState = { a: "", b: "", c: "" };
-            let suggestion = "ဈေးကွက်ကို စောင့်ကြည့်နေသည်...";
-
-            ['a','b','c'].forEach(k => {
-                const el = document.getElementById('box-'+k);
-                el.classList.remove('glow-cyan', 'glow-red');
-                if (streakTracker[k] >= 4) {
-                    el.classList.add('glow-red'); lastAiState[k] = "⚠️Warning";
-                    suggestion = `⚠️ Logic ${k.toUpperCase()} ကို ခဏနားပါ (အမှားများနေ)`;
-                } else if (rates[k] >= 80) {
-                    el.classList.add('glow-cyan'); lastAiState[k] = "🔵Glow";
-                    suggestion = `✅ Logic ${k.toUpperCase()} ကို လိုက်ရန် အကြံပြုသည်`;
-                }
-            });
-            status.innerText = suggestion;
-        }
-
-        function renderUI() {
+        function renderHistory() {
             const container = document.getElementById('history-container');
-            const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
-            container.innerHTML = Object.keys(groups).map(r => `
-                <div class="roll-card">
-                    <div class="text-[10px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1 flex justify-between">
-                        <span>ROLL ${r}</span><span class="text-[8px] text-slate-500">AI ANALYSED</span>
+            container.innerHTML = history.slice().reverse().map(i => `
+                <div class="bg-[#0a192f] p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                    <div class="flex flex-col">
+                        <span class="text-[9px] text-slate-500 font-bold uppercase">Roll ${i.roll} - Step ${i.stage}</span>
+                        <span class="text-lg font-black ${i.aOk ? 'text-green-400' : 'text-red-500'}">Logic A: ${i.aNext} ${i.aOk ? '✅' : '❌'}</span>
                     </div>
-                    ${groups[r].map(i => `
-                        <div class="grid grid-cols-5 gap-1 py-1 text-[11px] border-b border-white/5 items-center">
-                            <div class="text-slate-500 font-bold">${i.stage}</div>
-                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}${i.aState?'<span class="text-[8px]">'+(i.aState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}${i.bState?'<span class="text-[8px]">'+(i.bState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}${i.cState?'<span class="text-[8px]">'+(i.cState.includes('Glow')?'🔵':'⚠️')+'</span>':''}</div>
-                            <div class="text-yellow-400 font-black text-right text-[13px]">${i.val}</div>
-                        </div>
-                    `).join('')}
+                    <div class="text-2xl font-black text-yellow-400">${i.val}</div>
                 </div>
             `).join('');
-            container.scrollLeft = container.scrollWidth;
         }
 
-        function copyLogs() {
-            let logText = history.map(h => `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${h.aState?'('+h.aState+')':''} B:${h.b}${h.bOk?'✅':'❌'}${h.bState?'('+h.bState+')':''} C:${h.c}${h.cOk?'✅':'❌'}${h.cState?'('+h.cState+')':''}`).join('\n');
-            navigator.clipboard.writeText(logText).then(() => {
-                const t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000);
-            });
-        }
+        function fullReset() { if(confirm("Clear all?")) { localStorage.clear(); location.reload(); } }
 
-        function fullReset() { if(confirm("Data အားလုံးကို ဖျက်ပစ်မလား?")) { localStorage.clear(); location.reload(); } }
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('V46_6_FINAL'));
-            if (saved) { history=saved.history; roll=saved.roll; stage=saved.stage; streakTracker=saved.streakTracker; renderUI(); if(history.length) updateAI(history[history.length-1].val); }
+            checkAccess();
+            renderSteps();
+            const saved = JSON.parse(localStorage.getItem('omni_history'));
+            if(saved) { history=saved.history; roll=saved.roll; stage=saved.stage; renderHistory(); }
         };
     </script>
 </body>
