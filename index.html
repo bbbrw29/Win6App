@@ -74,7 +74,7 @@
                 <button onclick="submitDigit()" class="bg-cyan-500 text-black h-9 mt-1 rounded-lg font-black text-sm active:scale-95">ENTER</button>
             </div>
         </div>
-        <div id="ai-status" class="ai-status-bar ai-normal">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-status" class="ai-status-bar ai-normal">AIမှ ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
     <div class="main-scroll no-scrollbar" id="history-container"></div>
@@ -156,7 +156,7 @@
             const maxR = Math.max(curARate, curBRate, curCRate);
             if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.className = "ai-status-bar ai-good"; }
             else if (history.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.className = "ai-status-bar ai-warning"; }
-            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.className = "ai-status-bar ai-normal"; }
+            else { status.innerText = "AIမှ ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.className = "ai-status-bar ai-normal"; }
         }
 
         function renderUI() {
@@ -190,7 +190,7 @@
                 const cS = h.cG ? "(🔵)" : (h.cW ? "(⚠️)" : "");
                 text += `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${aS} B:${h.b}${h.bOk?'✅':'❌'}${bS} C:${h.c}${h.cOk?'✅':'❌'}${cS}\n`;
             });
-            navigator.clipboard.writeText(text).then(() => alert("Format အသစ်ဖြင့် Copy ယူပြီးပါပြီ"));
+            navigator.clipboard.writeText(text).then(() => alert("Copy ယူပြီးပါပြီ"));
         }
 
         function fullReset() { if(confirm("ဒေတာအားလုံးကို ဖျက်ထုတ်မလား?")) location.reload(); }
