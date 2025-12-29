@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.7-PREMIUM</title>
+    <title>Omni Logic V46.7-ULTIMATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; margin: 0; }
         
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; }
         
         /* Prediction Shapes */
-        .shape-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; margin-top: 5px; }
+        .shape-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; }
         .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
@@ -20,49 +20,45 @@
         .c-box span { transform: rotate(-45deg); display: inline-block; }
         .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; }
 
-        /* Main Split Layout: 50/50 */
-        .control-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-        
-        /* Left: Betting Section */
-        .bet-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; cursor: pointer; }
+        /* Main Split Layout: Fixed for Android */
+        .main-split { display: flex; gap: 8px; margin-top: 15px; align-items: flex-start; }
+        .left-betting { flex: 0 0 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .right-input { flex: 0 0 42%; display: flex; flex-direction: column; gap: 4px; }
+
+        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 34px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; }
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; }
 
-        /* Right: Input Group */
-        .right-col { display: flex; flex-direction: column; gap: 4px; }
-        #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; }
-        #enter-btn { height: 50px; border-radius: 6px; font-weight: 900; font-size: 18px; background: #00f2ff; color: black; }
+        #digit-input { height: 50px; border-radius: 6px; text-align: center; font-size: 35px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; }
+        #enter-btn { height: 50px; border-radius: 6px; font-weight: 900; font-size: 16px; background: #00f2ff; color: black; width: 100%; display: flex; align-items: center; justify-content: center; }
         
-        /* Total Box under Enter */
-        .total-box { border: 1px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 4px; text-align: center; font-size: 11px; font-weight: bold; color: #fbbf24; }
+        .total-box { border: 1.5px solid #fbbf24; background: rgba(251,191,36,0.15); border-radius: 4px; padding: 6px 2px; text-align: center; font-size: 12px; font-weight: 900; color: #fbbf24; width: 100%; margin-top: 2px; }
 
-        /* AI Status Box */
-        .ai-notif { background: rgba(30,41,59,0.8); border: 1px solid #00f2ff; border-radius: 6px; padding: 6px; text-align: center; font-size: 11px; font-weight: bold; color: #fbbf24; margin-top: 10px; }
+        .ai-status-box { background: rgba(30,41,59,0.8); border: 1px solid #00f2ff; border-radius: 6px; padding: 8px; text-align: center; font-size: 11px; font-weight: bold; color: #fbbf24; margin-top: 12px; }
 
-        /* Roll Card: Horizontal Carousel with Snap */
-        .card-carousel { margin-top: 325px; padding: 10px; height: calc(100vh - 395px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
-        .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1.5px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
+        /* Roll Card Styles */
+        .card-container { margin-top: 335px; padding: 10px; height: calc(100vh - 405px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
+        .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; box-sizing: border-box; }
         
-        /* Table Structure & Alignment */
-        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 45px; gap: 4px; align-items: center; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; }
+        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 40px; gap: 4px; align-items: center; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 7px 0; }
         .t-row:last-child { border-bottom: none; }
-        .t-head { border-bottom: 1.5px solid #1e40af; margin-bottom: 8px; padding-bottom: 4px; }
+        .t-head { border-bottom: 2px solid #1e40af; margin-bottom: 5px; padding-bottom: 5px; }
+        
         .shape-h { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; border: 2px solid; margin: 0 auto; }
         .h-a { border-color: #ff4136; border-radius: 50%; color: #ff4136; }
         .h-b { border-color: #b10dc9; border-radius: 4px; color: #b10dc9; }
         .h-c { border-color: #2ecc40; border-radius: 2px; color: #2ecc40; transform: rotate(45deg); }
         .h-c span { transform: rotate(-45deg); }
 
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 100; }
     </style>
 </head>
 <body>
 
     <div class="fixed-header">
-        <div class="flex justify-between items-center text-[10px] px-1">
-            <span class="text-slate-400">ID: 6401717718</span>
-            <span class="text-cyan-400 font-bold">V46.7-PREMIUM</span>
+        <div class="flex justify-between items-center text-[10px] mb-2 px-1">
+            <span class="text-slate-500 font-bold">ID: 6401717718</span>
+            <span class="text-cyan-400 font-black">V46.7-ULTIMATE</span>
         </div>
 
         <div class="shape-container">
@@ -71,28 +67,31 @@
             <div><div class="p-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
         </div>
 
-        <div class="control-split">
-            <div class="flex flex-col gap-1">
-                <div class="flex justify-between items-center mb-1">
+        <div class="main-split">
+            <div class="left-betting">
+                <div class="col-span-2 flex justify-between items-center mb-1">
                     <select id="max-s" onchange="initB()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-1">
-                        <option value="4">4S</option><option value="6">6S</option><option value="8" selected>8S</option>
+                        <option value="8" selected>8 STEPS</option>
                     </select>
-                    <button onclick="tglL()" id="l-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase">Lock: Off</button>
+                    <button onclick="tglL()" id="l-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase">LOCK: OFF</button>
                 </div>
-                <div id="bet-area" class="bet-col"></div>
+                <div class="bet-btn" id="s-0" onclick="hT(0)">100</div><div class="bet-btn" id="s-1" onclick="hT(1)">2,500</div>
+                <div class="bet-btn" id="s-2" onclick="hT(2)">200</div><div class="bet-btn" id="s-3" onclick="hT(3)">5,200</div>
+                <div class="bet-btn" id="s-4" onclick="hT(4)">500</div><div class="bet-btn" id="s-5" onclick="hT(5)">10,500</div>
+                <div class="bet-btn" id="s-6" onclick="hT(6)">1,200</div><div class="bet-btn" id="s-7" onclick="hT(7)">23,000</div>
             </div>
             
-            <div class="right-col">
+            <div class="right-input">
                 <input type="tel" id="digit-input" maxlength="1" placeholder="?">
                 <button id="enter-btn" onclick="subD()">ENTER</button>
-                <div class="total-box" id="total-val">TOTAL: 0</div>
+                <div class="total-box" id="total-val">TOTAL: 43,200</div>
             </div>
         </div>
 
-        <div id="ai-notif" class="ai-notif">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-notif" class="ai-status-box">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
-    <div class="card-carousel no-scrollbar" id="hist-cont"></div>
+    <div class="card-container no-scrollbar" id="hist-cont"></div>
 
     <div class="footer">
         <button onclick="copyL()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600 active:bg-slate-700">COPY RECORD</button>
@@ -104,22 +103,11 @@
         let lock = false, hist = [], roll = 1, stage = 1;
         let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
 
-        function initB() {
-            const cont = document.getElementById('bet-area');
-            cont.innerHTML = bVal.map((v, i) => `<div class="bet-btn" id="s-${i}" onclick="hT(${i})">${v.toLocaleString()}</div>`).join('');
-            calcT();
-        }
-
-        function calcT() {
-            let sum = bVal.reduce((a, b) => a + b, 0);
-            document.getElementById('total-val').innerText = "TOTAL: " + sum.toLocaleString();
-        }
-
         function tglL() {
             lock = !lock;
             const btn = document.getElementById('l-btn');
-            btn.innerText = lock ? "Lock: On" : "Lock: Off";
-            btn.className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black uppercase" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase";
+            btn.innerText = lock ? "LOCK: ON" : "LOCK: OFF";
+            btn.className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black";
         }
 
         function hT(idx) {
@@ -136,24 +124,13 @@
             const input = document.getElementById('digit-input');
             const v = parseInt(input.value); if (isNaN(v)) return;
             const g = v >= 5 ? 'B' : 'S';
-            hist.push({ 
-                v, g, r: roll, s: stage, 
-                a: aN, aO: aN === g, aG: aR >= 68, aW: aR < 40 && hist.length > 5,
-                b: bN, bO: bN === g, bG: bR >= 68, bW: bR < 40 && hist.length > 5,
-                c: cN, cO: cN === g, cG: cR >= 68, cW: cR < 40 && hist.length > 5
-            });
+            hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, aG: aR >= 68, b: bN, bO: bN === g, bG: bR >= 68, c: cN, cO: cN === g, cG: cR >= 68 });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updAI(v); rend(); input.value = ""; input.focus();
         }
 
         function updAI(last) {
-            if (hist.length >= 2) {
-                const l2 = hist.slice(-2);
-                aN = (l2[0].g === l2[1].g) ? l2[1].g : (l2[1].g === 'B' ? 'S' : 'B');
-            } else { aN = last >= 5 ? 'B' : 'S'; }
-            bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
-            cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
-
+            aN = last >= 5 ? 'S' : 'B'; bN = last % 2 === 0 ? 'B' : 'S'; cN = last > 3 ? 'B' : 'S';
             ['a','b','c'].forEach(k => {
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
@@ -163,12 +140,6 @@
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
             });
-
-            const status = document.getElementById('ai-notif');
-            const maxR = Math.max(aR, bR, cR);
-            if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.style.color = "#10b981"; }
-            else if (hist.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.style.color = "#ff4136"; }
-            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.style.color = "#fbbf24"; }
         }
 
         function rend() {
@@ -184,9 +155,9 @@
                     ${grps[r].map(i => `
                         <div class="t-row">
                             <div class="text-slate-500 text-[10px] text-left">${i.s}</div>
-                            <div class="${i.aO?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aO?'✅':'❌'}${i.aG?'🔵':''}${i.aW?'⚠️':''}</div>
-                            <div class="${i.bO?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bO?'✅':'❌'}${i.bG?'🔵':''}${i.bW?'⚠️':''}</div>
-                            <div class="${i.cO?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cO?'✅':'❌'}${i.cG?'🔵':''}${i.cW?'⚠️':''}</div>
+                            <div class="${i.aO?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aO?'✅':'❌'}${i.aG?'🔵':''}</div>
+                            <div class="${i.bO?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bO?'✅':'❌'}${i.bG?'🔵':''}</div>
+                            <div class="${i.cO?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cO?'✅':'❌'}${i.cG?'🔵':''}</div>
                             <div class="text-yellow-400 font-black text-right text-base">${i.v}</div>
                         </div>`).join('')}
                 </div>`).join('');
@@ -194,19 +165,11 @@
         }
 
         function copyL() {
-            if(hist.length === 0) return alert("မှတ်တမ်းမရှိသေးပါ");
-            let t = "";
-            hist.forEach(h => {
-                const aS = h.aG ? "(🔵)" : (h.aW ? "(⚠️)" : "");
-                const bS = h.bG ? "(🔵)" : (h.bW ? "(⚠️)" : "");
-                const cS = h.cG ? "(🔵)" : (h.cW ? "(⚠️)" : "");
-                t += `R${h.r}.S${h.s} | G(${h.v}) | A:${h.a}${h.aO?'✅':'❌'}${aS} B:${h.b}${h.bO?'✅':'❌'}${bS} C:${h.c}${h.cO?'✅':'❌'}${cS}\n`;
-            });
-            navigator.clipboard.writeText(t).then(() => alert("Copied to clipboard!"));
+            let t = hist.map(h => `R${h.r}.S${h.s} | G(${h.v}) | A:${h.a}${h.aO?'✅':'❌'} B:${h.b}${h.bO?'✅':'❌'} C:${h.c}${h.cO?'✅':'❌'}`).join('\n');
+            navigator.clipboard.writeText(t).then(() => alert("Copied!"));
         }
 
-        function resetA() { if(confirm("Clear all data?")) location.reload(); }
-        window.onload = initB;
+        function resetA() { if(confirm("Clear All?")) location.reload(); }
     </script>
 </body>
 </html>
