@@ -3,100 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.7-BETA FIXED</title>
+    <title>Omni Logic V46.7 FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; -webkit-user-select: none; user-select: none; height: 100vh; }
         
-        /* TG-ID Badge Style */
-        .tg-id-badge { background: #1e293b; color: #00f2ff; padding: 2px 8px; border-radius: 4px; border: 1px solid #00f2ff; font-weight: bold; }
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px 10px 0 10px; border-bottom: 2px solid #00f2ff; }
+        .tg-badge { background: #1e293b; color: #00f2ff; padding: 2px 8px; border-radius: 4px; border: 1px solid #00f2ff; font-weight: bold; font-size: 10px; }
         
-        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; }
-        .predict-box { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 20px; border: 4px solid; transition: 0.3s; }
+        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: center; margin-top: 8px; }
+        .predict-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
-        .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 10px; }
-        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 6px; transform: rotate(45deg); }
+        .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
+        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
-        .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; transform: scale(1.05); }
+        .glow-cyan { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; transform: scale(1.05); }
 
-        /* Split Layout */
-        .split-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-top: 10px; }
+        .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; padding-bottom: 10px; }
         .bet-grid-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
-        .bet-item { background: #0a192f; border: 1px solid #1e388a; padding: 3px; border-radius: 6px; text-align: center; font-size: 10px; cursor: pointer; }
+        .bet-item { background: #0a192f; border: 1px solid #1e388a; padding: 4px; border-radius: 6px; text-align: center; cursor: pointer; height: 32px; display: flex; align-items: center; justify-content: center; }
         .bet-item.lost { background: #451a1a !important; border-color: #ff4136 !important; }
         .bet-item.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
-        .bet-val-input { width: 100%; background: transparent; color: white; text-align: center; border: none; outline: none; pointer-events: none; font-weight: bold; }
-        .unlocked .bet-val-input { pointer-events: auto; background: rgba(255,255,255,0.05); }
+        .bet-val-input { width: 100%; background: transparent; color: white; text-align: center; border: none; outline: none; pointer-events: none; font-weight: bold; font-size: 11px; }
+        .unlocked .bet-val-input { pointer-events: auto; background: rgba(255,255,255,0.1); }
 
-        /* Roll Card Section */
-        .main-scroll { margin-top: 360px; padding: 10px; height: calc(100vh - 420px); overflow-y: auto; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; }
-        .roll-card { min-width: 90vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; scroll-snap-align: start; margin-right: 15px; height: fit-content; }
+        .ai-status-bar { width: 100%; padding: 4px; text-align: center; font-size: 11px; font-weight: bold; margin-top: 5px; border-radius: 4px; transition: 0.3s; }
+        .ai-normal { background: #1e293b; color: #fbbf24; }
+        .ai-good { background: #064e3b; color: #10b981; border: 1px solid #10b981; }
+        .ai-warning { background: #451a1a; color: #ff4136; border: 1px solid #ff4136; }
+
+        .main-scroll { margin-top: 275px; padding: 10px; height: calc(100vh - 340px); overflow-y: auto; display: flex; flex-direction: column; }
+        .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; margin-bottom: 20px; }
         
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; }
+        .shape-h { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; border: 2px solid; margin-right: 2px; }
+        .h-a { border-color: #ff4136; border-radius: 50%; color: #ff4136; }
+        .h-b { border-color: #b10dc9; border-radius: 4px; color: #b10dc9; }
+        .h-c { border-color: #2ecc40; border-radius: 2px; color: #2ecc40; transform: rotate(45deg); }
+        .h-c span { transform: rotate(-45deg); }
+
+        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; border-top: 1px solid #1e3a8a; }
     </style>
 </head>
 <body>
 
     <div class="fixed-header">
-        <div class="flex justify-between items-center text-[10px] mb-2 px-1">
-            <span class="tg-id-badge">ID: 6401717718</span>
-            <span id="ai-status" class="font-bold text-yellow-400 text-center flex-1 mx-2">AIမှဒေတာများကို စောင့်ကြည့်နေပါသည်</span>
-            <span class="text-cyan-400 font-bold">V46.7</span>
+        <div class="flex justify-between items-center text-[10px] px-1">
+            <span class="tg-badge">ID: 6401717718</span>
+            <span class="text-cyan-400 font-bold uppercase">Omni Logic V46.7</span>
         </div>
 
         <div class="box-container">
-            <div><div class="predict-box a-box" id="box-a">-</div><div class="text-[9px] mt-1" id="a-rate">A: 0%</div></div>
-            <div><div class="predict-box b-box" id="box-b">-</div><div class="text-[9px] mt-1" id="b-rate">B: 0%</div></div>
-            <div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px]" id="c-rate">C: 0%</div></div>
+            <div><div class="predict-box a-box" id="box-a">-</div><div class="text-[9px] mt-1 text-slate-400" id="a-rate">A: 0%</div></div>
+            <div><div class="predict-box b-box" id="box-b">-</div><div class="text-[9px] mt-1 text-slate-400" id="b-rate">B: 0%</div></div>
+            <div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
         </div>
 
         <div class="split-grid">
-            <div class="bet-grid-mini" id="bet-grid-container"></div>
-            <div class="flex flex-col gap-2">
-                <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-[10px] py-1 rounded font-black">LOCK: OFF</button>
-                <div class="flex gap-1">
-                    <input type="tel" id="digit-input" class="w-full h-12 rounded-lg text-center text-3xl font-black text-black border-2 border-cyan-500" maxlength="1">
-                    <button onclick="submitDigit()" class="bg-cyan-500 text-black px-4 rounded-lg font-black text-xs">ENTER</button>
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between items-center px-1 mb-1">
+                    <select id="max-steps" onchange="initGrid()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-1 outline-none z-50">
+                        <option value="5">5S</option><option value="6">6S</option><option value="7">7S</option><option value="8" selected>8S</option>
+                    </select>
+                    <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-[9px] px-2 py-0.5 rounded font-black">LOCK: OFF</button>
                 </div>
-                <div class="text-[10px] text-yellow-400 font-bold text-right" id="total-sum">SUM: 0</div>
+                <div id="bet-grid-container" class="bet-grid-mini"></div>
+            </div>
+            <div class="flex flex-col justify-between">
+                <input type="tel" id="digit-input" class="w-full h-14 rounded-lg text-center text-4xl font-black text-black border-2 border-cyan-500 shadow-lg" maxlength="1">
+                <button onclick="submitDigit()" class="bg-cyan-500 text-black h-9 mt-1 rounded-lg font-black text-sm active:scale-95">ENTER</button>
             </div>
         </div>
+        <div id="ai-status" class="ai-status-bar ai-normal">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
     <div class="main-scroll no-scrollbar" id="history-container"></div>
 
     <div class="footer-btns">
-        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600">COPY RECORD</button>
-        <button onclick="fullReset()" class="flex-1 p-3 bg-red-900/50 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
+        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600 active:bg-slate-700">COPY RECORD</button>
+        <button onclick="fullReset()" class="flex-1 p-3 bg-red-900/40 rounded-lg text-[12px] font-black border border-red-700 text-red-500 active:bg-red-900">RESET ALL</button>
     </div>
 
     <script>
         let betValues = [100, 200, 400, 800, 1600, 3200, 6400, 12800];
         let isLocked = false, history = [], roll = 1, stage = 1;
         let aNext="-", bNext="-", cNext="-";
+        let curARate=0, curBRate=0, curCRate=0;
 
         function initGrid() {
+            const count = document.getElementById('max-steps').value;
             const container = document.getElementById('bet-grid-container');
-            container.innerHTML = betValues.map((v, i) => `
-                <div class="bet-item ${isLocked ? '' : 'unlocked'}" id="step-${i}" onclick="handleTouch(${i})">
-                    <input type="tel" value="${v}" oninput="betValues[${i}]=parseInt(this.value)||0;calculateTotal()" class="bet-val-input">
-                </div>`).join('');
-            calculateTotal();
+            container.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                container.innerHTML += `<div class="bet-item ${isLocked ? '' : 'unlocked'}" id="step-${i}" onclick="handleTouch(${i})"><input type="tel" value="${betValues[i] || 0}" oninput="betValues[${i}]=parseInt(this.value)||0" class="bet-val-input"></div>`;
+            }
         }
 
         function toggleLock() {
             isLocked = !isLocked;
             const btn = document.getElementById('lock-btn');
             btn.innerText = isLocked ? "LOCK: ON" : "LOCK: OFF";
-            btn.className = isLocked ? "bg-green-600 text-[10px] py-1 rounded font-black" : "bg-red-600 text-[10px] py-1 rounded font-black";
+            btn.className = isLocked ? "bg-green-600 text-[9px] px-2 py-0.5 rounded font-black" : "bg-red-600 text-[9px] px-2 py-0.5 rounded font-black";
             initGrid();
         }
 
         function handleTouch(index) {
             if (!isLocked) return;
-            for(let i=0; i<8; i++) {
+            const count = document.getElementById('max-steps').value;
+            for(let i=0; i<count; i++) {
                 const el = document.getElementById(`step-${i}`);
                 el.classList.remove('active', 'lost');
                 if (i < index) el.classList.add('lost');
@@ -104,17 +118,18 @@
             }
         }
 
-        function calculateTotal() {
-            let s = betValues.reduce((a, b) => a + b, 0);
-            document.getElementById('total-sum').innerText = "SUM: " + s.toLocaleString();
-        }
-
         function submitDigit() {
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value); if (isNaN(val)) return;
             const grp = val >= 5 ? 'B' : 'S';
-            history.push({ val, grp, roll, stage, a: aNext, aOk: aNext === grp, b: bNext, bOk: bNext === grp, c: cNext, cOk: cNext === grp });
-            let lastRoll = roll;
+            
+            history.push({ 
+                val, grp, roll, stage, 
+                a: aNext, aOk: aNext === grp, aG: curARate >= 68, aW: curARate < 40 && history.length > 5,
+                b: bNext, bOk: bNext === grp, bG: curBRate >= 68, bW: curBRate < 40 && history.length > 5,
+                c: cNext, cOk: cNext === grp, cG: curCRate >= 68, cW: curCRate < 40 && history.length > 5
+            });
+
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(val); renderUI(); input.value = ""; input.focus();
         }
@@ -127,21 +142,21 @@
             bNext = (history.slice(-3).reduce((acc,h)=>acc+h.val,0) % 2 === 0) ? 'S' : 'B';
             cNext = (history.slice(-5).reduce((acc,h)=>acc+h.val,0)/5) >= 4.5 ? 'B' : 'S';
 
-            let maxRate = 0;
             ['a','b','c'].forEach(k => {
                 const box = document.getElementById('box-'+k);
-                box.innerText = (k==='a'?aNext:(k==='b'?bNext:cNext));
+                box.innerHTML = (k==='c' ? `<span>${cNext}</span>` : (k==='a'?aNext:bNext));
                 const hists = history.filter(h => h[k] !== "-");
                 const rate = hists.length ? Math.round(hists.filter(h => h[k+'Ok']).length / hists.length * 100) : 0;
+                if(k==='a') curARate=rate; if(k==='b') curBRate=rate; if(k==='c') curCRate=rate;
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
-                if(rate > maxRate) maxRate = rate;
             });
 
             const status = document.getElementById('ai-status');
-            if(maxRate >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.className = "text-green-400 font-bold text-center flex-1 mx-2"; }
-            else if(maxRate < 40 && history.length > 5) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.className = "text-red-500 font-bold text-center flex-1 mx-2"; }
-            else { status.innerText = "AIမှဒေတာများကို စောင့်ကြည့်တွက်ချက်နေသည်"; status.className = "text-yellow-400 font-bold text-center flex-1 mx-2"; }
+            const maxR = Math.max(curARate, curBRate, curCRate);
+            if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.className = "ai-status-bar ai-good"; }
+            else if (history.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.className = "ai-status-bar ai-warning"; }
+            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.className = "ai-status-bar ai-normal"; }
         }
 
         function renderUI() {
@@ -149,23 +164,36 @@
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(groups).map(r => `
                 <div class="roll-card">
-                    <div class="text-[11px] font-black text-cyan-400 mb-2 border-b border-cyan-900 pb-1 flex justify-between">
-                        <span>ROLL ${r}</span> <span class="text-slate-500">V46.7</span>
+                    <div class="flex justify-between items-center mb-3 border-b border-cyan-900 pb-1">
+                        <span class="text-[10px] font-bold text-cyan-400">ROLL - ${r}</span>
+                        <div class="flex gap-4 px-4"><div class="shape-h h-a">A</div><div class="shape-h h-b">B</div><div class="shape-h h-c"><span>C</span></div></div>
+                        <span class="text-[10px] text-slate-500 font-bold">DIGIT</span>
                     </div>
                     ${groups[r].map(i => `
-                        <div class="grid grid-cols-5 gap-2 py-1 text-[13px] border-b border-white/5 items-center">
-                            <div class="text-slate-500">${i.stage}</div>
-                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-black">${i.a}${i.aOk?'✅':'❌'}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-black">${i.b}${i.bOk?'✅':'❌'}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-black">${i.c}${i.cOk?'✅':'❌'}</div>
-                            <div class="text-yellow-400 font-black text-right">${i.val}</div>
+                        <div class="grid grid-cols-5 gap-2 py-1.5 text-[13px] border-b border-white/5 items-center text-center">
+                            <div class="text-slate-500 text-[10px] text-left">${i.stage}</div>
+                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aOk?'✅':'❌'}${i.aG?'🔵':''}${i.aW?'⚠️':''}</div>
+                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bOk?'✅':'❌'}${i.bG?'🔵':''}${i.bW?'⚠️':''}</div>
+                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cOk?'✅':'❌'}${i.cG?'🔵':''}${i.cW?'⚠️':''}</div>
+                            <div class="text-yellow-400 font-black text-right text-base">${i.val}</div>
                         </div>`).join('')}
                 </div>`).join('');
-            container.scrollLeft = container.scrollWidth;
+            container.scrollTop = container.scrollHeight;
         }
 
-        function copyLogs() { alert("Copied!"); }
-        function fullReset() { if(confirm("Clear?")) location.reload(); }
+        function copyLogs() {
+            if(history.length === 0) return alert("မှတ်တမ်းမရှိသေးပါ");
+            let text = "";
+            history.forEach(h => {
+                const aS = h.aG ? "(🔵)" : (h.aW ? "(⚠️)" : "");
+                const bS = h.bG ? "(🔵)" : (h.bW ? "(⚠️)" : "");
+                const cS = h.cG ? "(🔵)" : (h.cW ? "(⚠️)" : "");
+                text += `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${aS} B:${h.b}${h.bOk?'✅':'❌'}${bS} C:${h.c}${h.cOk?'✅':'❌'}${cS}\n`;
+            });
+            navigator.clipboard.writeText(text).then(() => alert("Format အသစ်ဖြင့် Copy ယူပြီးပါပြီ"));
+        }
+
+        function fullReset() { if(confirm("ဒေတာအားလုံးကို ဖျက်ထုတ်မလား?")) location.reload(); }
         window.onload = initGrid;
     </script>
 </body>
