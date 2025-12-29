@@ -9,43 +9,46 @@
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; -webkit-user-select: none; user-select: none; height: 100vh; }
         
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px 10px 0 10px; border-bottom: 2px solid #00f2ff; }
+        /* Header & Fixed Elements */
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 8px 10px; border-bottom: 2px solid #00f2ff; }
         
         /* Prediction Boxes */
-        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: center; margin-top: 5px; }
-        .predict-box { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
+        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; margin-top: 5px; }
+        .predict-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
         .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; transform: scale(1.05); }
 
-        /* Betting Grid: 4x2 Layout */
-        .bet-section { margin-top: 10px; }
-        .bet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 4px; }
-        .bet-item { background: #0a192f; border: 1px solid #1e388a; padding: 5px; border-radius: 4px; text-align: center; cursor: pointer; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
+        /* Split Area: Betting (Left) & Input (Right) */
+        .main-controls { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; margin-top: 10px; }
+        
+        /* Betting Section - 2 Columns (4 Rows each) */
+        .bet-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .bet-item { background: #0a192f; border: 1px solid #1e388a; padding: 4px; border-radius: 4px; text-align: center; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .bet-item.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 5px #10b981; }
         .bet-item.lost { background: #451a1a !important; border-color: #ff4136 !important; }
-        .bet-item.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
         .bet-val-input { width: 100%; background: transparent; color: white; text-align: center; border: none; outline: none; pointer-events: none; }
         .unlocked .bet-val-input { pointer-events: auto; background: rgba(255,255,255,0.05); }
 
         /* Input & Enter Group */
-        .input-group { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 5px; margin-top: 8px; }
-        #digit-input { height: 55px; border-radius: 8px; text-align: center; font-size: 40px; font-weight: 900; color: black; border: 3px solid #00f2ff; }
-        #enter-btn { height: 55px; border-radius: 8px; font-weight: 900; font-size: 18px; transition: 0.2s; }
+        .input-group { display: flex; flex-direction: column; gap: 2px; }
+        #digit-input { height: 60px; border-radius: 6px; text-align: center; font-size: 42px; font-weight: 900; color: black; border: 3px solid #00f2ff; }
+        #enter-btn { height: 72px; border-radius: 6px; font-weight: 900; font-size: 20px; transition: 0.2s; background-color: #00f2ff; color: #000; }
 
-        /* AI Status Bar */
-        .ai-status-bar { width: 100%; padding: 4px; text-align: center; font-size: 11px; font-weight: bold; margin-top: 8px; border-radius: 4px; }
-        .ai-normal { background: #1e293b; color: #fbbf24; }
-        .ai-good { background: #064e3b; color: #10b981; border: 1px solid #10b981; }
-        .ai-warning { background: #451a1a; color: #ff4136; border: 1px solid #ff4136; }
+        /* AI Suggestion Box Style */
+        .ai-box { width: 100%; padding: 6px; text-align: center; font-size: 11px; font-weight: bold; margin-top: 10px; border-radius: 6px; border: 1px solid rgba(0,242,255,0.3); }
+        .ai-normal { background: rgba(30, 41, 59, 0.8); color: #fbbf24; }
+        .ai-good { background: rgba(6, 78, 59, 0.8); color: #10b981; border-color: #10b981; }
+        .ai-warning { background: rgba(69, 26, 26, 0.8); color: #ff4136; border-color: #ff4136; }
 
-        /* Roll Card: Horizontal Scroll */
-        .main-scroll { margin-top: 310px; padding: 10px; height: calc(100vh - 380px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
+        /* Roll Card: Horizontal Carousel */
+        .main-scroll { margin-top: 315px; padding: 10px; height: calc(100vh - 385px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
         .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; scroll-snap-align: start; flex-shrink: 0; }
         
-        /* Table Alignment */
-        .grid-row { display: grid; grid-template-columns: 30px 1fr 1fr 1fr 45px; gap: 5px; align-items: center; text-align: center; }
+        /* Table Alignment & Headers */
+        .grid-row { display: grid; grid-template-columns: 35px 1.2fr 1.2fr 1.2fr 45px; gap: 4px; align-items: center; text-align: center; }
         .shape-h { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; border: 2px solid; margin: 0 auto; }
         .h-a { border-color: #ff4136; border-radius: 50%; color: #ff4136; }
         .h-b { border-color: #b10dc9; border-radius: 4px; color: #b10dc9; }
@@ -60,7 +63,7 @@
     <div class="fixed-header">
         <div class="flex justify-between items-center text-[10px]">
             <span class="bg-slate-800 px-2 py-0.5 border border-cyan-500 rounded text-cyan-400">ID: 6401717718</span>
-            <span id="total-sum" class="text-yellow-400 font-bold">TOTAL: 0</span>
+            <span id="total-sum" class="text-yellow-400 font-bold text-[11px]">TOTAL: 0</span>
             <span class="text-cyan-400 font-bold">V46.7-FINAL</span>
         </div>
 
@@ -70,22 +73,23 @@
             <div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px]" id="c-rate">C: 0%</div></div>
         </div>
 
-        <div class="bet-section">
-            <div class="flex justify-between items-center mb-1">
-                <select id="max-steps" onchange="initGrid()" class="bg-black text-cyan-400 text-[11px] border border-slate-700 rounded outline-none px-1">
-                    <option value="4">4S</option><option value="6">6S</option><option value="8" selected>8S</option>
-                </select>
-                <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-[9px] px-3 py-1 rounded font-black">LOCK: OFF</button>
+        <div class="main-controls">
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between items-center px-1">
+                    <select id="max-steps" onchange="initGrid()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded outline-none">
+                        <option value="4">4S</option><option value="6">6S</option><option value="8" selected>8S</option>
+                    </select>
+                    <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black">LOCK: OFF</button>
+                </div>
+                <div id="bet-grid-container" class="bet-grid-container"></div>
             </div>
-            <div id="bet-grid-container"></div>
+            <div class="input-group">
+                <input type="tel" id="digit-input" maxlength="1" placeholder="?">
+                <button id="enter-btn" onclick="submitDigit()">ENTER</button>
+            </div>
         </div>
 
-        <div class="input-group">
-            <input type="tel" id="digit-input" maxlength="1" placeholder="?">
-            <button id="enter-btn" onclick="submitDigit()" class="bg-cyan-500 text-black">ENTER</button>
-        </div>
-
-        <div id="ai-status" class="ai-status-bar ai-normal">AI မှ ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-status" class="ai-box ai-normal">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
     <div class="main-scroll no-scrollbar" id="history-container"></div>
@@ -96,46 +100,41 @@
     </div>
 
     <script>
-        let betValues = [100, 200, 400, 800, 1600, 3200, 6400, 12800];
+        let bValues = [100, 200, 500, 1200, 2500, 5200, 10500, 23000];
         let isLocked = false, history = [], roll = 1, stage = 1;
-        let aNext="-", bNext="-", cNext="-";
-        let curAR=0, curBR=0, curCR=0;
+        let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
 
         function initGrid() {
             const count = parseInt(document.getElementById('max-steps').value);
             const container = document.getElementById('bet-grid-container');
-            let html = '<div class="bet-grid">';
+            container.innerHTML = '';
             for(let i=0; i<count; i++) {
-                if(i === 4) html += '</div><div class="bet-grid">';
-                html += `<div class="bet-item ${isLocked?'':'unlocked'}" id="step-${i}" onclick="handleTouch(${i})"><input type="tel" value="${betValues[i]||0}" oninput="betValues[${i}]=parseInt(this.value)||0;calculateTotal()" class="bet-val-input"></div>`;
+                container.innerHTML += `<div class="bet-item ${isLocked?'':'unlocked'}" id="step-${i}" onclick="hTouch(${i})"><input type="tel" value="${bValues[i]||0}" oninput="bValues[${i}]=parseInt(this.value)||0;calcT()" class="bet-val-input"></div>`;
             }
-            html += '</div>';
-            container.innerHTML = html;
-            calculateTotal();
+            calcT();
         }
 
-        function calculateTotal() {
-            const count = parseInt(document.getElementById('max-steps').value);
-            let sum = betValues.slice(0, count).reduce((a, b) => a + b, 0);
+        function calcT() {
+            let sum = bValues.slice(0, parseInt(document.getElementById('max-steps').value)).reduce((a, b) => a + b, 0);
             document.getElementById('total-sum').innerText = "TOTAL: " + sum.toLocaleString();
         }
 
         function toggleLock() {
             isLocked = !isLocked;
-            const btn = document.getElementById('lock-btn');
-            btn.innerText = isLocked ? "LOCK: ON" : "LOCK: OFF";
-            btn.className = isLocked ? "bg-green-600 text-[9px] px-3 py-1 rounded font-black" : "bg-red-600 text-[9px] px-3 py-1 rounded font-black";
+            const b = document.getElementById('lock-btn');
+            b.innerText = isLocked ? "LOCK: ON" : "LOCK: OFF";
+            b.className = isLocked ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black";
             initGrid();
         }
 
-        function handleTouch(index) {
+        function hTouch(idx) {
             if (!isLocked) return;
-            const count = document.getElementById('max-steps').value;
-            for(let i=0; i<count; i++) {
+            for(let i=0; i<8; i++) {
                 const el = document.getElementById(`step-${i}`);
+                if(!el) continue;
                 el.classList.remove('active', 'lost');
-                if (i < index) el.classList.add('lost');
-                if (i === index) el.classList.add('active');
+                if (i < idx) el.classList.add('lost');
+                if (i === idx) el.classList.add('active');
             }
         }
 
@@ -143,44 +142,40 @@
             const input = document.getElementById('digit-input');
             const val = parseInt(input.value); if (isNaN(val)) return;
             const grp = val >= 5 ? 'B' : 'S';
-            
             history.push({ 
-                val, grp, roll, stage, 
-                a: aNext, aOk: aNext === grp, aG: curAR >= 68, aW: curAR < 40 && history.length > 5,
-                b: bNext, bOk: bNext === grp, bG: curBR >= 68, bW: curBR < 40 && history.length > 5,
-                c: cNext, cOk: cNext === grp, cG: curCR >= 68, cW: curCR < 40 && history.length > 5
+                val, grp, roll, stage, a: aN, aOk: aN === grp, aG: aR >= 68, aW: aR < 40 && history.length > 5,
+                b: bN, bOk: bN === grp, bG: bR >= 68, bW: bR < 40 && history.length > 5,
+                c: cN, cOk: cN === grp, cG: cR >= 68, cW: cR < 40 && history.length > 5
             });
-
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
-            updateAI(val); renderUI(); input.value = ""; input.focus();
+            updAI(val); render(); input.value = ""; input.focus();
         }
 
-        function updateAI(last) {
+        function updAI(last) {
             if (history.length >= 2) {
                 const l2 = history.slice(-2);
-                aNext = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
-            } else { aNext = last >= 5 ? 'B' : 'S'; }
-            bNext = (history.slice(-3).reduce((acc,h)=>acc+h.val,0) % 2 === 0) ? 'S' : 'B';
-            cNext = (history.slice(-5).reduce((acc,h)=>acc+h.val,0)/5) >= 4.5 ? 'B' : 'S';
+                aN = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
+            } else { aN = last >= 5 ? 'B' : 'S'; }
+            bN = (history.slice(-3).reduce((acc,h)=>acc+h.val,0) % 2 === 0) ? 'S' : 'B';
+            cN = (history.slice(-5).reduce((acc,h)=>acc+h.val,0)/5) >= 4.5 ? 'B' : 'S';
 
             ['a','b','c'].forEach(k => {
                 const box = document.getElementById('box-'+k);
-                box.innerHTML = (k==='c' ? `<span>${cNext}</span>` : (k==='a'?aNext:bNext));
+                box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 const hists = history.filter(h => h[k] !== "-");
                 const rate = hists.length ? Math.round(hists.filter(h => h[k+'Ok']).length / hists.length * 100) : 0;
-                if(k==='a') curAR=rate; if(k==='b') curBR=rate; if(k==='c') curCR=rate;
+                if(k==='a') aR=rate; if(k==='b') bR=rate; if(k==='c') cR=rate;
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
             });
-
             const status = document.getElementById('ai-status');
-            const maxR = Math.max(curAR, curBR, curCR);
-            if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.className = "ai-status-bar ai-good"; }
-            else if (history.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.className = "ai-status-bar ai-warning"; }
-            else { status.innerText = "Ai မှ ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.className = "ai-status-bar ai-normal"; }
+            const maxR = Math.max(aR, bR, cR);
+            if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.className = "ai-box ai-good"; }
+            else if (history.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.className = "ai-box ai-warning"; }
+            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.className = "ai-box ai-normal"; }
         }
 
-        function renderUI() {
+        function render() {
             const container = document.getElementById('history-container');
             const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
             container.innerHTML = Object.keys(groups).map(r => `
@@ -204,17 +199,17 @@
 
         function copyLogs() {
             if(history.length === 0) return alert("မှတ်တမ်းမရှိသေးပါ");
-            let text = "";
+            let t = "";
             history.forEach(h => {
                 const aS = h.aG ? "(🔵)" : (h.aW ? "(⚠️)" : "");
                 const bS = h.bG ? "(🔵)" : (h.bW ? "(⚠️)" : "");
                 const cS = h.cG ? "(🔵)" : (h.cW ? "(⚠️)" : "");
-                text += `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${aS} B:${h.b}${h.bOk?'✅':'❌'}${bS} C:${h.c}${h.cOk?'✅':'❌'}${cS}\n`;
+                t += `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${aS} B:${h.b}${h.bOk?'✅':'❌'}${bS} C:${h.c}${h.cOk?'✅':'❌'}${cS}\n`;
             });
-            navigator.clipboard.writeText(text).then(() => alert("Format အသစ်ဖြင့် Copy ယူပြီးပါပြီ (URL မပါဝင်ပါ)"));
+            navigator.clipboard.writeText(t).then(() => alert("Format အသစ်ဖြင့် Copy ယူပြီးပါပြီ"));
         }
 
-        function fullReset() { if(confirm("Clear Data?")) location.reload(); }
+        function fullReset() { if(confirm("Clear All?")) location.reload(); }
         window.onload = initGrid;
     </script>
 </body>
