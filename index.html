@@ -3,214 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V46.7-FINAL</title>
+    <title>Omni Logic V46.7-PREMIUM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; -webkit-user-select: none; user-select: none; height: 100vh; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; }
         
-        /* Header & Fixed Elements */
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 8px 10px; border-bottom: 2px solid #00f2ff; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; }
         
-        /* Prediction Boxes */
-        .box-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; margin-top: 5px; }
-        .predict-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
+        /* Prediction Shapes */
+        .shape-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; margin-top: 5px; }
+        .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
-        .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; transform: scale(1.05); }
+        .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; }
 
-        /* Split Area: Betting (Left) & Input (Right) */
-        .main-controls { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; margin-top: 10px; }
+        /* Main Split Layout: 50/50 */
+        .control-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
         
-        /* Betting Section - 2 Columns (4 Rows each) */
-        .bet-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-        .bet-item { background: #0a192f; border: 1px solid #1e388a; padding: 4px; border-radius: 4px; text-align: center; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .bet-item.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 5px #10b981; }
-        .bet-item.lost { background: #451a1a !important; border-color: #ff4136 !important; }
-        .bet-val-input { width: 100%; background: transparent; color: white; text-align: center; border: none; outline: none; pointer-events: none; }
-        .unlocked .bet-val-input { pointer-events: auto; background: rgba(255,255,255,0.05); }
+        /* Left: Betting Section */
+        .bet-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
+        .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; }
 
-        /* Input & Enter Group */
-        .input-group { display: flex; flex-direction: column; gap: 2px; }
-        #digit-input { height: 60px; border-radius: 6px; text-align: center; font-size: 42px; font-weight: 900; color: black; border: 3px solid #00f2ff; }
-        #enter-btn { height: 72px; border-radius: 6px; font-weight: 900; font-size: 20px; transition: 0.2s; background-color: #00f2ff; color: #000; }
-
-        /* AI Suggestion Box Style */
-        .ai-box { width: 100%; padding: 6px; text-align: center; font-size: 11px; font-weight: bold; margin-top: 10px; border-radius: 6px; border: 1px solid rgba(0,242,255,0.3); }
-        .ai-normal { background: rgba(30, 41, 59, 0.8); color: #fbbf24; }
-        .ai-good { background: rgba(6, 78, 59, 0.8); color: #10b981; border-color: #10b981; }
-        .ai-warning { background: rgba(69, 26, 26, 0.8); color: #ff4136; border-color: #ff4136; }
-
-        /* Roll Card: Horizontal Carousel */
-        .main-scroll { margin-top: 315px; padding: 10px; height: calc(100vh - 385px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
-        .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1px solid #1e3a8a; scroll-snap-align: start; flex-shrink: 0; }
+        /* Right: Input Group */
+        .right-col { display: flex; flex-direction: column; gap: 4px; }
+        #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; }
+        #enter-btn { height: 50px; border-radius: 6px; font-weight: 900; font-size: 18px; background: #00f2ff; color: black; }
         
-        /* Table Alignment & Headers */
-        .grid-row { display: grid; grid-template-columns: 35px 1.2fr 1.2fr 1.2fr 45px; gap: 4px; align-items: center; text-align: center; }
-        .shape-h { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; border: 2px solid; margin: 0 auto; }
+        /* Total Box under Enter */
+        .total-box { border: 1px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 4px; text-align: center; font-size: 11px; font-weight: bold; color: #fbbf24; }
+
+        /* AI Status Box */
+        .ai-notif { background: rgba(30,41,59,0.8); border: 1px solid #00f2ff; border-radius: 6px; padding: 6px; text-align: center; font-size: 11px; font-weight: bold; color: #fbbf24; margin-top: 10px; }
+
+        /* Roll Card: Horizontal Carousel with Snap */
+        .card-carousel { margin-top: 325px; padding: 10px; height: calc(100vh - 395px); overflow-x: auto; display: flex; scroll-snap-type: x mandatory; gap: 15px; }
+        .roll-card { min-width: 92vw; background: #0a192f; border-radius: 12px; padding: 12px; border: 1.5px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
+        
+        /* Table Structure & Alignment */
+        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 45px; gap: 4px; align-items: center; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; }
+        .t-row:last-child { border-bottom: none; }
+        .t-head { border-bottom: 1.5px solid #1e40af; margin-bottom: 8px; padding-bottom: 4px; }
+        .shape-h { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; border: 2px solid; margin: 0 auto; }
         .h-a { border-color: #ff4136; border-radius: 50%; color: #ff4136; }
         .h-b { border-color: #b10dc9; border-radius: 4px; color: #b10dc9; }
         .h-c { border-color: #2ecc40; border-radius: 2px; color: #2ecc40; transform: rotate(45deg); }
         .h-c span { transform: rotate(-45deg); }
 
-        .footer-btns { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; border-top: 1px solid #1e3a8a; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; }
     </style>
 </head>
 <body>
 
     <div class="fixed-header">
-        <div class="flex justify-between items-center text-[10px]">
-            <span class="bg-slate-800 px-2 py-0.5 border border-cyan-500 rounded text-cyan-400">ID: 6401717718</span>
-            <span id="total-sum" class="text-yellow-400 font-bold text-[11px]">TOTAL: 0</span>
-            <span class="text-cyan-400 font-bold">V46.7-FINAL</span>
+        <div class="flex justify-between items-center text-[10px] px-1">
+            <span class="text-slate-400">ID: 6401717718</span>
+            <span class="text-cyan-400 font-bold">V46.7-PREMIUM</span>
         </div>
 
-        <div class="box-container">
-            <div><div class="predict-box a-box" id="box-a">-</div><div class="text-[9px] mt-1" id="a-rate">A: 0%</div></div>
-            <div><div class="predict-box b-box" id="box-b">-</div><div class="text-[9px] mt-1" id="b-rate">B: 0%</div></div>
-            <div><div class="predict-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px]" id="c-rate">C: 0%</div></div>
+        <div class="shape-container">
+            <div><div class="p-box a-box" id="box-a">-</div><div class="text-[9px] mt-1 text-slate-400" id="a-rate">A: 0%</div></div>
+            <div><div class="p-box b-box" id="box-b">-</div><div class="text-[9px] mt-1 text-slate-400" id="b-rate">B: 0%</div></div>
+            <div><div class="p-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
         </div>
 
-        <div class="main-controls">
+        <div class="control-split">
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between items-center px-1">
-                    <select id="max-steps" onchange="initGrid()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded outline-none">
+                <div class="flex justify-between items-center mb-1">
+                    <select id="max-s" onchange="initB()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-1">
                         <option value="4">4S</option><option value="6">6S</option><option value="8" selected>8S</option>
                     </select>
-                    <button id="lock-btn" onclick="toggleLock()" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black">LOCK: OFF</button>
+                    <button onclick="tglL()" id="l-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase">Lock: Off</button>
                 </div>
-                <div id="bet-grid-container" class="bet-grid-container"></div>
+                <div id="bet-area" class="bet-col"></div>
             </div>
-            <div class="input-group">
+            
+            <div class="right-col">
                 <input type="tel" id="digit-input" maxlength="1" placeholder="?">
-                <button id="enter-btn" onclick="submitDigit()">ENTER</button>
+                <button id="enter-btn" onclick="subD()">ENTER</button>
+                <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
 
-        <div id="ai-status" class="ai-box ai-normal">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-notif" class="ai-notif">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
-    <div class="main-scroll no-scrollbar" id="history-container"></div>
+    <div class="card-carousel no-scrollbar" id="hist-cont"></div>
 
-    <div class="footer-btns">
-        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600 active:bg-slate-700">COPY RECORD</button>
-        <button onclick="fullReset()" class="flex-1 p-3 bg-red-900/40 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
+    <div class="footer">
+        <button onclick="copyL()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600 active:bg-slate-700">COPY RECORD</button>
+        <button onclick="resetA()" class="flex-1 p-3 bg-red-900/30 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
     </div>
 
     <script>
-        let bValues = [100, 200, 500, 1200, 2500, 5200, 10500, 23000];
-        let isLocked = false, history = [], roll = 1, stage = 1;
+        let bVal = [100, 2500, 200, 5200, 500, 10500, 1200, 23000];
+        let lock = false, hist = [], roll = 1, stage = 1;
         let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
 
-        function initGrid() {
-            const count = parseInt(document.getElementById('max-steps').value);
-            const container = document.getElementById('bet-grid-container');
-            container.innerHTML = '';
-            for(let i=0; i<count; i++) {
-                container.innerHTML += `<div class="bet-item ${isLocked?'':'unlocked'}" id="step-${i}" onclick="hTouch(${i})"><input type="tel" value="${bValues[i]||0}" oninput="bValues[${i}]=parseInt(this.value)||0;calcT()" class="bet-val-input"></div>`;
-            }
+        function initB() {
+            const cont = document.getElementById('bet-area');
+            cont.innerHTML = bVal.map((v, i) => `<div class="bet-btn" id="s-${i}" onclick="hT(${i})">${v.toLocaleString()}</div>`).join('');
             calcT();
         }
 
         function calcT() {
-            let sum = bValues.slice(0, parseInt(document.getElementById('max-steps').value)).reduce((a, b) => a + b, 0);
-            document.getElementById('total-sum').innerText = "TOTAL: " + sum.toLocaleString();
+            let sum = bVal.reduce((a, b) => a + b, 0);
+            document.getElementById('total-val').innerText = "TOTAL: " + sum.toLocaleString();
         }
 
-        function toggleLock() {
-            isLocked = !isLocked;
-            const b = document.getElementById('lock-btn');
-            b.innerText = isLocked ? "LOCK: ON" : "LOCK: OFF";
-            b.className = isLocked ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black";
-            initGrid();
+        function tglL() {
+            lock = !lock;
+            const btn = document.getElementById('l-btn');
+            btn.innerText = lock ? "Lock: On" : "Lock: Off";
+            btn.className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black uppercase" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase";
         }
 
-        function hTouch(idx) {
-            if (!isLocked) return;
+        function hT(idx) {
+            if (!lock) return;
             for(let i=0; i<8; i++) {
-                const el = document.getElementById(`step-${i}`);
-                if(!el) continue;
+                const el = document.getElementById(`s-${i}`);
                 el.classList.remove('active', 'lost');
                 if (i < idx) el.classList.add('lost');
                 if (i === idx) el.classList.add('active');
             }
         }
 
-        function submitDigit() {
+        function subD() {
             const input = document.getElementById('digit-input');
-            const val = parseInt(input.value); if (isNaN(val)) return;
-            const grp = val >= 5 ? 'B' : 'S';
-            history.push({ 
-                val, grp, roll, stage, a: aN, aOk: aN === grp, aG: aR >= 68, aW: aR < 40 && history.length > 5,
-                b: bN, bOk: bN === grp, bG: bR >= 68, bW: bR < 40 && history.length > 5,
-                c: cN, cOk: cN === grp, cG: cR >= 68, cW: cR < 40 && history.length > 5
+            const v = parseInt(input.value); if (isNaN(v)) return;
+            const g = v >= 5 ? 'B' : 'S';
+            hist.push({ 
+                v, g, r: roll, s: stage, 
+                a: aN, aO: aN === g, aG: aR >= 68, aW: aR < 40 && hist.length > 5,
+                b: bN, bO: bN === g, bG: bR >= 68, bW: bR < 40 && hist.length > 5,
+                c: cN, cO: cN === g, cG: cR >= 68, cW: cR < 40 && hist.length > 5
             });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
-            updAI(val); render(); input.value = ""; input.focus();
+            updAI(v); rend(); input.value = ""; input.focus();
         }
 
         function updAI(last) {
-            if (history.length >= 2) {
-                const l2 = history.slice(-2);
-                aN = (l2[0].grp === l2[1].grp) ? l2[1].grp : (l2[1].grp === 'B' ? 'S' : 'B');
+            if (hist.length >= 2) {
+                const l2 = hist.slice(-2);
+                aN = (l2[0].g === l2[1].g) ? l2[1].g : (l2[1].g === 'B' ? 'S' : 'B');
             } else { aN = last >= 5 ? 'B' : 'S'; }
-            bN = (history.slice(-3).reduce((acc,h)=>acc+h.val,0) % 2 === 0) ? 'S' : 'B';
-            cN = (history.slice(-5).reduce((acc,h)=>acc+h.val,0)/5) >= 4.5 ? 'B' : 'S';
+            bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
+            cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
 
             ['a','b','c'].forEach(k => {
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
-                const hists = history.filter(h => h[k] !== "-");
-                const rate = hists.length ? Math.round(hists.filter(h => h[k+'Ok']).length / hists.length * 100) : 0;
+                const hits = hist.filter(h => h[k] !== "-");
+                const rate = hits.length ? Math.round(hits.filter(h => h[k+'O']).length / hits.length * 100) : 0;
                 if(k==='a') aR=rate; if(k==='b') bR=rate; if(k==='c') cR=rate;
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
             });
-            const status = document.getElementById('ai-status');
+
+            const status = document.getElementById('ai-notif');
             const maxR = Math.max(aR, bR, cR);
-            if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.className = "ai-box ai-good"; }
-            else if (history.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.className = "ai-box ai-warning"; }
-            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.className = "ai-box ai-normal"; }
+            if(maxR >= 68) { status.innerText = "အခြေအနေကောင်းသည် - လိုက်ထိုးနိုင်သည်"; status.style.color = "#10b981"; }
+            else if (hist.length > 5 && maxR < 45) { status.innerText = "သတိထားပါ - အမှားများနေသည်"; status.style.color = "#ff4136"; }
+            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.style.color = "#fbbf24"; }
         }
 
-        function render() {
-            const container = document.getElementById('history-container');
-            const groups = history.reduce((acc, cur) => { if (!acc[cur.roll]) acc[cur.roll] = []; acc[cur.roll].push(cur); return acc; }, {});
-            container.innerHTML = Object.keys(groups).map(r => `
+        function rend() {
+            const cont = document.getElementById('hist-cont');
+            const grps = hist.reduce((acc, cur) => { if (!acc[cur.r]) acc[cur.r] = []; acc[cur.r].push(cur); return acc; }, {});
+            cont.innerHTML = Object.keys(grps).map(r => `
                 <div class="roll-card">
-                    <div class="grid-row mb-3 border-b border-cyan-900 pb-1">
+                    <div class="t-row t-head">
                         <span class="text-[9px] font-bold text-cyan-400">ROLL-${r}</span>
                         <div class="shape-h h-a">A</div><div class="shape-h h-b">B</div><div class="shape-h h-c"><span>C</span></div>
-                        <span class="text-[9px] text-slate-500 font-bold">DIGIT</span>
+                        <span class="text-[9px] text-slate-500 font-bold uppercase">Digit</span>
                     </div>
-                    ${groups[r].map(i => `
-                        <div class="grid-row py-1.5 text-[14px] border-b border-white/5">
-                            <div class="text-slate-500 text-[10px] text-left">${i.stage}</div>
-                            <div class="${i.aOk?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aOk?'✅':'❌'}${i.aG?'🔵':''}${i.aW?'⚠️':''}</div>
-                            <div class="${i.bOk?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bOk?'✅':'❌'}${i.bG?'🔵':''}${i.bW?'⚠️':''}</div>
-                            <div class="${i.cOk?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cOk?'✅':'❌'}${i.cG?'🔵':''}${i.cW?'⚠️':''}</div>
-                            <div class="text-yellow-400 font-black text-right text-lg">${i.val}</div>
+                    ${grps[r].map(i => `
+                        <div class="t-row">
+                            <div class="text-slate-500 text-[10px] text-left">${i.s}</div>
+                            <div class="${i.aO?'text-green-400':'text-red-500'} font-bold">${i.a}${i.aO?'✅':'❌'}${i.aG?'🔵':''}${i.aW?'⚠️':''}</div>
+                            <div class="${i.bO?'text-green-400':'text-red-500'} font-bold">${i.b}${i.bO?'✅':'❌'}${i.bG?'🔵':''}${i.bW?'⚠️':''}</div>
+                            <div class="${i.cO?'text-green-400':'text-red-500'} font-bold">${i.c}${i.cO?'✅':'❌'}${i.cG?'🔵':''}${i.cW?'⚠️':''}</div>
+                            <div class="text-yellow-400 font-black text-right text-base">${i.v}</div>
                         </div>`).join('')}
                 </div>`).join('');
-            container.scrollLeft = container.scrollWidth;
+            cont.scrollLeft = cont.scrollWidth;
         }
 
-        function copyLogs() {
-            if(history.length === 0) return alert("မှတ်တမ်းမရှိသေးပါ");
+        function copyL() {
+            if(hist.length === 0) return alert("မှတ်တမ်းမရှိသေးပါ");
             let t = "";
-            history.forEach(h => {
+            hist.forEach(h => {
                 const aS = h.aG ? "(🔵)" : (h.aW ? "(⚠️)" : "");
                 const bS = h.bG ? "(🔵)" : (h.bW ? "(⚠️)" : "");
                 const cS = h.cG ? "(🔵)" : (h.cW ? "(⚠️)" : "");
-                t += `R${h.roll}.S${h.stage} | G(${h.val}) | A:${h.a}${h.aOk?'✅':'❌'}${aS} B:${h.b}${h.bOk?'✅':'❌'}${bS} C:${h.c}${h.cOk?'✅':'❌'}${cS}\n`;
+                t += `R${h.r}.S${h.s} | G(${h.v}) | A:${h.a}${h.aO?'✅':'❌'}${aS} B:${h.b}${h.bO?'✅':'❌'}${bS} C:${h.c}${h.cO?'✅':'❌'}${cS}\n`;
             });
-            navigator.clipboard.writeText(t).then(() => alert("Format အသစ်ဖြင့် Copy ယူပြီးပါပြီ"));
+            navigator.clipboard.writeText(t).then(() => alert("Copied to clipboard!"));
         }
 
-        function fullReset() { if(confirm("Clear All?")) location.reload(); }
-        window.onload = initGrid;
+        function resetA() { if(confirm("Clear all data?")) location.reload(); }
+        window.onload = initB;
     </script>
 </body>
 </html>
