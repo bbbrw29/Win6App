@@ -3,37 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V47.3</title>
+    <title>Omni Logic V47.4-FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; margin: 0; }
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 350px; }
         
-        /* Prediction Glow Effects */
+        /* 1. TG ID Highlighted */
+        .tg-id-badge { background: #00f2ff; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: 900; font-size: 11px; box-shadow: 0 0 10px #00f2ff; animation: tg-glow 2s infinite; }
+        @keyframes tg-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 350px; }
         .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
-        .glow-blue { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
         
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* Betting System UI */
         .main-split { display: flex; gap: 8px; margin-top: 15px; }
         .left-betting { flex: 0 0 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
         .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 40px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; }
 
-        /* Roll Card - V46.6 Style */
+        /* 2. Roll Card Digit Enhanced */
         .card-container { margin-top: 360px; padding: 10px; height: calc(100vh - 430px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
         .roll-card { min-width: 92vw; background: #0a192f; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
-        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid #1e40af; height: 35px; align-items: center; text-align: center; }
-        .t-head { background: #1e40af; border-bottom: 2.5px solid #00f2ff; }
+        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid #1e40af; height: 38px; align-items: center; text-align: center; }
+        .t-head { background: #1e40af; border-bottom: 2.5px solid #00f2ff; height: 40px; }
         .t-col { border-right: 1px solid #1e40af; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
-        .t-col:last-child { border-right: none; }
+        
+        /* High visibility for Digit Column */
+        .digit-highlight { background: #fbbf24 !important; color: #000 !important; font-size: 20px !important; font-weight: 900 !important; border-right: none !important; }
 
         #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; outline: none; }
         .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
@@ -43,9 +44,9 @@
 <body>
 
     <div class="fixed-header">
-        <div class="flex justify-between items-center text-[10px] mb-2 px-1">
-            <span class="text-slate-500">ID: 6401717718</span>
-            <span class="text-cyan-400 font-black">V47.3-STRICT</span>
+        <div class="flex justify-between items-center mb-2 px-1">
+            <span class="text-slate-500 text-[10px]">V47.4-FINAL</span>
+            <div class="tg-id-badge">ID: 6401717718</div>
         </div>
 
         <div class="shape-container grid grid-cols-3 gap-2 text-center">
@@ -85,6 +86,7 @@
         let lock = false, hist = [], roll = 1, stage = 1;
         let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
 
+        // ALL LOGIC PATTERNS FROM V47.2-STRICT (LOCKED)
         function initBetting() {
             const count = parseInt(document.getElementById('step-selector').value);
             const grid = document.getElementById('bet-grid'); grid.innerHTML = '';
@@ -118,12 +120,9 @@
             const input = document.getElementById('digit-input');
             const v = parseInt(input.value); if (isNaN(v)) return;
             const g = v >= 5 ? 'B' : 'S';
-            
-            // AI Status Flags before adding to history
             const aS = aR < 40 ? "⚠️" : (aR >= 68 ? "🔵" : "");
             const bS = bR < 40 ? "⚠️" : (bR >= 68 ? "🔵" : "");
             const cS = cR < 40 ? "⚠️" : (cR >= 68 ? "🔵" : "");
-
             hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, aS, b: bN, bO: bN === g, bS, c: cN, cO: cN === g, cS });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(v); renderHistory(); input.value = ""; input.focus();
@@ -144,12 +143,7 @@
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
-                if (rate >= 68) box.classList.add('glow-blue'); else box.classList.remove('glow-blue');
             });
-            const status = document.getElementById('ai-notif');
-            if (aR < 40) { status.innerText = "⚠️ A ကို မထိုးပါနှင့် (အမှားများနေသည်)"; status.style.color = "#ff4136"; }
-            else if (bR >= 68) { status.innerText = "🔵 B ကို အားပြုထိုးပါ"; status.style.color = "#00f2ff"; }
-            else { status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.style.color = "#fbbf24"; }
         }
 
         function renderHistory() {
@@ -169,7 +163,7 @@
                         <div class="t-col ${d ? (d.aO?'text-green-400':'text-red-500') : ''}">${d ? d.a+(d.aO?'✅':'❌')+d.aS : ''}</div>
                         <div class="t-col ${d ? (d.bO?'text-green-400':'text-red-500') : ''}">${d ? d.b+(d.bO?'✅':'❌')+d.bS : ''}</div>
                         <div class="t-col ${d ? (d.cO?'text-green-400':'text-red-500') : ''}">${d ? d.c+(d.cO?'✅':'❌')+d.cS : ''}</div>
-                        <div class="t-col text-white font-black">${d ? d.v : ''}</div>
+                        <div class="t-col digit-highlight">${d ? d.v : ''}</div>
                     </div>`;
                 }
                 html += `</div>`;
@@ -180,7 +174,7 @@
 
         function copyLogs() {
             let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.aO?'✅':'❌'}${h.aS} B:${h.b}${h.bO?'✅':'❌'}${h.bS} C:${h.c}${h.cO?'✅':'❌'}${h.cS}`).join('\n');
-            navigator.clipboard.writeText(t).then(() => alert("Copied With Symbols!"));
+            navigator.clipboard.writeText(t).then(() => alert("Copied!"));
         }
 
         function resetAll() { if(confirm("Clear All?")) location.reload(); }
