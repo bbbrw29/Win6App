@@ -19,7 +19,6 @@
         .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
         
-        /* Prediction AI Glow Effect */
         .glow-ai { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; animation: ai-pulse 1.5s infinite; }
         @keyframes ai-pulse { 0% { transform: scale(1) rotate(var(--rot, 0deg)); } 50% { transform: scale(1.05) rotate(var(--rot, 0deg)); } 100% { transform: scale(1) rotate(var(--rot, 0deg)); } }
         .c-box.glow-ai { --rot: 45deg; }
@@ -37,11 +36,10 @@
         .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 101; }
         
-        /* AI Notification - အကွာအဝေးခြားဖို့ */
-        #ai-notif { 
-            margin-bottom: 15px; /* အောက်ကို နေရာချဲ့ */
-            margin-top: 8px; /* အပေါ်ကနေလည်း နေရာချန်ထား */
-        }
+        #ai-notif { margin-bottom: 15px; margin-top: 8px; }
+
+        /* Hidden Utility */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -77,6 +75,17 @@
         <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">AI စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
+    <div id="custom-prompt" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="bg-slate-900 border-2 border-cyan-400 p-6 rounded-xl w-[85%] max-w-[300px] shadow-[0_0_30px_rgba(0,242,255,0.4)]">
+            <h3 class="text-cyan-400 font-black mb-4 text-center text-sm tracking-widest uppercase">Set Step Amount</h3>
+            <input type="number" id="prompt-input" class="w-full bg-black border border-slate-700 p-4 rounded-lg text-white text-center text-2xl mb-5 outline-none focus:border-cyan-400 font-bold" placeholder="0">
+            <div class="flex gap-3">
+                <button onclick="closePrompt()" class="flex-1 py-3 bg-slate-800 text-slate-400 rounded-lg text-xs font-bold active:scale-95 transition-transform">CANCEL</button>
+                <button onclick="savePromptValue()" class="flex-1 py-3 bg-cyan-500 text-black rounded-lg text-xs font-black active:scale-95 transition-transform">SAVE</button>
+            </div>
+        </div>
+    </div>
+
     <div class="card-container no-scrollbar" id="hist-cont"></div>
 
     <div class="footer">
@@ -88,14 +97,15 @@
         let betValues = [100, 200, 500, 1200, 2500, 5200, 10500, 23000];
         let lock = false, hist = [], roll = 1, stage = 1;
         let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
+        let currentEditIdx = -1;
 
         function initBetting() {
             const count = parseInt(document.getElementById('step-selector').value);
             const grid = document.getElementById('bet-grid'); grid.innerHTML = '';
             let t = 0;
             for(let i=0; i<count; i++) {
-                grid.innerHTML += `<div class="bet-btn" id="s-${i}" onclick="handleBetClick(${i})">${betValues[i].toLocaleString()}</div>`;
-                t += betValues[i];
+                grid.innerHTML += `<div class="bet-btn" id="s-${i}" onclick="handleBetClick(${i})">${(betValues[i] || 0).toLocaleString()}</div>`;
+                t += (betValues[i] || 0);
             }
             document.getElementById('total-val').innerText = "TOTAL: " + t.toLocaleString();
             renderHistory();
@@ -109,7 +119,6 @@
 
         function handleBetClick(idx) {
             if (lock) {
-                // LOCK: ON - Betting Animation
                 const count = parseInt(document.getElementById('step-selector').value);
                 for(let i=0; i<count; i++) {
                     const el = document.getElementById(`s-${i}`);
@@ -118,12 +127,25 @@
                     if (i === idx) el.classList.add('active');
                 }
             } else {
-                // LOCK: OFF - Custom Input
-                let val = prompt("Enter Custom Stake for Step " + (idx+1), betValues[idx]);
-                if (val !== null && !isNaN(val)) {
-                    betValues[idx] = parseInt(val);
-                    initBetting();
-                }
+                currentEditIdx = idx;
+                const modal = document.getElementById('custom-prompt');
+                const input = document.getElementById('prompt-input');
+                input.value = betValues[idx];
+                modal.classList.remove('hidden');
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+
+        function closePrompt() {
+            document.getElementById('custom-prompt').classList.add('hidden');
+        }
+
+        function savePromptValue() {
+            let val = document.getElementById('prompt-input').value;
+            if (val !== "" && !isNaN(val)) {
+                betValues[currentEditIdx] = parseInt(val);
+                initBetting();
+                closePrompt();
             }
         }
 
@@ -161,7 +183,6 @@
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 
-                // Fix Glow & Warning Effect
                 if (rate >= 68) { 
                     box.classList.add('glow-ai'); 
                     highConf = true; 
