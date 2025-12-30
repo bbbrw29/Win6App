@@ -3,101 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V47.8-STRICT</title>
+    <title>Omni Logic V47.9-STRICT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; margin: 0; }
         
-        /* TG ID - Neon Highlight */
-        .tg-id-badge { background: #00f2ff; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: 900; font-size: 11px; box-shadow: 0 0 10px #00f2ff; }
-
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #1e3a8a; height: 355px; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #1e3a8a; height: 350px; }
         
-        /* Prediction Shapes & Glow */
-        .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; }
+        /* Shape Controls */
+        .p-box { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 20px; border: 4px solid; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
-        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
-        .c-box span { transform: rotate(-45deg); display: inline-block; }
-        .glow-ai { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        /* Prediction C - Diamond Shape (စိန်ပွင့်ပုံ အစစ်) */
+        .c-box { 
+            border-color: #2ecc40; color: #2ecc40; border-radius: 0px;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            background: #fff;
+        }
+        .c-box span { transform: none !important; } /* စာသားကို အတည့်ထားခြင်း */
+
+        .glow-ai { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; animation: ai-glow 1.5s infinite; }
+        @keyframes ai-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         /* Betting Grid */
-        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 40px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #94a3b8; transition: 0.2s; }
+        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 40px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #94a3b8; }
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 10px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        /* EXTRA: AI Suggestion Box Highlight */
+        /* FIXED: AI Suggestion Box High Visibility */
         #ai-notif {
             background-color: #0f172a; 
             border: 2px solid #00f2ff; 
             border-radius: 8px;
             padding: 12px;
             text-align: center;
-            margin: 15px 5px;
-            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.4);
+            margin: 15px 10px; /* Roll Card နှင့် မကပ်စေရန် Spacing */
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
             font-weight: 900;
-            font-size: 13px;
             min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Roll Card - Visual Fix */
-        .card-container { margin-top: 365px; padding: 10px; height: calc(100vh - 435px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
+        .card-container { margin-top: 360px; padding: 10px; height: calc(100vh - 430px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
         .roll-card { min-width: 92vw; background: #0a192f; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
         .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid #1e40af; height: 38px; align-items: center; text-align: center; }
-        .t-head { background: #1e40af; font-weight: bold; color: white; border-bottom: 2px solid #00f2ff; }
-        .t-col { border-right: 1px solid #1e40af; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
-        
-        /* Digit Highlight Visibility */
-        .digit-highlight { background: #fbbf24 !important; color: #000 !important; font-size: 18px !important; font-weight: 900 !important; border-right: none !important; }
+        .digit-highlight { background: #fbbf24 !important; color: #000 !important; font-size: 20px !important; font-weight: 900 !important; }
 
         #digit-input { height: 50px; border-radius: 6px; text-align: center; font-size: 32px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; outline: none; }
-        .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 5px; text-align: center; font-size: 12px; font-weight: 900; color: #fbbf24; }
+        .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 101; }
     </style>
 </head>
 <body>
 
     <div class="fixed-header">
-        <div class="flex justify-between items-center mb-2 px-1">
-            <span class="text-slate-500 text-[10px]">V47.8-STRICT</span>
-            <div class="tg-id-badge">ID: 6401717718</div>
+        <div class="flex justify-between items-center mb-2 px-1 text-[10px]">
+            <span class="text-slate-500">V47.9-STRICT</span>
+            <span class="text-cyan-400 font-bold" id="tg-id">ID: 6401717718</span>
         </div>
 
         <div class="grid grid-cols-3 gap-2 text-center">
             <div><div class="p-box a-box" id="box-a">-</div><div class="text-[9px] mt-1 text-slate-400" id="a-rate">A: 0%</div></div>
             <div><div class="p-box b-box" id="box-b">-</div><div class="text-[9px] mt-1 text-slate-400" id="b-rate">B: 0%</div></div>
-            <div><div class="p-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
+            <div><div class="p-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-1 text-slate-400" id="c-rate">C: 0%</div></div>
         </div>
 
         <div class="flex gap-2 mt-4">
             <div class="w-[55%] grid grid-cols-2 gap-1">
                 <div class="col-span-2 flex justify-between items-center mb-1">
-                    <select id="step-selector" onchange="initBetting()" class="bg-black text-cyan-400 text-[10px] border border-slate-700 rounded px-1">
+                    <select id="step-selector" onchange="initBetting()" class="bg-black text-cyan-400 text-[11px] border border-slate-700 rounded px-1">
                         <option value="5">5S</option><option value="6">6S</option><option value="7">7S</option><option value="8" selected>8S</option>
                     </select>
-                    <button onclick="toggleLock()" id="lock-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black">LOCK: OFF</button>
+                    <button onclick="toggleLock()" id="lock-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase">LOCK: OFF</button>
                 </div>
                 <div id="bet-grid" class="contents"></div>
             </div>
             <div class="flex-1 flex flex-col gap-1">
                 <input type="tel" id="digit-input" maxlength="1" placeholder="?">
-                <button id="enter-btn" class="bg-cyan-400 text-black h-[40px] font-black rounded text-sm" onclick="submitDigit()">ENTER</button>
+                <button id="enter-btn" class="bg-cyan-400 text-black h-[40px] font-black rounded" onclick="submitDigit()">ENTER</button>
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        
         <div id="ai-notif" style="color: #fbbf24;">AI စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
     <div class="card-container no-scrollbar" id="hist-cont"></div>
 
     <div class="footer">
-        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600">COPY RECORD</button>
+        <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600 text-white">COPY RECORD</button>
         <button onclick="resetAll()" class="flex-1 p-3 bg-red-900/30 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
     </div>
 
@@ -121,7 +118,7 @@
         function toggleLock() {
             lock = !lock;
             document.getElementById('lock-btn').innerText = lock ? "LOCK: ON" : "LOCK: OFF";
-            document.getElementById('lock-btn').className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black";
+            document.getElementById('lock-btn').className = lock ? "bg-green-600 text-[8px] px-2 py-0.5 rounded font-black uppercase" : "bg-red-600 text-[8px] px-2 py-0.5 rounded font-black uppercase";
         }
 
         function handleBetClick(idx) {
@@ -134,8 +131,12 @@
                     if (i === idx) el.classList.add('active');
                 }
             } else {
-                let val = prompt("Enter Custom Stake:", betValues[idx]);
-                if (val !== null && !isNaN(val)) { betValues[idx] = parseInt(val); initBetting(); }
+                // ပြင်ဆင်ချက်- URL Prompt မပေါ်စေရန် ဂဏန်းပဲ တန်းရိုက်ထည့်ခိုင်းသည့် ပုံစံ
+                let newVal = window.prompt("ပမာဏအသစ် ရိုက်ထည့်ပါ", betValues[idx]);
+                if (newVal !== null && !isNaN(newVal)) {
+                    betValues[idx] = parseInt(newVal);
+                    initBetting();
+                }
             }
         }
 
@@ -152,7 +153,6 @@
         }
 
         function updateAI(last) {
-            // Logic Pattern Locked from V47.2
             if (hist.length >= 2) {
                 const l2 = hist.slice(-2);
                 aN = (l2[0].g === l2[1].g) ? l2[1].g : (l2[1].g === 'B' ? 'S' : 'B');
@@ -161,7 +161,7 @@
             cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
 
             const status = document.getElementById('ai-notif');
-            let found = false;
+            let high = false;
             ['a','b','c'].forEach(k => {
                 const hits = hist.filter(h => h[k] !== "-");
                 const rate = hits.length ? Math.round(hits.filter(h => h[k+'O']).length / hits.length * 100) : 0;
@@ -169,11 +169,11 @@
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
-                if (rate >= 68) { box.classList.add('glow-ai'); found = true; status.innerText = `${k.toUpperCase()} ကို အားပြုထိုးပါ`; status.style.color = "#00f2ff"; }
+                if (rate >= 68) { box.classList.add('glow-ai'); high=true; status.innerText = `${k.toUpperCase()} ကို အားပြုထိုးပါ`; status.style.color="#00f2ff"; }
                 else { box.classList.remove('glow-ai'); }
-                if (rate < 40) { status.innerText = `${k.toUpperCase()} ကို မထိုးပါနှင့် (အမှားများနေသည်)`; status.style.color = "#ff4136"; found = true; }
+                if (rate < 40) { status.innerText = `${k.toUpperCase()} ကို မထိုးပါနှင့် (အမှားများနေသည်)`; status.style.color="#ff4136"; high=true; }
             });
-            if (!found) { status.innerText = "AI စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.style.color = "#fbbf24"; }
+            if (!high) { status.innerText = "AI စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.style.color="#fbbf24"; }
         }
 
         function renderHistory() {
@@ -197,7 +197,7 @@
             navigator.clipboard.writeText(t).then(() => alert("Copied!"));
         }
 
-        function resetAll() { if(confirm("Clear?")) location.reload(); }
+        function resetAll() { if(confirm("Clear All?")) location.reload(); }
         window.onload = initBetting;
     </script>
 </body>
