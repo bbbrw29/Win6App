@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V47.5-STRICT</title>
+    <title>Omni Logic V47.5-PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
@@ -27,7 +27,7 @@
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        /* Roll Card Styling Upgraded for Up-Down Scroll */
+        /* Roll Card Styling Upgraded */
         .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 460px); overflow-x: auto; display: flex; gap: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
         .roll-card { min-width: 85vw; background: #0a192f; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow-y: auto; height: 100%; display: block; }
         .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid rgba(30, 64, 175, 0.4); height: 40px; align-items: center; text-align: center; }
@@ -44,9 +44,12 @@
         #ai-notif { margin-bottom: 15px; margin-top: 8px; }
         .hidden { display: none !important; }
 
-        /* Toast Styling */
+        /* Custom Modal & Toast Styling */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-blur: 5px; z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: #0a192f; border: 2px solid #00f2ff; border-radius: 16px; width: 100%; max-width: 320px; padding: 24px; box-shadow: 0 0 30px rgba(0,242,255,0.3); }
+        
         #toast { visibility: hidden; min-width: 200px; background-color: #00f2ff; color: #000; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 300; left: 50%; bottom: 80px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2s; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.0s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 80px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 80px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
@@ -55,9 +58,20 @@
 
     <div id="toast">COPIED TO CLIPBOARD!</div>
 
+    <div id="reset-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2 class="text-[#00f2ff] font-black text-center text-xl mb-4 tracking-tighter uppercase">Omni Logic Pro</h2>
+            <p class="text-slate-300 text-center text-sm mb-6 leading-relaxed">မှတ်တမ်းအားလုံးကို ဖျက်ပစ်ရန် သေချာပါသလား?</p>
+            <div class="flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 py-3 bg-slate-800 text-slate-400 rounded-lg text-xs font-bold active:scale-95 transition-transform">CANCEL</button>
+                <button onclick="confirmReset()" class="flex-1 py-3 bg-red-600 text-white rounded-lg text-xs font-black shadow-lg shadow-red-900/50 active:scale-95 transition-transform">CLEAR ALL</button>
+            </div>
+        </div>
+    </div>
+
     <div class="fixed-header">
         <div class="flex justify-between items-center mb-2 px-1">
-            <span class="text-slate-500 text-[10px]">V47.5-STRICT</span>
+            <span class="text-slate-500 text-[10px]">V47.5-PRO</span>
             <div class="tg-id-badge">ID: 6401717718</div>
         </div>
 
@@ -101,7 +115,7 @@
 
     <div class="footer">
         <button onclick="copyLogs()" class="flex-1 p-3 bg-slate-800 rounded-lg text-[12px] font-black border border-slate-600">COPY RECORD</button>
-        <button onclick="resetAll()" class="flex-1 p-3 bg-red-900/30 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
+        <button onclick="openResetModal()" class="flex-1 p-3 bg-red-900/30 rounded-lg text-[12px] font-black border border-red-700 text-red-500">RESET ALL</button>
     </div>
 
     <script>
@@ -245,7 +259,11 @@
             });
         }
 
-        function resetAll() { if(confirm("Clear All?")) location.reload(); }
+        /* Custom Reset Modal Functions */
+        function openResetModal() { document.getElementById('reset-modal').classList.remove('hidden'); }
+        function closeResetModal() { document.getElementById('reset-modal').classList.add('hidden'); }
+        function confirmReset() { location.reload(); }
+
         window.onload = initBetting;
     </script>
 </body>
