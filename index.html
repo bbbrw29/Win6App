@@ -27,11 +27,11 @@
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        /* Roll Card Styling Upgraded */
+        /* Roll Card Styling Upgraded for Up-Down Scroll */
         .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 460px); overflow-x: auto; display: flex; gap: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
-        .roll-card { min-width: 85vw; background: #0a192f; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid rgba(30, 64, 175, 0.4); height: 38px; align-items: center; text-align: center; }
-        .t-head { background: #1e3a8a; font-weight: 900; color: #fbbf24; font-size: 11px; }
+        .roll-card { min-width: 85vw; background: #0a192f; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow-y: auto; height: 100%; display: block; }
+        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid rgba(30, 64, 175, 0.4); height: 40px; align-items: center; text-align: center; }
+        .t-head { background: #1e3a8a; font-weight: 900; color: #fbbf24; font-size: 11px; position: sticky; top: 0; z-index: 50; }
         .t-col { border-right: 1px solid rgba(30, 64, 175, 0.3); height: 100%; display: flex; align-items: center; justify-content: center; }
         .main-text { font-size: 18px; font-weight: 900; margin-right: 2px; }
         .sub-icon { font-size: 10px; opacity: 0.9; }
@@ -44,7 +44,7 @@
         #ai-notif { margin-bottom: 15px; margin-top: 8px; }
         .hidden { display: none !important; }
 
-        /* Toast Styling (No URL Alert) */
+        /* Toast Styling */
         #toast { visibility: hidden; min-width: 200px; background-color: #00f2ff; color: #000; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 300; left: 50%; bottom: 80px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 80px; opacity: 1;} }
@@ -231,7 +231,13 @@
         }
 
         function copyLogs() {
-            let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.aS} B:${h.b}${h.bS} C:${h.c}${h.cS}`).join('\n');
+            let t = hist.map(h => {
+                const aM = h.aO ? "✅" : "❌";
+                const bM = h.bO ? "✅" : "❌";
+                const cM = h.cO ? "✅" : "❌";
+                return `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${aM}${h.aS} B:${h.b}${bM}${h.bS} C:${h.c}${cM}${h.cS}`;
+            }).join('\n');
+            
             navigator.clipboard.writeText(t).then(() => {
                 const toast = document.getElementById("toast");
                 toast.className = "show";
