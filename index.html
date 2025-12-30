@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V47.1</title>
+    <title>Omni Logic V47.2-STRICT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; margin: 0; }
+        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 350px; }
         
-        /* Header Fix */
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 340px; }
-        
-        /* Shapes */
+        /* Prediction Boxes */
         .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; }
         .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
         .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
@@ -20,28 +18,23 @@
         .c-box span { transform: rotate(-45deg); display: inline-block; }
         .glow-cyan { box-shadow: 0 0 15px #00f2ff; border-color: #00f2ff !important; }
 
-        /* Split Layout 55/42 */
+        /* Betting Grid Fix */
         .main-split { display: flex; gap: 8px; margin-top: 15px; }
         .left-betting { flex: 0 0 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-        .right-input { flex: 0 0 42%; display: flex; flex-direction: column; gap: 4px; }
+        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 40px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #555; }
+        .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 8px #10b981; }
+        .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        /* Betting System */
-        .bet-btn { background: #0a192f; border: 1px solid #1e3a8a; height: 38px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
-        .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; box-shadow: 0 0 8px #10b981; }
-        .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; }
-
-        /* Input & Total */
+        /* Input & UI */
         #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; outline: none; }
-        #enter-btn { height: 50px; border-radius: 6px; font-weight: 900; font-size: 18px; background: #00f2ff; color: black; }
         .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
 
-        /* Roll Card - Strictly Bordered 1 to 10 */
-        .card-container { margin-top: 350px; padding: 10px; height: calc(100vh - 420px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
-        .roll-card { min-width: 90vw; background: #0a192f; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; display: flex; flex-direction: column; }
-        
-        .t-row { display: grid; grid-template-columns: 40px 1fr 1fr 1fr 45px; width: 100%; border-bottom: 1px solid #1e40af; height: 32px; align-items: center; text-align: center; }
-        .t-head { background: #1e40af; color: white; height: 35px; border-bottom: 2px solid #00f2ff; }
-        .t-col { border-right: 1px solid #1e40af; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
+        /* Roll Card with AI Suggestion Column */
+        .card-container { margin-top: 360px; padding: 10px; height: calc(100vh - 430px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
+        .roll-card { min-width: 92vw; background: #0a192f; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
+        .t-row { display: grid; grid-template-columns: 25px 1fr 1fr 1fr 1.2fr 30px; width: 100%; border-bottom: 1px solid #1e40af; height: 35px; align-items: center; text-align: center; }
+        .t-head { background: #1e40af; color: white; height: 38px; border-bottom: 2px solid #00f2ff; }
+        .t-col { border-right: 1px solid #1e40af; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; padding: 0 2px; }
         .t-col:last-child { border-right: none; }
 
         .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 101; }
@@ -52,7 +45,7 @@
     <div class="fixed-header">
         <div class="flex justify-between items-center text-[10px] mb-2 px-1">
             <span class="text-slate-500">ID: 6401717718</span>
-            <span class="text-cyan-400 font-black">V47.1-STRICT</span>
+            <span class="text-cyan-400 font-black">V47.2-STRICT</span>
         </div>
 
         <div class="shape-container grid grid-cols-3 gap-2 text-center">
@@ -64,20 +57,20 @@
         <div class="main-split">
             <div class="left-betting">
                 <div class="col-span-2 flex justify-between items-center mb-1">
-                    <select id="step-selector" onchange="initBetting()" class="bg-black text-cyan-400 text-[11px] border border-slate-700 rounded px-2 py-0.5">
+                    <select id="step-selector" onchange="initBetting()" class="bg-black text-cyan-400 text-[11px] border border-slate-700 rounded px-1">
                         <option value="5">5S</option><option value="6">6S</option><option value="7">7S</option><option value="8" selected>8S</option>
                     </select>
                     <button onclick="toggleLock()" id="lock-btn" class="bg-red-600 text-[8px] px-2 py-0.5 rounded font-black">LOCK: OFF</button>
                 </div>
                 <div id="bet-grid" class="contents"></div>
             </div>
-            <div class="right-input">
+            <div class="right-input flex flex-col gap-1 flex-1">
                 <input type="tel" id="digit-input" maxlength="1" placeholder="?">
-                <button id="enter-btn" onclick="submitDigit()">ENTER</button>
+                <button id="enter-btn" class="bg-cyan-400 text-black h-[45px] font-black rounded" onclick="submitDigit()">ENTER</button>
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        <div id="ai-notif" class="bg-slate-800/80 border border-cyan-500 rounded p-2 text-center text-[10px] mt-3 font-bold text-yellow-400">ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] mt-3 font-bold text-yellow-400">AI မှ ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
     </div>
 
     <div class="card-container no-scrollbar" id="hist-cont"></div>
@@ -88,9 +81,9 @@
     </div>
 
     <script>
-        const betValues = [100, 2500, 200, 5200, 500, 10500, 1200, 23000];
+        const betValues = [100, 200, 500, 1200, 2500, 5200, 10500, 23000];
         let lock = false, hist = [], roll = 1, stage = 1;
-        let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
+        let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0, currentAI="";
 
         function initBetting() {
             const count = parseInt(document.getElementById('step-selector').value);
@@ -125,13 +118,14 @@
             const input = document.getElementById('digit-input');
             const v = parseInt(input.value); if (isNaN(v)) return;
             const g = v >= 5 ? 'B' : 'S';
-            hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, b: bN, bO: bN === g, c: cN, cO: cN === g });
+            // Save AI state before submission
+            hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, b: bN, bO: bN === g, c: cN, cO: cN === g, ai: currentAI });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
         function updateAI(last) {
-            // Strict Logic Pattern
+            // Strict Prediction Logic
             if (hist.length >= 2) {
                 const l2 = hist.slice(-2);
                 aN = (l2[0].g === l2[1].g) ? l2[1].g : (l2[1].g === 'B' ? 'S' : 'B');
@@ -148,28 +142,34 @@
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 if (rate >= 68) box.classList.add('glow-cyan'); else box.classList.remove('glow-cyan');
             });
+
+            // Update Current AI Suggestion for Record
+            const maxR = Math.max(aR, bR, cR);
+            const status = document.getElementById('ai-notif');
+            if (aR < 40) { currentAI = "A-Don't!"; status.innerText = "A ကို မထိုးပါနှင့် (အမှားများနေသည်)"; status.style.color = "#ff4136"; }
+            else if (bR >= 68) { currentAI = "B-BET!"; status.innerText = "B ကို အားပြုထိုးပါ"; status.style.color = "#10b981"; }
+            else { currentAI = "Wait.."; status.innerText = "ဒေတာများကို စောင့်ကြည့်တွက်ချက်နေပါသည်"; status.style.color = "#fbbf24"; }
         }
 
         function renderHistory() {
             const cont = document.getElementById('hist-cont');
             const grps = hist.reduce((acc, cur) => { if (!acc[cur.r]) acc[cur.r] = []; acc[cur.r].push(cur); return acc; }, {});
-            
-            // Current roll or at least Roll 1
             const maxRoll = Math.max(roll, ...Object.keys(grps).map(Number));
             let html = "";
             for(let r=1; r<=maxRoll; r++) {
                 html += `<div class="roll-card">
                     <div class="t-row t-head">
-                        <div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">DIGIT</div>
+                        <div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">AI-SUG</div><div class="t-col">#</div>
                     </div>`;
                 for(let s=1; s<=10; s++) {
                     const data = (grps[r] || []).find(i => i.s === s);
                     html += `<div class="t-row">
-                        <div class="t-col text-slate-400">${s}</div>
+                        <div class="t-col text-slate-500">${s}</div>
                         <div class="t-col ${data ? (data.aO?'text-green-400':'text-red-500') : ''}">${data ? data.a+(data.aO?'✅':'❌') : ''}</div>
                         <div class="t-col ${data ? (data.bO?'text-green-400':'text-red-500') : ''}">${data ? data.b+(data.bO?'✅':'❌') : ''}</div>
                         <div class="t-col ${data ? (data.cO?'text-green-400':'text-red-500') : ''}">${data ? data.c+(data.cO?'✅':'❌') : ''}</div>
-                        <div class="t-col text-yellow-400 font-black">${data ? data.v : ''}</div>
+                        <div class="t-col text-[8px] ${data && data.ai.includes('BET') ? 'text-green-400' : 'text-yellow-500'}">${data ? data.ai : ''}</div>
+                        <div class="t-col text-white font-black">${data ? data.v : ''}</div>
                     </div>`;
                 }
                 html += `</div>`;
@@ -179,7 +179,7 @@
         }
 
         function copyLogs() {
-            let t = hist.map(h => `R${h.r}.S${h.s} | G(${h.v}) | A:${h.a}${h.aO?'✅':'❌'} B:${h.b}${h.bO?'✅':'❌'} C:${h.c}${h.cO?'✅':'❌'}`).join('\n');
+            let t = hist.map(h => `R${h.r}.S${h.s} | G(${h.v}) | AI:${h.ai} | A:${h.a}${h.aO?'✅':'❌'} B:${h.b}${h.bO?'✅':'❌'}`).join('\n');
             navigator.clipboard.writeText(t).then(() => alert("Copied!"));
         }
 
