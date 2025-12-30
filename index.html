@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -24,12 +22,14 @@
 
         .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: #010814; padding: 10px; border-bottom: 2px solid #00f2ff; height: 350px; }
         .p-box { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: #fff; font-weight: 900; margin: 0 auto; font-size: 18px; border: 4px solid; transition: 0.3s; }
-        .a-box { border-color: #ff4136; color: #ff4136; border-radius: 50%; }
-        .b-box { border-color: #b10dc9; color: #b10dc9; border-radius: 8px; }
-        .c-box { border-color: #2ecc40; color: #2ecc40; border-radius: 4px; transform: rotate(45deg); }
+        
+        /* Default colors will be applied via JavaScript based on state */
+        .a-box { border-radius: 50%; }
+        .b-box { border-radius: 8px; }
+        .c-box { border-radius: 4px; transform: rotate(45deg); }
         .c-box span { transform: rotate(-45deg); display: inline-block; }
         
-        .glow-ai { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; animation: ai-pulse 1.5s infinite; }
+        .glow-ai { box-shadow: 0 0 20px #00f2ff; border-color: #00f2ff !important; color: #00f2ff !important; animation: ai-pulse 1.5s infinite; }
         @keyframes ai-pulse { 0% { transform: scale(1) rotate(var(--rot, 0deg)); } 50% { transform: scale(1.05) rotate(var(--rot, 0deg)); } 100% { transform: scale(1) rotate(var(--rot, 0deg)); } }
         .c-box.glow-ai { --rot: 45deg; }
 
@@ -113,7 +113,7 @@
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400"> Omni Logic Pro ကိုအသုံးပြုရန် အကောင့်ဝင်ပါ</div>
+        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">AI စနစ်အသုံးပြုရန် အကောင့်ဝင်ပါ</div>
     </div>
 
     <div id="custom-prompt" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -245,23 +245,30 @@
             const bS = bR < 40 ? "⚠️" : (bR >= 68 ? "🔵" : "");
             const cS = cR < 40 ? "⚠️" : (cR >= 68 ? "🔵" : "");
 
-            hist.push({ v, g, r: roll, s: stage, a: aN, aO: aN === g, aS, b: bN, bO: bN === g, bS, c: cN, cO: cN === g, cS });
+            hist.push({ v, g, r: roll, s: stage, a: aN, aO: (aN !== "-" && aN === g), aS, b: bN, bO: (bN !== "-" && bN === g), bS, c: cN, cO: (cN !== "-" && cN === g), cS });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
-        // --- AI Suggestion Box: မြန်မာလို ပြောင်းလဲခြင်း Logic ---
         function updateAI(last) {
             if(!isVIP) return;
 
+            // Logic A: 7 လုံးစောင့်
             if (hist.length >= 7) {
                 const l7 = hist.slice(-7);
                 const sum7 = l7.reduce((acc, h) => acc + h.v, 0);
                 aN = (sum7 % 10 % 2 === 0) ? 'S' : 'B';
-            } else { aN = last >= 5 ? 'B' : 'S'; }
+            } else { aN = "-"; }
 
-            bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
-            cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
+            // Logic B: 3 လုံးစောင့်
+            if (hist.length >= 3) {
+                bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
+            } else { bN = "-"; }
+
+            // Logic C: 5 လုံးစောင့်
+            if (hist.length >= 5) {
+                cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
+            } else { cN = "-"; }
 
             const status = document.getElementById('ai-notif');
             let highConf = false;
@@ -272,20 +279,35 @@
                 const rate = hits.length ? Math.round(hits.filter(h => h[k+'O']).length / hits.length * 100) : 0;
                 if(k==='a') aR=rate; if(k==='b') bR=rate; if(k==='c') cR=rate;
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
-                const box = document.getElementById('box-'+k);
-                box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 
-                if (rate >= 68) { 
-                    box.classList.add('glow-ai'); 
-                    highConf = true; 
-                    status.innerText = `${k.toUpperCase()} အားကောင်းနေသည်: Trend အတိုင်းလိုက်ပါ`; 
-                    status.style.color = "#00f2ff"; 
-                } 
-                else if (rate < 40 && hits.length > 0) {
-                    lowConf = true;
+                const box = document.getElementById('box-'+k);
+                const val = (k === 'a' ? aN : (k === 'b' ? bN : cN));
+                
+                // UI နှင့် အရောင် ပြောင်းလဲခြင်း
+                if (val === "-") {
+                    box.innerHTML = (k === 'c' ? `<span>-</span>` : "-");
+                    box.style.color = "#fbbf24";
+                    box.style.borderColor = "#fbbf24";
                     box.classList.remove('glow-ai');
+                } else {
+                    box.innerHTML = (k === 'c' ? `<span>${val}</span>` : val);
+                    // မူလအရောင်များ
+                    if(k==='a') { box.style.color = "#ff4136"; box.style.borderColor = "#ff4136"; }
+                    if(k==='b') { box.style.color = "#b10dc9"; box.style.borderColor = "#b10dc9"; }
+                    if(k==='c') { box.style.color = "#2ecc40"; box.style.borderColor = "#2ecc40"; }
+
+                    if (rate >= 68) { 
+                        box.classList.add('glow-ai'); 
+                        highConf = true; 
+                        status.innerText = `${k.toUpperCase()} အားကောင်းနေသည်: Trend အတိုင်းလိုက်ပါ`; 
+                        status.style.color = "#00f2ff"; 
+                    } 
+                    else if (rate < 40 && hits.length > 0) {
+                        lowConf = true;
+                        box.classList.remove('glow-ai');
+                    }
+                    else { box.classList.remove('glow-ai'); }
                 }
-                else { box.classList.remove('glow-ai'); }
             });
 
             if (!highConf) { 
@@ -293,7 +315,7 @@
                     status.innerText = "Signal အားနည်းနေသည်: ခေတ္တစောင့်ဆိုင်းပါ";
                     status.style.color = "#ff4136";
                 } else {
-                    status.innerText = "AI မှ ဂဏန်းပုံစံများကို လေ့လာနေသည်..."; 
+                    status.innerText = "Omni AI: ဂဏန်းပုံစံများကို လေ့လာနေသည်..."; 
                     status.style.color = "#fbbf24"; 
                 }
             }
@@ -309,8 +331,8 @@
                     <div class="t-row t-head"><div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">DIGIT</div></div>`;
                 for(let s=1; s<=10; s++) {
                     const d = (grps[r] || []).find(i => i.s === s);
-                    const renderCol = (key, ok, sig) => d ? `<span class="main-text">${d[key]}</span><span class="sub-icon">${ok?'✅':'❌'}${sig}</span>` : '';
-                    html += `<div class="t-row"><div class="t-col text-slate-500 font-bold">${s}</div><div class="t-col ${d ? (d.aO?'text-green-400':'text-red-500') : ''}">${renderCol('a', d?.aO, d?.aS)}</div><div class="t-col ${d ? (d.bO?'text-green-400':'text-red-500') : ''}">${renderCol('b', d?.bO, d?.bS)}</div><div class="t-col ${d ? (d.cO?'text-green-400':'text-red-500') : ''}">${renderCol('c', d?.cO, d?.cS)}</div><div class="t-col digit-highlight">${d ? d.v : ''}</div></div>`;
+                    const renderCol = (key, ok, sig) => d ? `<span class="main-text">${d[key]}</span><span class="sub-icon">${d[key]==='-'?'':(ok?'✅':'❌')}${sig}</span>` : '';
+                    html += `<div class="t-row"><div class="t-col text-slate-500 font-bold">${s}</div><div class="t-col ${d ? (d.a==='-'?'text-yellow-400':(d.aO?'text-green-400':'text-red-500')) : ''}">${renderCol('a', d?.aO, d?.aS)}</div><div class="t-col ${d ? (d.b==='-'?'text-yellow-400':(d.bO?'text-green-400':'text-red-500')) : ''}">${renderCol('b', d?.bO, d?.bS)}</div><div class="t-col ${d ? (d.c==='-'?'text-yellow-400':(d.cO?'text-green-400':'text-red-500')) : ''}">${renderCol('c', d?.cO, d?.cS)}</div><div class="t-col digit-highlight">${d ? d.v : ''}</div></div>`;
                 }
                 html += `</div>`;
             }
@@ -319,7 +341,7 @@
         }
 
         function copyLogs() {
-            let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.aO?'✅':'❌'} B:${h.b}${h.bO?'✅':'❌'} C:${h.c}${h.cO?'✅':'❌'}`).join('\n');
+            let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.a==='-'?'':(h.aO?'✅':'❌')} B:${h.b}${h.b==='-'?'':(h.bO?'✅':'❌')} C:${h.c}${h.c==='-'?'':(h.cO?'✅':'❌')}`).join('\n');
             navigator.clipboard.writeText(t).then(() => showToast("DATA COPIED!"));
         }
 
