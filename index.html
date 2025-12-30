@@ -27,7 +27,6 @@
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        /* Roll Card Styling Upgraded */
         .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 460px); overflow-x: auto; display: flex; gap: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
         .roll-card { min-width: 85vw; background: #0a192f; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow-y: auto; height: 100%; display: block; }
         .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid rgba(30, 64, 175, 0.4); height: 40px; align-items: center; text-align: center; }
@@ -44,7 +43,6 @@
         #ai-notif { margin-bottom: 15px; margin-top: 8px; }
         .hidden { display: none !important; }
 
-        /* Custom Modal & Toast Styling */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-blur: 5px; z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0a192f; border: 2px solid #00f2ff; border-radius: 16px; width: 100%; max-width: 320px; padding: 24px; box-shadow: 0 0 30px rgba(0,242,255,0.3); }
         
@@ -185,11 +183,19 @@
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
+        // Logic A ကို အသစ်ပြင်ဆင်ထားသော အပိုင်း
         function updateAI(last) {
-            if (hist.length >= 2) {
-                const l2 = hist.slice(-2);
-                aN = (l2[0].g === l2[1].g) ? l2[1].g : (l2[1].g === 'B' ? 'S' : 'B');
-            } else { aN = last >= 5 ? 'B' : 'S'; }
+            // Logic A: နောက်ဆုံး 7 လုံးကိုပေါင်းပြီး ရလဒ်ရဲ့ နောက်ဆုံးဂဏန်းကိုကြည့်ကာ စုံ=Small, မ=Big ခန့်မှန်းမည်
+            if (hist.length >= 7) {
+                const l7 = hist.slice(-7);
+                const sum7 = l7.reduce((acc, h) => acc + h.v, 0);
+                const lastDigit = sum7 % 10;
+                aN = (lastDigit % 2 === 0) ? 'S' : 'B';
+            } else {
+                // 7 လုံးမပြည့်မချင်း Default ခန့်မှန်းချက်
+                aN = last >= 5 ? 'B' : 'S';
+            }
+
             bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
             cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
 
@@ -259,7 +265,6 @@
             });
         }
 
-        /* Custom Reset Modal Functions */
         function openResetModal() { document.getElementById('reset-modal').classList.remove('hidden'); }
         function closeResetModal() { document.getElementById('reset-modal').classList.add('hidden'); }
         function confirmReset() { location.reload(); }
