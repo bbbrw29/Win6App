@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omni Logic V47.5-PRO</title>
+    <title>Omni Logic Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #010814; color: white; overflow: hidden; height: 100vh; margin: 0; }
+        
+        /* Cyber Login UI Styles */
+        #login-overlay { position: fixed; inset: 0; background: rgba(1, 8, 20, 0.98); backdrop-filter: blur(15px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: rgba(10, 25, 47, 0.8); border: 2px solid #00f2ff; border-radius: 24px; padding: 40px 20px; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.2); }
+        .login-card input { background: #000; border: 1px solid #1e40af; border-radius: 12px; padding: 15px; width: 100%; color: #00f2ff; text-align: center; font-size: 20px; font-weight: bold; outline: none; transition: 0.3s; }
+        .login-card input:focus { border-color: #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
+        .verify-btn { background: linear-gradient(90deg, #00f2ff, #0077ff); color: #000; font-weight: 900; padding: 15px; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         
         .tg-id-badge { background: #00f2ff; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: 900; font-size: 11px; box-shadow: 0 0 10px #00f2ff; animation: tg-glow 2s infinite; }
         @keyframes tg-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
@@ -40,13 +48,11 @@
         .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 101; }
         
-        #ai-notif { margin-bottom: 15px; margin-top: 8px; }
         .hidden { display: none !important; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-blur: 5px; z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0a192f; border: 2px solid #00f2ff; border-radius: 16px; width: 100%; max-width: 320px; padding: 24px; box-shadow: 0 0 30px rgba(0,242,255,0.3); }
         
-        #toast { visibility: hidden; min-width: 200px; background-color: #00f2ff; color: #000; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 300; left: 50%; bottom: 80px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        #toast { visibility: hidden; min-width: 200px; background-color: #00f2ff; color: #000; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 1100; left: 50%; bottom: 80px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.0s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 80px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 80px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -54,7 +60,17 @@
 </head>
 <body>
 
-    <div id="toast">COPIED TO CLIPBOARD!</div>
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2 class="text-[#00f2ff] font-black text-2xl mb-2 tracking-tighter italic">OMNI LOGIC PRO</h2>
+            <p class="text-slate-400 text-[10px] mb-8 uppercase tracking-[3px]">System Authorization</p>
+            <input type="tel" id="access-input" placeholder="ENTER ID / TRIAL CODE">
+            <button onclick="verifyAccess()" id="verify-btn" class="verify-btn">VERIFY AND ACTIVATE</button>
+            <p class="text-[9px] text-slate-500 mt-6">Powered by Omni Intelligence</p>
+        </div>
+    </div>
+
+    <div id="toast">SYSTEM CONNECTED!</div>
 
     <div id="reset-modal" class="modal-overlay hidden">
         <div class="modal-box">
@@ -62,15 +78,15 @@
             <p class="text-slate-300 text-center text-sm mb-6 leading-relaxed">မှတ်တမ်းအားလုံးကို ဖျက်ပစ်ရန် သေချာပါသလား?</p>
             <div class="flex gap-3">
                 <button onclick="closeResetModal()" class="flex-1 py-3 bg-slate-800 text-slate-400 rounded-lg text-xs font-bold active:scale-95 transition-transform">CANCEL</button>
-                <button onclick="confirmReset()" class="flex-1 py-3 bg-red-600 text-white rounded-lg text-xs font-black shadow-lg shadow-red-900/50 active:scale-95 transition-transform">CLEAR ALL</button>
+                <button onclick="confirmReset()" class="flex-1 py-3 bg-red-600 text-white rounded-lg text-xs font-black shadow-lg active:scale-95 transition-transform">CLEAR ALL</button>
             </div>
         </div>
     </div>
 
     <div class="fixed-header">
         <div class="flex justify-between items-center mb-2 px-1">
-            <span class="text-slate-500 text-[10px]">V47.5-PRO</span>
-            <div class="tg-id-badge">ID: 6401717718</div>
+            <span class="text-slate-500 text-[10px] font-bold tracking-widest uppercase">Omni Logic Pro</span>
+            <div id="user-badge" class="tg-id-badge">ID: OFFLINE</div>
         </div>
 
         <div class="grid grid-cols-3 gap-2 text-center">
@@ -95,7 +111,7 @@
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">AI စောင့်ကြည့်တွက်ချက်နေပါသည်</div>
+        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">LOGIN TO ACTIVATE AI</div>
     </div>
 
     <div id="custom-prompt" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -117,10 +133,43 @@
     </div>
 
     <script>
+        const SB_URL = "https://folxuczagcspjnypyopw.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvbHh1Y3phZ2NzcGpueXB5b3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMjQ4MTAsImV4cCI6MjA4MTkwMDgxMH0.gOwmroH4rGr1iGATXK1NoSfg7gNs87hXJ8E3w13s5xo";
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
         let betValues = [100, 200, 500, 1200, 2500, 5200, 10500, 23000];
-        let lock = false, hist = [], roll = 1, stage = 1;
+        let lock = false, isVIP = false, hist = [], roll = 1, stage = 1;
         let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
         let currentEditIdx = -1;
+
+        async function verifyAccess() {
+            const input = document.getElementById('access-input').value;
+            const btn = document.getElementById('verify-btn');
+            if(!input) return;
+            btn.innerText = "AUTHORIZING...";
+            btn.disabled = true;
+
+            try {
+                const { data: vipData } = await _supabase.from('user_access').select('*').eq('telegram_id', input).single();
+                const { data: trialData } = await _supabase.from('pending_codes').select('*').eq('code_key', input).single();
+
+                if(vipData || trialData) {
+                    isVIP = true;
+                    document.getElementById('login-overlay').classList.add('hidden');
+                    document.getElementById('user-badge').innerText = "ID: " + input;
+                    showToast("SYSTEM ACTIVATED!");
+                    updateAI(0);
+                } else {
+                    alert("ACCESS DENIED: INVALID ID/CODE");
+                    btn.innerText = "VERIFY AND ACTIVATE";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Connection Error. Try Again.");
+                btn.innerText = "VERIFY AND ACTIVATE";
+                btn.disabled = false;
+            }
+        }
 
         function initBetting() {
             const count = parseInt(document.getElementById('step-selector').value);
@@ -183,18 +232,15 @@
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
-        // Logic A ကို အသစ်ပြင်ဆင်ထားသော အပိုင်း
         function updateAI(last) {
-            // Logic A: နောက်ဆုံး 7 လုံးကိုပေါင်းပြီး ရလဒ်ရဲ့ နောက်ဆုံးဂဏန်းကိုကြည့်ကာ စုံ=Small, မ=Big ခန့်မှန်းမည်
+            if(!isVIP) return;
+
+            // Logic A: 7-Step Logic
             if (hist.length >= 7) {
                 const l7 = hist.slice(-7);
                 const sum7 = l7.reduce((acc, h) => acc + h.v, 0);
-                const lastDigit = sum7 % 10;
-                aN = (lastDigit % 2 === 0) ? 'S' : 'B';
-            } else {
-                // 7 လုံးမပြည့်မချင်း Default ခန့်မှန်းချက်
-                aN = last >= 5 ? 'B' : 'S';
-            }
+                aN = (sum7 % 10 % 2 === 0) ? 'S' : 'B';
+            } else { aN = last >= 5 ? 'B' : 'S'; }
 
             bN = (hist.slice(-3).reduce((acc,h)=>acc+h.v,0) % 2 === 0) ? 'S' : 'B';
             cN = (hist.slice(-5).reduce((acc,h)=>acc+h.v,0)/5) >= 4.5 ? 'B' : 'S';
@@ -206,21 +252,14 @@
                 const hits = hist.filter(h => h[k] !== "-");
                 const rate = hits.length ? Math.round(hits.filter(h => h[k+'O']).length / hits.length * 100) : 0;
                 if(k==='a') aR=rate; if(k==='b') bR=rate; if(k==='c') cR=rate;
-                
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
-                
-                if (rate >= 68) { box.classList.add('glow-ai'); highConf = true; status.innerText = `${k.toUpperCase()} ကို အားပြုထိုးပါ`; status.style.color = "#00f2ff"; } 
+                if (rate >= 68) { box.classList.add('glow-ai'); highConf = true; status.innerText = `${k.toUpperCase()} ACTIVE: FOLLOW TREND`; status.style.color = "#00f2ff"; } 
                 else { box.classList.remove('glow-ai'); }
-
-                if (rate < 40) { status.innerText = `${k.toUpperCase()} ကို မထိုးပါနှင့် (အမှားများနေသည်)`; status.style.color = "#ff4136"; }
             });
 
-            if (!highConf && Math.min(aR, bR, cR) >= 40) {
-                status.innerText = "AI မှ စောင့်ကြည့်တွက်ချက်နေပါသည်";
-                status.style.color = "#fbbf24";
-            }
+            if (!highConf) { status.innerText = "OMNI AI: ANALYZING PATTERNS..."; status.style.color = "#fbbf24"; }
         }
 
         function renderHistory() {
@@ -230,19 +269,11 @@
             let html = "";
             for(let r=1; r<=maxRoll; r++) {
                 html += `<div class="roll-card">
-                    <div class="t-row t-head">
-                        <div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">DIGIT</div>
-                    </div>`;
+                    <div class="t-row t-head"><div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">DIGIT</div></div>`;
                 for(let s=1; s<=10; s++) {
                     const d = (grps[r] || []).find(i => i.s === s);
                     const renderCol = (key, ok, sig) => d ? `<span class="main-text">${d[key]}</span><span class="sub-icon">${ok?'✅':'❌'}${sig}</span>` : '';
-                    html += `<div class="t-row">
-                        <div class="t-col text-slate-500 font-bold">${s}</div>
-                        <div class="t-col ${d ? (d.aO?'text-green-400':'text-red-500') : ''}">${renderCol('a', d?.aO, d?.aS)}</div>
-                        <div class="t-col ${d ? (d.bO?'text-green-400':'text-red-500') : ''}">${renderCol('b', d?.bO, d?.bS)}</div>
-                        <div class="t-col ${d ? (d.cO?'text-green-400':'text-red-500') : ''}">${renderCol('c', d?.cO, d?.cS)}</div>
-                        <div class="t-col digit-highlight">${d ? d.v : ''}</div>
-                    </div>`;
+                    html += `<div class="t-row"><div class="t-col text-slate-500 font-bold">${s}</div><div class="t-col ${d ? (d.aO?'text-green-400':'text-red-500') : ''}">${renderCol('a', d?.aO, d?.aS)}</div><div class="t-col ${d ? (d.bO?'text-green-400':'text-red-500') : ''}">${renderCol('b', d?.bO, d?.bS)}</div><div class="t-col ${d ? (d.cO?'text-green-400':'text-red-500') : ''}">${renderCol('c', d?.cO, d?.cS)}</div><div class="t-col digit-highlight">${d ? d.v : ''}</div></div>`;
                 }
                 html += `</div>`;
             }
@@ -251,18 +282,14 @@
         }
 
         function copyLogs() {
-            let t = hist.map(h => {
-                const aM = h.aO ? "✅" : "❌";
-                const bM = h.bO ? "✅" : "❌";
-                const cM = h.cO ? "✅" : "❌";
-                return `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${aM}${h.aS} B:${h.b}${bM}${h.bS} C:${h.c}${cM}${h.cS}`;
-            }).join('\n');
-            
-            navigator.clipboard.writeText(t).then(() => {
-                const toast = document.getElementById("toast");
-                toast.className = "show";
-                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
-            });
+            let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.aO?'✅':'❌'} B:${h.b}${h.bO?'✅':'❌'} C:${h.c}${h.cO?'✅':'❌'}`).join('\n');
+            navigator.clipboard.writeText(t).then(() => showToast("DATA COPIED!"));
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg; toast.className = "show";
+            setTimeout(() => { toast.className = ""; }, 2500);
         }
 
         function openResetModal() { document.getElementById('reset-modal').classList.remove('hidden'); }
