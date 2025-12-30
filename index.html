@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -84,12 +86,12 @@
                 <span class="text-3xl">👑</span>
             </div>
             <h2 class="text-yellow-500 font-black text-xl mb-1 italic uppercase tracking-tighter">Upgrade to VIP</h2>
-            <p class="text-slate-400 text-[10px] mb-6 uppercase tracking-[1px]">ပိုမိုတိကျသော VIP Logic များဖြင့် အနိုင်ရယူပါ</p>
+            <p class="text-slate-400 text-[10px] mb-6 uppercase tracking-[1px]">🇲🇲ပိုမိုတိကျသော VIP Logic များဖြင့် အနိုင်ရယူပါ🇲🇲</p>
             <div class="space-y-2 mb-6">
-                <div class="vip-feature-item"><span class="text-yellow-500">✅</span><span class="text-slate-200 text-[11px] font-bold">Logic A + B + C (Full AI Support)</span></div>
-                <div class="vip-feature-item"><span class="text-yellow-500">✅</span><span class="text-slate-200 text-[11px] font-bold">8-Step အထိ စိတ်ကြိုက်ရွေးချယ်နိုင်မှု</span></div>
-                <div class="vip-feature-item"><span class="text-yellow-500">✅</span><span class="text-slate-200 text-[11px] font-bold">အချိန် အကန့်အသတ်မဲ့ အသုံးပြုနိုင်မှု</span></div>
-                <div class="vip-feature-item"><span class="text-yellow-500">💰</span><span class="text-yellow-400 text-xs font-black italic">စျေးနှုန်း - ၅,၀၀၀ ကျပ် (၃၀ ရက်)</span></div>
+                <div class="vip-feature-item"><span class="text-yellow-500">🟢</span><span class="text-slate-200 text-[11px] font-bold">Logic A + B + C (Full AI Support)</span></div>
+                <div class="vip-feature-item"><span class="text-yellow-500">🟢</span><span class="text-slate-200 text-[11px] font-bold">ဆထိုး 8 ဆင့်ထိကို Screen ပေါ်မှာပဲဖော်ပြထားတယ်</span></div>
+                <div class="vip-feature-item"><span class="text-yellow-500">🟢</span><span class="text-slate-200 text-[11px] font-bold">အချိန် အကန့်အသတ်မဲ့ အသုံးပြုနိုင်မှု</span></div>
+                <div class="vip-feature-item"><span class="text-yellow-400 text-xs font-black italic">💰 စျေးနှုန်း - ၅,၀၀၀ ကျပ် (၃၀ ရက်)</span></div>
             </div>
             <button onclick="contactAdmin()" class="buy-vip-btn active:scale-95 transition-transform">BUY VIP ACCESS NOW</button>
             <button onclick="closeVipModal()" class="mt-4 text-slate-500 text-[10px] font-bold uppercase tracking-widest">Later</button>
@@ -135,7 +137,7 @@
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">AI စနစ်အသုံးပြုရန် အကောင့်ဝင်ပါ</div>
+        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">Omni Logic Pro ကို အသုံးပြုရန် အကောင့်ဝင်ပါ</div>
     </div>
 
     <div id="custom-prompt" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -311,12 +313,18 @@
                 const box = document.getElementById('box-'+k);
                 const val = (k==='a' ? aN : (k==='b' ? bN : cN));
                 box.innerHTML = (k==='c' ? `<span>${val}</span>` : val);
-                if (val !== "🔒" && val !== "-" && rate >= 68) { box.classList.add('glow-ai'); highConf = true; status.innerText = `${k.toUpperCase()} အားကောင်းနေသည်`; status.style.color = "#00f2ff"; } 
-                else { box.classList.remove('glow-ai'); }
+                if (val !== "🔒" && val !== "-" && rate >= 68) { 
+                    box.classList.add('glow-ai'); 
+                    highConf = true; 
+                    status.innerText = `${k.toUpperCase()} အားကောင်းနေသည်`; 
+                    status.style.color = "#00f2ff"; 
+                } else { 
+                    box.classList.remove('glow-ai'); 
+                }
             });
 
             if (!highConf) { 
-                status.innerText = isVIP ? "Omni AI: Analysis Online" : "TRIAL MODE: Box B & C Are Locked"; 
+                status.innerText = isVIP ? "Omni AI မှ ဂဏန်းပုံစံများကို လေ့လာနေသည်..." : "TRIAL MODE: Prediction B, C အား ပိတ်ထားပါသည်"; 
                 status.style.color = "#fbbf24"; 
             }
         }
