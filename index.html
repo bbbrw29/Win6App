@@ -27,18 +27,20 @@
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 450px); overflow-x: auto; display: flex; gap: 15px; scroll-snap-type: x mandatory; }
-        .roll-card { min-width: 92vw; background: #0a192f; border: 1px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; }
-        .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid #1e40af; height: 38px; align-items: center; text-align: center; }
-        .digit-highlight { background: #fbbf24 !important; color: #000 !important; font-size: 20px !important; font-weight: 900 !important; }
+        /* Roll Card Styling (အသစ်ပြင်ထားသော Design) */
+        .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 450px); overflow-x: auto; display: flex; gap: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .roll-card { min-width: 85vw; background: rgba(10, 25, 47, 0.8); border: 1.5px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .t-row { display: grid; grid-template-columns: 30px 1fr 1fr 1fr 45px; width: 100%; border-bottom: 1px solid rgba(30, 64, 175, 0.3); height: 35px; align-items: center; text-align: center; font-size: 12px; }
+        .t-head { background: #1e3a8a; font-weight: 900; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; }
+        .t-col-border { border-right: 1px solid rgba(30, 64, 175, 0.3); height: 100%; display: flex; align-items: center; justify-content: center; }
+        .digit-highlight { background: #fbbf24 !important; color: #000 !important; font-size: 18px !important; font-weight: 900 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+        .ai-signal-high { text-shadow: 0 0 8px #00f2ff; }
 
         #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; outline: none; }
         .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 10px; padding: 10px; background: #010814; z-index: 101; }
         
         #ai-notif { margin-bottom: 15px; margin-top: 8px; }
-
-        /* Hidden Utility */
         .hidden { display: none !important; }
     </style>
 </head>
@@ -136,10 +138,7 @@
             }
         }
 
-        function closePrompt() {
-            document.getElementById('custom-prompt').classList.add('hidden');
-        }
-
+        function closePrompt() { document.getElementById('custom-prompt').classList.add('hidden'); }
         function savePromptValue() {
             let val = document.getElementById('prompt-input').value;
             if (val !== "" && !isNaN(val)) {
@@ -154,6 +153,7 @@
             const v = parseInt(input.value); if (isNaN(v)) return;
             const g = v >= 5 ? 'B' : 'S';
             
+            // Record AI Signals at the moment of submission
             const aS = aR < 40 ? "⚠️" : (aR >= 68 ? "🔵" : "");
             const bS = bR < 40 ? "⚠️" : (bR >= 68 ? "🔵" : "");
             const cS = cR < 40 ? "⚠️" : (cR >= 68 ? "🔵" : "");
@@ -183,19 +183,10 @@
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
                 
-                if (rate >= 68) { 
-                    box.classList.add('glow-ai'); 
-                    highConf = true; 
-                    status.innerText = `${k.toUpperCase()} ကို အားပြုထိုးပါ`; 
-                    status.style.color = "#00f2ff";
-                } else { 
-                    box.classList.remove('glow-ai'); 
-                }
+                if (rate >= 68) { box.classList.add('glow-ai'); highConf = true; status.innerText = `${k.toUpperCase()} ကို အားပြုထိုးပါ`; status.style.color = "#00f2ff"; } 
+                else { box.classList.remove('glow-ai'); }
 
-                if (rate < 40) {
-                    status.innerText = `${k.toUpperCase()} ကို မထိုးပါနှင့် (အမှားများနေသည်)`;
-                    status.style.color = "#ff4136";
-                }
+                if (rate < 40) { status.innerText = `${k.toUpperCase()} ကို မထိုးပါနှင့် (အမှားများနေသည်)`; status.style.color = "#ff4136"; }
             });
 
             if (!highConf && Math.min(aR, bR, cR) >= 40) {
@@ -204,6 +195,7 @@
             }
         }
 
+        // Render History with Design Upgrades and AI Record Symbols
         function renderHistory() {
             const cont = document.getElementById('hist-cont');
             const grps = hist.reduce((acc, cur) => { if (!acc[cur.r]) acc[cur.r] = []; acc[cur.r].push(cur); return acc; }, {});
@@ -212,16 +204,22 @@
             for(let r=1; r<=maxRoll; r++) {
                 html += `<div class="roll-card">
                     <div class="t-row t-head">
-                        <div class="t-col">R-${r}</div><div class="t-col">A</div><div class="t-col">B</div><div class="t-col">C</div><div class="t-col">DIGIT</div>
+                        <div class="t-col-border">#</div><div class="t-col-border">A</div><div class="t-col-border">B</div><div class="t-col-border">C</div><div>DIG</div>
                     </div>`;
                 for(let s=1; s<=10; s++) {
                     const d = (grps[r] || []).find(i => i.s === s);
                     html += `<div class="t-row">
-                        <div class="t-col text-slate-500">${s}</div>
-                        <div class="t-col ${d ? (d.aO?'text-green-400':'text-red-500') : ''}">${d ? d.a+(d.aO?'✅':'❌')+d.aS : ''}</div>
-                        <div class="t-col ${d ? (d.bO?'text-green-400':'text-red-500') : ''}">${d ? d.b+(d.bO?'✅':'❌')+d.bS : ''}</div>
-                        <div class="t-col ${d ? (d.cO?'text-green-400':'text-red-500') : ''}">${d ? d.c+(d.cO?'✅':'❌')+d.cS : ''}</div>
-                        <div class="t-col digit-highlight">${d ? d.v : ''}</div>
+                        <div class="t-col-border text-slate-500 font-bold">${s}</div>
+                        <div class="t-col-border ${d ? (d.aO?'text-green-400':'text-red-500') : ''}">
+                            ${d ? d.a+(d.aO?'✅':'❌')+(d.aS==='🔵'?'<span class="ai-signal-high">🔵</span>':d.aS) : ''}
+                        </div>
+                        <div class="t-col-border ${d ? (d.bO?'text-green-400':'text-red-500') : ''}">
+                            ${d ? d.b+(d.bO?'✅':'❌')+(d.bS==='🔵'?'<span class="ai-signal-high">🔵</span>':d.bS) : ''}
+                        </div>
+                        <div class="t-col-border ${d ? (d.cO?'text-green-400':'text-red-500') : ''}">
+                            ${d ? d.c+(d.cO?'✅':'❌')+(d.cS==='🔵'?'<span class="ai-signal-high">🔵</span>':d.cS) : ''}
+                        </div>
+                        <div class="digit-highlight">${d ? d.v : ''}</div>
                     </div>`;
                 }
                 html += `</div>`;
