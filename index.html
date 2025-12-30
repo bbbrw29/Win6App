@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -111,7 +113,7 @@
                 <div class="total-box" id="total-val">TOTAL: 0</div>
             </div>
         </div>
-        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400">LOGIN TO ACTIVATE AI</div>
+        <div id="ai-notif" class="bg-slate-800 border border-cyan-500 rounded p-2 text-center text-[10px] font-bold text-yellow-400"> Omni Logic Pro ကိုအသုံးပြုရန် အကောင့်ဝင်ပါ</div>
     </div>
 
     <div id="custom-prompt" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -151,7 +153,6 @@
             btn.disabled = true;
 
             try {
-                // ၁။ user_access (VIP) ကို အရင်စစ်မယ်
                 let { data: vipUser } = await _supabase
                     .from('user_access')
                     .select('telegram_id')
@@ -160,7 +161,6 @@
 
                 let trialUser = null;
                 if (!vipUser) {
-                    // ၂။ မရှိရင် pending_codes (Trial) ကို စစ်မယ်
                     let { data: tData } = await _supabase
                         .from('pending_codes')
                         .select('telegram_id, code_key')
@@ -250,6 +250,7 @@
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
+        // --- AI Suggestion Box: မြန်မာလို ပြောင်းလဲခြင်း Logic ---
         function updateAI(last) {
             if(!isVIP) return;
 
@@ -264,6 +265,7 @@
 
             const status = document.getElementById('ai-notif');
             let highConf = false;
+            let lowConf = false;
 
             ['a','b','c'].forEach(k => {
                 const hits = hist.filter(h => h[k] !== "-");
@@ -272,11 +274,29 @@
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
                 const box = document.getElementById('box-'+k);
                 box.innerHTML = (k==='c' ? `<span>${cN}</span>` : (k==='a'?aN:bN));
-                if (rate >= 68) { box.classList.add('glow-ai'); highConf = true; status.innerText = `${k.toUpperCase()} ACTIVE: FOLLOW TREND`; status.style.color = "#00f2ff"; } 
+                
+                if (rate >= 68) { 
+                    box.classList.add('glow-ai'); 
+                    highConf = true; 
+                    status.innerText = `${k.toUpperCase()} အားကောင်းနေသည်: Trend အတိုင်းလိုက်ပါ`; 
+                    status.style.color = "#00f2ff"; 
+                } 
+                else if (rate < 40 && hits.length > 0) {
+                    lowConf = true;
+                    box.classList.remove('glow-ai');
+                }
                 else { box.classList.remove('glow-ai'); }
             });
 
-            if (!highConf) { status.innerText = "OMNI AI: ANALYZING PATTERNS..."; status.style.color = "#fbbf24"; }
+            if (!highConf) { 
+                if (lowConf) {
+                    status.innerText = "Signal အားနည်းနေသည်: ခေတ္တစောင့်ဆိုင်းပါ";
+                    status.style.color = "#ff4136";
+                } else {
+                    status.innerText = "AI မှ ဂဏန်းပုံစံများကို လေ့လာနေသည်..."; 
+                    status.style.color = "#fbbf24"; 
+                }
+            }
         }
 
         function renderHistory() {
