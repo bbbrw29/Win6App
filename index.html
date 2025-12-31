@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -39,8 +37,10 @@
         .bet-btn.active { background: #064e3b !important; border-color: #10b981 !important; color: white !important; box-shadow: 0 0 8px #10b981; }
         .bet-btn.lost { background: #451a1a !important; border-color: #ff4136 !important; color: #ff4136 !important; }
 
-        .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 460px); overflow-x: auto; display: flex; gap: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
-        .roll-card { min-width: 85vw; background: #0a192f; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow-y: auto; height: 100%; display: block; }
+        /* FIX: Card Container and Scroll Behavior */
+        .card-container { margin-top: 380px; padding: 10px; height: calc(100vh - 460px); overflow-x: auto; overflow-y: hidden; display: flex; gap: 12px; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .roll-card { min-width: 85vw; background: #0a192f; border: 2px solid #1e40af; scroll-snap-align: start; flex-shrink: 0; border-radius: 12px; overflow-y: auto; max-height: 100%; display: block; -webkit-overflow-scrolling: touch; }
+        
         .t-row { display: grid; grid-template-columns: 35px 1fr 1fr 1fr 50px; width: 100%; border-bottom: 1px solid rgba(30, 64, 175, 0.4); height: 40px; align-items: center; text-align: center; }
         .t-head { background: #1e3a8a; font-weight: 900; color: #fbbf24; font-size: 11px; position: sticky; top: 0; z-index: 50; }
         .t-col { border-right: 1px solid rgba(30, 64, 175, 0.3); height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -188,7 +188,14 @@
                     isVIP = !!vipUser;
                     const limit = isVIP ? 30 : 5;
                     const remaining = limit - diffDays;
-                    if (remaining <= 0) { alert("ACCESS EXPIRED"); btn.innerText = "VERIFY AND ACTIVATE"; btn.disabled = false; return; }
+                    if (remaining <= 0) { 
+                        localStorage.removeItem('omni_access_id'); // သက်တမ်းကုန်လျှင် သိမ်းထားတာ ဖျက်မယ်
+                        alert("ACCESS EXPIRED"); 
+                        btn.innerText = "VERIFY AND ACTIVATE"; btn.disabled = false; return; 
+                    }
+
+                    // Success Login: ID ကို သိမ်းဆည်းမယ်
+                    localStorage.setItem('omni_access_id', input);
 
                     document.getElementById('login-overlay').classList.add('hidden');
                     const badge = document.getElementById('user-badge');
@@ -205,6 +212,15 @@
                     initBetting(); updateAI(0);
                 } else { alert("ACCESS DENIED"); btn.innerText = "VERIFY AND ACTIVATE"; btn.disabled = false; }
             } catch (err) { alert("Error: " + err.message); btn.disabled = false; }
+        }
+
+        // Auto Login Checker
+        async function checkAutoLogin() {
+            const savedID = localStorage.getItem('omni_access_id');
+            if (savedID) {
+                document.getElementById('access-input').value = savedID;
+                await verifyAccess();
+            }
         }
 
         function showVipModal() { document.getElementById('vip-modal').classList.remove('hidden'); }
@@ -358,8 +374,17 @@
         function showToast(msg) { const toast = document.getElementById("toast"); toast.innerText = msg; toast.className = "show"; setTimeout(() => { toast.className = ""; }, 2500); }
         function openResetModal() { document.getElementById('reset-modal').classList.remove('hidden'); }
         function closeResetModal() { document.getElementById('reset-modal').classList.add('hidden'); }
-        function confirmReset() { location.reload(); }
-        window.onload = initBetting;
+        
+        function confirmReset() { 
+            // Reset လုပ်တဲ့အခါ Auto Login ပါ ဖျက်ချင်ရင် အောက်က Line ကိုသုံးနိုင်ပါတယ်
+            // localStorage.removeItem('omni_access_id'); 
+            location.reload(); 
+        }
+
+        window.onload = () => {
+            initBetting();
+            checkAutoLogin(); // App စဖွင့်တာနဲ့ Auto Login စစ်ဆေးမယ်
+        };
     </script>
 </body>
 </html>
