@@ -46,9 +46,8 @@
         .sub-icon { font-size: 10px; opacity: 0.9; }
         .digit-highlight { background: #fbbf24 !important; color: #000 !important; font-size: 20px !important; font-weight: 900 !important; border-right: none !important; }
 
-        .vip-card { background: linear-gradient(145deg, #0f172a, #1e293b); border: 2px solid #fbbf24; border-radius: 24px; padding: 30px 20px; width: 90%; max-width: 340px; text-align: center; box-shadow: 0 0 40px rgba(251, 191, 36, 0.2); }
-        .vip-feature-item { display: flex; align-items: center; gap: 10px; background: rgba(251, 191, 36, 0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; text-align: left; border: 1px solid rgba(251, 191, 36, 0.1); }
-        .buy-vip-btn { background: linear-gradient(90deg, #fbbf24, #d97706); color: #000; font-weight: 900; padding: 16px; border-radius: 14px; width: 100%; margin-top: 15px; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); text-transform: uppercase; }
+        /* PlaceHolder Symbol Styling */
+        .symbol-wait { color: #00f2ff; font-weight: 900; font-size: 16px; opacity: 0.6; }
 
         #digit-input { height: 55px; border-radius: 6px; text-align: center; font-size: 38px; font-weight: 900; color: black; border: 3px solid #00f2ff; width: 100%; outline: none; }
         .total-box { border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 4px; padding: 6px; text-align: center; font-size: 13px; font-weight: 900; color: #fbbf24; }
@@ -85,12 +84,6 @@
             </div>
             <h2 class="text-yellow-500 font-black text-xl mb-1 italic uppercase tracking-tighter">Upgrade to VIP</h2>
             <p class="text-slate-400 text-[10px] mb-6 uppercase tracking-[1px]">🇲🇲ပိုမိုတိကျသော VIP Logic များဖြင့် အနိုင်ရယူပါ🇲🇲</p>
-            <div class="space-y-2 mb-6">
-                <div class="vip-feature-item"><span class="text-yellow-500">🟢</span><span class="text-slate-200 text-[11px] font-bold">Logic A + B + C (Full AI Support)</span></div>
-                <div class="vip-feature-item"><span class="text-yellow-500">🟢</span><span class="text-slate-200 text-[11px] font-bold">ဆထိုး 8 ဆင့်ထိကို Screen ပေါ်မှာပဲဖော်ပြထားတယ်</span></div>
-                <div class="vip-feature-item"><span class="text-yellow-500">🟢</span><span class="text-slate-200 text-[11px] font-bold">အချိန် အကန့်အသတ်မဲ့ အသုံးပြုနိုင်မှု</span></div>
-                <div class="vip-feature-item"><span class="text-yellow-400 text-xs font-black italic">💰 စျေးနှုန်း - ၅,၀၀၀ ကျပ် (၃၀ ရက်)</span></div>
-            </div>
             <button onclick="contactAdmin()" class="buy-vip-btn active:scale-95 transition-transform">BUY VIP ACCESS NOW</button>
             <button onclick="closeVipModal()" class="mt-4 text-slate-500 text-[10px] font-bold uppercase tracking-widest">Later</button>
         </div>
@@ -114,9 +107,9 @@
         </div>
 
         <div class="grid grid-cols-3 gap-2 text-center">
-            <div onclick="checkVip()"><div class="p-box a-box" id="box-a">-</div><div class="text-[9px] mt-1 text-slate-400" id="a-rate">A: 0%</div></div>
-            <div onclick="checkVip()"><div class="p-box b-box" id="box-b">-</div><div class="text-[9px] mt-1 text-slate-400" id="b-rate">B: 0%</div></div>
-            <div onclick="checkVip()"><div class="p-box c-box" id="box-c"><span>-</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
+            <div onclick="checkVip()"><div class="p-box a-box" id="box-a">?</div><div class="text-[9px] mt-1 text-slate-400" id="a-rate">A: 0%</div></div>
+            <div onclick="checkVip()"><div class="p-box b-box" id="box-b">?</div><div class="text-[9px] mt-1 text-slate-400" id="b-rate">B: 0%</div></div>
+            <div onclick="checkVip()"><div class="p-box c-box" id="box-c"><span>?</span></div><div class="text-[9px] mt-[12px] text-slate-400" id="c-rate">C: 0%</div></div>
         </div>
 
         <div class="flex gap-2 mt-4">
@@ -163,7 +156,7 @@
 
         let betValues = [100, 200, 500, 1200, 2500, 5200, 10500, 23000];
         let lock = false, isVIP = false, hist = [], roll = 1, stage = 1;
-        let aN="-", bN="-", cN="-", aR=0, bR=0, cR=0;
+        let aN="?", bN="?", cN="?", aR=0, bR=0, cR=0;
         let currentEditIdx = -1;
 
         async function verifyAccess() {
@@ -202,7 +195,6 @@
                         const select = document.getElementById('step-selector');
                         for(let i=1; i<=3; i++) select.options[i].disabled = true;
                         select.value = "5";
-                        document.getElementById('copy-record-btn').style.opacity = "0.3";
                     }
                     showToast("SYSTEM ACTIVATED!");
                     initBetting(); updateAI(0);
@@ -274,17 +266,21 @@
             const bS = bR < 40 ? "⚠️" : (bR >= 68 ? "🔵" : "");
             const cS = cR < 40 ? "⚠️" : (cR >= 68 ? "🔵" : "");
 
+            // Pre-calculate if prediction was valid (not "?")
+            const validA = (aN !== "?" && aN !== "-");
+            const validB = (bN !== "?" && bN !== "-" && bN !== "🔒");
+            const validC = (cN !== "?" && cN !== "-" && cN !== "🔒");
+
             hist.push({ 
                 v, g, r: roll, s: stage, 
-                a: aN, aO: aN === g, aS, 
-                b: (isVIP ? bN : "🔒"), bO: (isVIP && bN === g), bS: (isVIP ? bS : ""), 
-                c: (isVIP ? cN : "🔒"), cO: (isVIP && cN === g), cS: (isVIP ? cS : "") 
+                a: aN, aO: validA && aN === g, aS: validA ? aS : "", 
+                b: bN, bO: validB && bN === g, bS: validB ? bS : "", 
+                c: cN, cO: validC && cN === g, cS: validC ? cS : "" 
             });
             if (stage === 10) { roll++; stage = 1; } else { stage++; }
             updateAI(v); renderHistory(); input.value = ""; input.focus();
         }
 
-        // Trend Logic Helper for Logic C
         function getTrendLogic(winSize, data) {
             if (data.length < winSize) return null;
             const windowData = data.slice(-winSize);
@@ -300,52 +296,56 @@
             if(!isVIP && !document.getElementById('login-overlay').classList.contains('hidden')) return;
             const nums = hist.map(h => h.v);
             
-            // Logic A: Trial (3-Step Sum)
-            if (hist.length >= 3) {
+            // Logic A: (3-Step Sum)
+            if (nums.length >= 3) {
                 const sum3 = nums.slice(-3).reduce((acc, v) => acc + v, 0);
                 aN = (sum3 % 2 === 0) ? 'S' : 'B';
-            } else { aN = "-"; }
+            } else { aN = "?"; }
 
             if (isVIP) {
-                // Logic B: VIP (7-Step Sum)
-                if (hist.length >= 7) {
+                // Logic B: (7-Step Sum)
+                if (nums.length >= 7) {
                     const sum7 = nums.slice(-7).reduce((acc, v) => acc + v, 0);
                     bN = (sum7 % 10 % 2 === 0) ? 'S' : 'B';
-                } else { bN = "-"; }
+                } else { bN = "?"; }
 
-                // NEW Logic C: VIP (Trend Majority L5, L7, L10)
-                let l5 = getTrendLogic(5, nums);
-                let l7 = getTrendLogic(7, nums);
-                let l10 = getTrendLogic(10, nums);
-
-                let counts = { B: 0, S: 0 };
-                [l5, l7, l10].forEach(p => { if(p) counts[p]++; });
-                
-                if (counts.B > counts.S) cN = "B";
-                else if (counts.S > counts.B) cN = "S";
-                else cN = "-";
-                
+                // Logic C: (Trend Majority 10-Step)
+                if (nums.length >= 10) {
+                    let l5 = getTrendLogic(5, nums);
+                    let l7 = getTrendLogic(7, nums);
+                    let l10 = getTrendLogic(10, nums);
+                    let counts = { B: 0, S: 0 };
+                    [l5, l7, l10].forEach(p => { if(p) counts[p]++; });
+                    cN = counts.B > counts.S ? "B" : (counts.S > counts.B ? "S" : "?");
+                } else { cN = "?"; }
             } else { bN = "🔒"; cN = "🔒"; }
 
             const status = document.getElementById('ai-notif');
             let highConf = false;
 
             ['a','b','c'].forEach(k => {
-                const hits = hist.filter(h => h[k] !== "-" && h[k] !== "🔒");
+                const hits = hist.filter(h => h[k] !== "?" && h[k] !== "🔒" && h[k] !== "-");
                 const rate = hits.length ? Math.round(hits.filter(h => h[k+'O']).length / hits.length * 100) : 0;
                 if(k==='a') aR=rate; if(k==='b') bR=rate; if(k==='c') cR=rate;
                 document.getElementById(k+'-rate').innerText = `${k.toUpperCase()}: ${rate}%`;
+                
                 const box = document.getElementById('box-'+k);
                 const val = (k==='a' ? aN : (k==='b' ? bN : cN));
-                box.innerHTML = (k==='c' ? `<span>${val}</span>` : val);
-                if (val !== "🔒" && val !== "-" && rate >= 68) { 
-                    box.classList.add('glow-ai'); 
-                    highConf = true; 
+                
+                if (val === "?") {
+                    box.style.color = "#00f2ff"; 
+                    box.style.background = "rgba(0, 242, 255, 0.1)";
+                    box.innerHTML = (k==='c' ? `<span>?</span>` : "?");
+                } else {
+                    box.style.color = ""; box.style.background = "";
+                    box.innerHTML = (k==='c' ? `<span>${val}</span>` : val);
+                }
+
+                if (val !== "🔒" && val !== "?" && rate >= 68) { 
+                    box.classList.add('glow-ai'); highConf = true; 
                     status.innerText = `${k.toUpperCase()} အားကောင်းနေသည်`; 
                     status.style.color = "#00f2ff"; 
-                } else { 
-                    box.classList.remove('glow-ai'); 
-                }
+                } else { box.classList.remove('glow-ai'); }
             });
 
             if (!highConf) { 
@@ -364,10 +364,14 @@
                 for(let s=1; s<=10; s++) {
                     const d = (grps[r] || []).find(i => i.s === s);
                     const renderCol = (key, ok, sig) => {
-                        if(!d) return ''; if(d[key] === "🔒") return '🔒';
-                        return `<span class="main-text">${d[key]}</span><span class="sub-icon">${ok?'✅':'❌'}${sig||''}</span>`;
+                        if(!d) return ''; 
+                        let val = d[key];
+                        if(val === "🔒") return '🔒';
+                        if(val === "?") return `<span class="symbol-wait">?</span>`;
+                        // Only show Check/Cross if prediction was NOT "?"
+                        return `<span class="main-text">${val}</span><span class="sub-icon">${ok?'✅':'❌'}${sig||''}</span>`;
                     };
-                    html += `<div class="t-row"><div class="t-col text-slate-500 font-bold">${s}</div><div class="t-col ${d?.aO?'text-green-400':'text-red-500'}">${renderCol('a', d?.aO, d?.aS)}</div><div class="t-col ${d?.bO?'text-green-400':'text-red-500'}">${renderCol('b', d?.bO, d?.bS)}</div><div class="t-col ${d?.cO?'text-green-400':'text-red-500'}">${renderCol('c', d?.cO, d?.cS)}</div><div class="t-col digit-highlight">${d ? d.v : ''}</div></div>`;
+                    html += `<div class="t-row"><div class="t-col text-slate-500 font-bold">${s}</div><div class="t-col ${d?.a!=='?'&&d?.aO?'text-green-400':'text-red-500'}">${renderCol('a', d?.aO, d?.aS)}</div><div class="t-col ${d?.b!=='?'&&d?.bO?'text-green-400':'text-red-500'}">${renderCol('b', d?.bO, d?.bS)}</div><div class="t-col ${d?.c!=='?'&&d?.cO?'text-green-400':'text-red-500'}">${renderCol('c', d?.cO, d?.cS)}</div><div class="t-col digit-highlight">${d ? d.v : ''}</div></div>`;
                 }
                 html += `</div>`;
             }
@@ -376,7 +380,7 @@
 
         function copyLogs() {
             if(!isVIP) { showVipModal(); return; }
-            let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.aO?'✅':'❌'} B:${h.b}${h.bO?'✅':'❌'} C:${h.c}${h.cO?'✅':'❌'}`).join('\n');
+            let t = hist.map(h => `R${h.r}.S${h.s} | ${h.v} | A:${h.a}${h.a!=='?'?(h.aO?'✅':'❌'):''} B:${h.b}${h.b!=='?'?(h.bO?'✅':'❌'):''} C:${h.c}${h.c!=='?'?(h.cO?'✅':'❌'):''}`).join('\n');
             navigator.clipboard.writeText(t).then(() => showToast("DATA COPIED!"));
         }
 
@@ -385,10 +389,7 @@
         function closeResetModal() { document.getElementById('reset-modal').classList.add('hidden'); }
         function confirmReset() { location.reload(); }
 
-        window.onload = () => {
-            initBetting();
-            checkAutoLogin();
-        };
+        window.onload = () => { initBetting(); checkAutoLogin(); };
     </script>
 </body>
 </html>
