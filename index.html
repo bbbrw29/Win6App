@@ -44,6 +44,14 @@ th { position: sticky; top: 0; background: #111; padding: 8px; color: var(--gold
 td { padding: 7px 4px; border-bottom: 1px solid #1c2128; text-align: center; }
 
 .num-btn { height: 45px; background: #21262d; border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+
+/* New Lock Toggle Style */
+.lock-toggle-btn { 
+    background: #333; color: #888; border: 1px solid #444; 
+    padding: 4px 12px; border-radius: 20px; font-size: 10px; 
+    cursor: pointer; transition: 0.3s; margin-bottom: 5px;
+}
+.lock-toggle-btn.on { background: var(--gold); color: #000; border-color: var(--gold); font-weight: bold; }
 </style>
 </head>
 <body>
@@ -58,6 +66,9 @@ td { padding: 7px 4px; border-bottom: 1px solid #1c2128; text-align: center; }
             <div id="brB" class="v-bar-b" style="width: 50%;"></div>
             <div id="brS" class="v-bar-s" style="width: 50%;"></div>
         </div>
+        
+        <button id="lockToggle" class="lock-toggle-btn" onclick="toggleLockSystem()">AUTO-LOCK: OFF</button>
+
         <div id="predDisplay">-</div>
         <div id="statusLabel" style="font-size:10px; color:var(--gold); margin-bottom: 10px;">WAITING...</div>
         <div class="step-grid" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin-bottom: 10px;">
@@ -95,22 +106,16 @@ td { padding: 7px 4px; border-bottom: 1px solid #1c2128; text-align: center; }
 </div>
 
 <script>
+// Patterns and variables remain the same
 const myPatterns = { "00": "SBSSSSBS", "01": "SBBSBSBB", "02": "BBSBSSSS", "03": "BSBSSSBB", "04": "SSBBBBSB", "05": "BSSBBSSS", "06": "SBBBBBSB", "07": "BBBBBBSS", "08": "BSSSBBBB", "09": "SSSSSSSB", "10": "BSBSBBBS", "11": "SBBSSSBS", "12": "BSSSBSSS", "13": "BBSBSSBB", "14": "BBBSBBBS", "15": "SBSBSBSB", "16": "SBSSBSBS", "17": "BSSBBBBB", "18": "BBSSSBSB", "19": "BSSBBBBB", "20": "BBBBBBBB", "21": "BBBSSSSB", "22": "SBSSSSSS", "23": "BSBSBBSB", "24": "BSBSBSBB", "25": "BBSBBSSB", "26": "SBSBSSBB", "27": "SSBBBBSB", "28": "SBBBSBSB", "29": "SBSBSBSB", "30": "SSSBSBSS", "31": "SSSBBBBS", "32": "BBBBBBBS", "33": "BSSBSSBS", "34": "BBBSSBSB", "35": "BBSSBSSS", "36": "SSBBSBBB", "37": "BSBBSBSB", "38": "BSBBBSBB", "39": "SSSBBSSB", "40": "BBBSSSSB", "41": "SBSSBSSS", "42": "BBSBSBBB", "43": "BBSBBBSB", "44": "SSBBSSBB", "45": "SBBSBBSB", "46": "SSSBBSBS", "47": "SBBSBBBB", "48": "BSSSSSBB", "49": "BBBSSBBB", "50": "BSSBBBBS", "51": "BBSBSBBB", "52": "SSBBSSSS", "53": "SSBSBBSS", "54": "SBBBSSSS", "55": "SSSSSSSS", "56": "BBBSBBBS", "57": "BBBSSSBB", "58": "SBSBSSSB", "59": "BBSBSBBB", "60": "SBBSBBSB", "61": "SBBSBSSB", "62": "BBBBBBSS", "63": "SBSSBSBB", "64": "BBSSSSBB", "65": "BSBBBSBS", "66": "BSBSSBSB", "67": "BSSBSBSS", "68": "BBBBSBBS", "69": "BBSSSBSS", "70": "SSSBBSSB", "71": "BBBBSSBB", "72": "BSBBBSSB", "73": "BBBBBSBS", "74": "BBBSBSSB", "75": "SSBBBSBS", "76": "SSSSSBBS", "77": "SSBBBSBS", "78": "BBBBBBSS", "79": "BSBBBSSS", "80": "BBSSBBSS", "81": "BSSSBSBS", "82": "BBBSBSSB", "83": "BSSSSBSS", "84": "BBSBBSBB", "85": "SSBBBSBB", "86": "BBSBSSBB", "87": "BBSSBSSS", "88": "SSBSSBBS", "89": "BBSSBSBB", "90": "SBBSSSSS", "91": "SSBBSBSB", "92": "BSBBBBSB", "93": "BSSSBBBB", "94": "BSSBSBBS", "95": "SSSSSBSS", "96": "BSBSSSBB", "97": "SBSBBSSB", "98": "BBSBSSBB", "99": "BBSSSSBB" };
 const analysisPatterns = { "00": "✅❌✅✅✅❌✅✅", "01": "✅❌✅✅✅❌✅❌", "02": "❌❌❌❌❌❌❌✅", "03": "❌✅✅✅❌❌❌✅", "04": "✅❌❌❌✅✅✅❌", "05": "✅✅✅✅❌✅✅❌", "06": "✅✅❌✅❌✅✅❌", "07": "❌❌❌❌✅✅✅✅", "08": "✅✅✅✅✅✅❌❌", "09": "❌✅❌✅❌❌✅✅", "10": "✅✅❌❌✅✅✅❌", "11": "✅✅✅❌❌✅✅✅", "12": "❌✅✅✅✅✅✅✅", "13": "✅❌✅❌❌❌✅✅", "14": "✅✅❌❌❌❌✅❌", "15": "❌✅✅❌❌✅❌❌", "16": "✅❌❌❌❌❌✅✅", "17": "✅❌❌✅✅✅✅✅", "18": "✅✅❌✅✅✅✅✅", "19": "✅❌✅❌❌❌✅❌", "20": "✅❌❌✅❌❌✅❌", "21": "❌✅✅✅❌❌✅✅", "22": "✅❌✅❌✅✅✅✅", "23": "❌❌✅✅❌✅✅❌", "24": "✅❌✅✅❌❌✅✅", "25": "❌✅✅❌❌✅❌✅", "26": "✅✅❌❌❌✅❌❌", "27": "✅✅✅✅❌✅✅✅", "28": "❌❌❌❌✅✅✅✅", "29": "✅✅❌✅✅❌✅❌", "30": "❌❌❌✅❌✅❌✅", "31": "✅✅❌✅✅❌✅❌", "32": "❌✅❌✅✅❌✅✅", "33": "❌❌❌❌✅✅❌❌", "34": "✅✅❌❌❌❌✅✅", "35": "✅❌✅✅❌❌✅✅", "36": "✅❌❌❌❌❌❌❌", "37": "✅✅❌✅✅❌✅❌", "38": "✅❌❌❌❌✅❌✅", "39": "✅✅✅❌✅❌❌✅", "40": "✅❌❌❌✅✅❌❌", "41": "❌✅✅✅❌❌❌❌", "42": "✅✅✅✅✅❌✅✅", "43": "❌✅❌❌❌✅❌❌", "44": "❌❌✅✅❌❌✅❌", "45": "❌❌✅✅❌✅❌❌", "46": "✅✅✅✅✅✅❌✅", "47": "❌❌❌❌❌✅❌❌", "48": "✅❌✅✅❌✅❌✅", "49": "✅❌✅✅✅❌✅✅", "50": "❌❌✅✅❌❌✅✅", "51": "❌❌❌❌❌❌✅✅", "52": "❌✅❌❌❌✅❌✅", "53": "✅✅✅❌✅✅✅✅", "54": "✅❌❌❌✅✅❌✅", "55": "✅✅✅❌❌❌✅❌", "56": "✅❌❌❌❌✅✅❌", "57": "✅✅❌✅✅✅✅✅", "58": "❌❌❌✅❌✅✅✅", "59": "❌❌✅❌✅✅❌❌", "60": "❌✅✅✅❌✅✅❌", "61": "❌✅❌✅❌✅✅❌", "62": "❌✅✅❌❌❌✅✅", "63": "✅❌✅❌❌❌❌✅", "64": "❌❌✅✅✅✅❌✅", "65": "❌✅❌❌✅✅❌✅", "66": "✅❌✅✅✅❌❌❌", "67": "❌❌❌✅❌✅✅❌", "68": "❌✅✅✅❌❌✅✅", "69": "✅❌❌❌✅✅✅❌", "70": "✅✅✅❌✅✅❌✅", "71": "❌✅✅❌❌❌✅✅", "72": "❌❌✅❌❌✅❌✅", "73": "❌❌❌✅❌✅✅✅", "74": "❌❌✅✅✅✅✅✅", "75": "❌✅❌✅✅✅✅✅", "76": "❌❌❌✅❌❌✅❌", "77": "✅✅✅❌✅✅❌❌", "78": "✅❌✅✅✅❌❌✅", "79": "❌✅✅✅✅❌✅✅", "80": "✅❌✅✅✅✅❌✅", "81": "✅✅✅✅✅❌✅✅", "82": "❌❌✅❌❌✅❌✅", "83": "✅✅❌❌✅❌❌✅", "84": "❌✅✅✅❌✅✅✅", "85": "❌✅❌✅❌❌❌✅", "86": "✅❌✅❌✅✅❌❌", "87": "✅✅✅✅❌✅✅✅", "88": "❌❌✅✅✅❌✅❌", "89": "❌✅✅✅✅✅❌❌", "90": "✅❌✅❌❌✅✅✅", "91": "✅❌✅❌✅✅✅✅", "92": "✅✅❌✅✅✅✅❌", "93": "✅❌✅✅✅❌✅✅", "94": "❌✅❌✅❌✅✅❌", "95": "❌❌✅✅✅❌❌❌", "96": "❌✅✅✅✅✅❌❌", "97": "✅✅✅✅✅❌✅✅", "98": "✅❌✅✅✅✅❌✅", "99": "✅❌❌❌✅✅✅❌" };
-const coldPatterns = [ 
-    "❌❌✅❌✅❌✅❌", 
-    "✅❌❌❌❌✅✅✅",
-    "✅❌✅✅✅✅✅❌", 
-    "✅✅❌❌❌✅❌❌", 
-    "✅✅✅❌✅❌✅✅",
-    "❌❌❌❌❌❌✅✅",
-    "❌❌❌✅✅✅❌❌", 
-    "❌❌✅❌❌❌❌❌"];
+const coldPatterns = [ "❌❌✅❌✅❌✅❌", "✅❌❌❌❌✅✅✅", "✅❌✅✅✅✅✅❌", "✅✅❌❌❌✅❌❌", "✅✅✅❌✅❌✅✅", "❌❌❌❌❌❌✅✅", "❌❌❌✅✅✅❌❌", "❌❌✅❌❌❌❌❌"];
 
 let rawInputs = JSON.parse(localStorage.getItem('rawInputs')) || [];
 let activeTracks = JSON.parse(localStorage.getItem('activeTracks')) || [];
 let historyLog = JSON.parse(localStorage.getItem('historyLog')) || [];
 let lockedTrackId = localStorage.getItem('lockedTrackId') || null;
+let isLockSystemOn = JSON.parse(localStorage.getItem('isLockSystemOn')) ?? false; // Default OFF as requested
 let cardModePrefs = JSON.parse(localStorage.getItem('cardModePrefs')) || {};
 
 function saveData() { 
@@ -118,7 +123,15 @@ function saveData() {
     localStorage.setItem('activeTracks', JSON.stringify(activeTracks)); 
     localStorage.setItem('historyLog', JSON.stringify(historyLog)); 
     localStorage.setItem('lockedTrackId', lockedTrackId); 
+    localStorage.setItem('isLockSystemOn', isLockSystemOn);
     localStorage.setItem('cardModePrefs', JSON.stringify(cardModePrefs));
+}
+
+function toggleLockSystem() {
+    isLockSystemOn = !isLockSystemOn;
+    if (!isLockSystemOn) lockedTrackId = null;
+    saveData();
+    renderUI();
 }
 
 function getVotePrediction() {
@@ -150,18 +163,13 @@ function handleInput(num) {
         let t = activeTracks[i];
         if (t.results.length < 8) {
             let actualRes = (bs === t.pattern[t.results.length] ? "✅" : "❌");
-            
             const match = findOppositeMatch(t.results);
             if (match && !t.coldPatternDone) {
-                if (match[t.results.length] === actualRes) {
-                    t.coldPatternDone = true;
-                }
+                if (match[t.results.length] === actualRes) t.coldPatternDone = true;
             }
-
             let voteRes = (currentVote === "-") ? "-" : (currentVote === bs ? `${currentVote} ✅` : `${currentVote} ❌`);
             t.lastVoteDisplay = voteRes;
             t.results.push(actualRes);
-            
             if (t.results.length === 8) {
                 historyLog.unshift({...t});
                 activeTracks.splice(i, 1);
@@ -171,19 +179,14 @@ function handleInput(num) {
     }
 
     let lockCreated = false;
-    if (lockedTrackId) {
+    // Only process Lock Logic if System is ON
+    if (isLockSystemOn && lockedTrackId) {
         let locked = activeTracks.find(t => t.id == lockedTrackId);
         if (locked && (locked.results[locked.results.length-1] === "✅")) {
-            // Cold Tracking Persistent Logic
-            const match = findOppositeMatch(locked.results);
-            const isColdPersistent = (locked.refMode === 'COLD') && match && !locked.coldPatternDone;
-            
-            if (!isColdPersistent) {
-                const p1 = rawInputs[rawInputs.length - 1];
-                lockedTrackId = null; 
-                createTrack(p1, num, true); 
-                lockCreated = true;
-            }
+            const p1 = rawInputs[rawInputs.length - 1];
+            lockedTrackId = null; 
+            createTrack(p1, num, true); 
+            lockCreated = true;
         }
     }
     
@@ -211,16 +214,15 @@ function createTrack(n1, n2, isLock) {
             coldPatternDone: false 
         };
         activeTracks.push(newT); 
-        if (isLock || !lockedTrackId) lockedTrackId = newT.id;
+        // Only auto-assign lock if system is ON
+        if (isLockSystemOn && (isLock || !lockedTrackId)) lockedTrackId = newT.id;
     }
 }
 
 function switchCardRef(trackId) {
     let t = activeTracks.find(x => x.id == trackId);
     if(t) {
-        const modes = ['LIVE', 'ANALYSIS', 'COLD', 'NONE'];
-        let idx = modes.indexOf(t.refMode);
-        t.refMode = modes[(idx + 1) % modes.length];
+        t.refMode = (t.refMode === 'ANALYSIS') ? 'LIVE' : 'ANALYSIS';
         cardModePrefs[t.digit] = t.refMode;
         saveData(); renderUI();
     }
@@ -242,6 +244,11 @@ function renderUI() {
     document.getElementById('lbB').innerText = `B: ${bPer}%`;
     document.getElementById('lbS').innerText = `S: ${sPer}%`;
 
+    // Update Toggle Button UI
+    const lBtn = document.getElementById('lockToggle');
+    lBtn.innerText = isLockSystemOn ? "AUTO-LOCK: ON" : "AUTO-LOCK: OFF";
+    if(isLockSystemOn) lBtn.classList.add('on'); else lBtn.classList.remove('on');
+
     const locked = activeTracks.find(t => t.id == lockedTrackId);
     const stepIdx = locked ? locked.results.length : -1;
     let nextBS = (locked && locked.pattern[stepIdx]) ? locked.pattern[stepIdx] : "-";
@@ -254,8 +261,7 @@ function renderUI() {
         el.style.background = res==='✅'?'var(--green)':(res==='❌'?'var(--red)':'#111');
         el.innerText = res || (i+1);
         el.classList.remove('blink-active');
-
-        if (locked && (locked.refMode === 'COLD' || locked.refMode === 'LIVE') && locked.results.length >= 3 && !locked.coldPatternDone) {
+        if (!anyBlinkActive && locked && locked.results.length >= 3 && !locked.coldPatternDone) {
             const match = findOppositeMatch(locked.results);
             if (match && i === locked.results.length) {
                 el.classList.add('blink-active');
@@ -267,7 +273,7 @@ function renderUI() {
     
     document.getElementById('predDisplay').innerText = nextBS;
     document.getElementById('predDisplay').style.color = nextBS === "B" ? "var(--blue)" : (nextBS === "S" ? "var(--red)" : "var(--silver)");
-    document.getElementById('statusLabel').innerText = locked ? `LOCKED: ${locked.digit} (${locked.refMode})` : "WAITING...";
+    document.getElementById('statusLabel').innerText = locked ? `LOCKED: ${locked.digit}` : "WAITING...";
     
     const last5 = rawInputs.slice(-5);
     document.getElementById('recentDisplay').innerHTML = last5.map((v, i) => `<div style="width:24px; height:24px; border-radius:50%; background:${i===last5.length-1?'var(--mint)':'#21262d'}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; border:1px solid var(--border);">${v}</div>`).join('');
@@ -277,39 +283,39 @@ function renderUI() {
         const currentPos = t.results.length;
         const currentRefMode = t.refMode || 'LIVE';
         let normalMove = t.pattern[currentPos] || '-'; 
-        let coldSymbol = ""; let cardIsBlinking = false;
-
-        const match = findOppositeMatch(t.results);
-        if ((currentRefMode === 'COLD' || currentRefMode === 'LIVE') && match && currentPos >= 3 && !t.coldPatternDone) {
-            cardIsBlinking = true; coldSymbol = match[currentPos]; 
+        let coldSymbol = ""; 
+        let cardIsBlinking = false;
+        if (!anyBlinkActive && currentPos >= 3 && !t.coldPatternDone) {
+            const match = findOppositeMatch(t.results);
+            if (match && match[currentPos]) { cardIsBlinking = true; anyBlinkActive = true; coldSymbol = match[currentPos]; }
         }
-
         let refRes = []; let refName = "NONE";
         if (currentRefMode === 'ANALYSIS') {
-            refRes = (analysisPatterns[t.digit] || "").split(''); refName = "A";
-        } else if (currentRefMode === 'LIVE') {
+            let rawPat = analysisPatterns[t.digit]; refRes = rawPat ? rawPat.split('') : []; refName = "A";
+        } else {
             const liveMatches = activeTracks.filter(x => x.id !== t.id && x.digit[0] === t.digit[0] && x.results.length > t.results.length);
             if (liveMatches.length > 0) {
-                let src = liveMatches.sort((a,b) => a.results.length - b.results.length)[0];
-                refRes = src.results; refName = src.digit + "(L)";
+                let src = liveMatches.sort((a,b) => a.results.length - b.results.length)[0]; refRes = src.results; refName = src.digit + "(L)";
+            } else {
+                const logMatch = historyLog.find(x => x.digit[0] === t.digit[0]); if (logMatch) { refRes = logMatch.results; refName = logMatch.digit + "(H)"; }
             }
         }
-
         let layers = '';
-        for(let pos=0; pos < 8; pos++) {
+        let maxDisplay = Math.max(currentPos, refRes.length);
+        for(let pos=0; pos < maxDisplay; pos++) {
             const cR = t.results[pos], rR = refRes[pos];
             let dotCol = (cR && rR) ? (cR === rR ? 'var(--mint)' : 'var(--red)') : 'transparent';
-            layers += `<div class="cell-stack"><div class="comp-dot" style="background:${dotCol};"></div><div class="res-cell" style="color:${cR==='✅'?'var(--mint)':'var(--red)'}">${cR||''}</div></div>`;
+            layers += `<div class="cell-stack"><div class="comp-dot" style="background:${dotCol};"></div><div class="res-cell" style="color:${cR==='✅'?'var(--mint)':'var(--red)'}">${cR||''}</div><div class="res-cell" style="opacity:0.3; font-size:9px; color:${rR==='✅'?'var(--mint)':'var(--red)'}">${rR||''}</div></div>`;
         }
-
-        return `<div class="live-card ${isLock?'current-lock':''} ${currentRefMode==='ANALYSIS'?'analysis-mode':''}" onclick="lockedTrackId=${t.id};renderUI();">
-            <button class="ref-toggle" onclick="event.stopPropagation();switchCardRef(${t.id})">Ref: ${currentRefMode[0]}</button>
+        return `<div class="live-card ${isLock?'current-lock':''} ${currentRefMode==='ANALYSIS'?'analysis-mode':''}" onclick="if(isLockSystemOn){lockedTrackId=${t.id};renderUI();}">
+            <button class="ref-toggle ${currentRefMode==='ANALYSIS'?'active':''}" onclick="event.stopPropagation();switchCardRef(${t.id})">${currentRefMode==='ANALYSIS'?'Ref: A':'Ref: L'}</button>
             <div style="position: absolute; top: 5px; right: 8px; display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 20px; font-weight: 900; color:${normalMove==='B'?'var(--blue)':(normalMove==='S'?'var(--red)':'var(--silver)')};">${normalMove}</span>
                 ${cardIsBlinking ? `<span class="blink-active" style="font-size: 16px; padding: 2px 6px; color:#000;">${coldSymbol}</span>` : ''}
             </div>
             <div style="font-size:11px; margin-bottom:4px;"><span>${isLock?'🔒':'A'} ${t.digit} <small>Step ${currentPos+1}</small></span></div>
-            <div class="three-layer-monitor">${layers}</div>
+            <div class="three-layer-monitor">${layers||'...'}</div>
+            <div style="font-size:8px; color:var(--silver); text-align:right; margin-top:4px;">Ref: ${refName}</div>
         </div>`;
     }).join('');
 
