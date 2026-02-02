@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VIP STEALTH PRO - COLD TRACKER UPDATED</title>
+<style>
+:root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9; --blue: #58a6ff; --gold: #ffd700; --silver: #8b949e; --green: #238636; --red: #f85149; --mint: #2ecc71; }
+body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 8px; margin: 0; overflow-x: hidden; }
+.container { max-width: 420px; margin: auto; }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 8px; position: relative; }
+h4 { margin: 0 0 5px 0; color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 5px; font-size: 10px; }
+
+@keyframes coldBlink {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); box-shadow: 0 0 10px var(--mint); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.blink-active { animation: coldBlink 0.6s infinite !important; background: rgba(46, 204, 113, 0.2) !important; border: 1px solid var(--mint) !important; border-radius: 4px; }
+
+.vote-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
+.vote-track { height: 10px; background: #000; border-radius: 5px; display: flex; overflow: hidden; border: 1px solid #333; margin-bottom: 12px; }
+.v-bar-b { background: var(--blue); transition: 0.5s; }
+.v-bar-s { background: var(--red); transition: 0.5s; }
+
+#predDisplay { font-size: 50px; font-weight: bold; color: var(--blue); text-shadow: 0 0 10px rgba(88, 166, 255, 0.3); }
+
+.live-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; width: 100%; }
+.live-card { padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: #1c2128; position: relative; transition: 0.3s; cursor: pointer; min-width: 0; overflow: hidden; }
+.current-lock { border: 2px solid #ffffff !important; box-shadow: 0 0 15px rgba(255,255,255,0.2); transform: scale(1.02); z-index: 2; }
+.analysis-mode { border: 1px solid var(--gold) !important; background: #262110 !important; }
+
+.three-layer-monitor { display: flex; gap: 4px; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 6px; overflow-x: auto; min-height: 48px; }
+.cell-stack { display: flex; flex-direction: column; gap: 3px; align-items: center; min-width: 22px; }
+.comp-dot { width: 5px; height: 5px; border-radius: 50%; }
+.res-cell { width: 100%; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; }
+
+.ref-toggle { position: absolute; top: 5px; left: 45px; font-size: 9px; background: #333; color: var(--gold); border: 1px solid #444; border-radius: 4px; padding: 2px 4px; cursor: pointer; z-index: 5; }
+.ref-toggle.active { background: var(--gold); color: #000; font-weight: bold; }
+
+.history-container { height: 250px; overflow-y: auto; background: #080a0d; border-radius: 8px; border: 1px solid var(--border); margin-top: 5px; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { position: sticky; top: 0; background: #111; padding: 8px; color: var(--gold); border-bottom: 1px solid var(--border); }
+td { padding: 7px 4px; border-bottom: 1px solid #1c2128; text-align: center; }
+
+.num-btn { height: 45px; background: #21262d; border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+
+/* Locked Option UI ခလုတ် ဒီဇိုင်း */
+.lock-control { background: #222; color: #888; border: 1px solid #444; padding: 5px 15px; border-radius: 6px; font-size: 11px; margin-bottom: 8px; cursor: pointer; }
+.lock-control.active { background: var(--gold); color: #000; font-weight: bold; border-color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="panel" style="text-align: center; border: 2px solid var(--gold); background: #000;">
+        <div class="vote-label">
+            <span id="lbB" style="color:var(--blue)">B: 0%</span>
+            <span style="color:var(--gold)">AI VOTING (ANA+COD)</span>
+            <span id="lbS" style="color:var(--red)">S: 0%</span>
+        </div>
+        <div class="vote-track">
+            <div id="brB" class="v-bar-b" style="width: 50%;"></div>
+            <div id="brS" class="v-bar-s" style="width: 50%;"></div>
+        </div>
+
+        <button id="lockToggleBtn" class="lock-control" onclick="toggleLockMode()">AUTO-LOCK: OFF</button>
+
+        <div id="predDisplay">-</div>
+        <div id="statusLabel" style="font-size:10px; color:var(--gold); margin-bottom: 10px;">WAITING...</div>
+        <div class="step-grid" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin-bottom: 10px;">
+            <script>for(let i=0;i<8;i++) document.write('<div class="step-box" style="height:20px; border:1px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; background:#111;" id="step-'+i+'">'+(i+1)+'</div>');</script>
+        </div>
+        <div id="recentDisplay" style="display: flex; gap: 8px; justify-content: center; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
+    </div>
+
+    <div class="panel">
+        <h4>LIVE MONITOR (TOP: CODING PATTERN)</h4>
+        <div id="liveMonitor" class="live-grid"></div>
+    </div>
+
+    <div class="panel">
+        <div class="numpad-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
+            <script>for(let i=1; i<=9; i++) document.write(`<button class="num-btn" onclick="handleInput(${i})">${i}</button>`);</script>
+            <button class="num-btn" onclick="handleInput(0)">0</button>
+            <button class="num-btn" style="grid-column: span 5; height: 35px; background:#333; color:var(--gold); font-size:12px;" onclick="undoInput()">UNDO</button>
+        </div>
+        <button onclick="resetData()" style="width:100%; background:var(--red); color:white; border:none; padding:10px; border-radius:8px; font-size:12px; font-weight:bold; margin-top:8px;">RESET ALL</button>
+    </div>
+
+    <div class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <h4>HISTORY LOG</h4>
+            <button class="copy-btn" style="background:var(--blue); color:white; border:none; padding:4px 10px; border-radius:4px; font-size:10px;" onclick="copyHistory()">COPY</button>
+        </div>
+        <div class="history-container">
+            <table>
+                <thead><tr><th>S/N</th><th>CAT</th><th>VOTE</th><th>RESULT</th><th>STAT</th></tr></thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Data constant (မပြင်ပါ)
+const myPatterns = { "00": "SBSSSSBS", "01": "SBBSBSBB", "02": "BBSBSSSS", "03": "BSBSSSBB", "04": "SSBBBBSB", "05": "BSSBBSSS", "06": "SBBBBBSB", "07": "BBBBBBSS", "08": "BSSSBBBB", "09": "SSSSSSSB", "10": "BSBSBBBS", "11": "SBBSSSBS", "12": "BSSSBSSS", "13": "BBSBSSBB", "14": "BBBSBBBS", "15": "SBSBSBSB", "16": "SBSSBSBS", "17": "BSSBBBBB", "18": "BBSSSBSB", "19": "BSSBBBBB", "20": "BBBBBBBB", "21": "BBBSSSSB", "22": "SBSSSSSS", "23": "BSBSBBSB", "24": "BSBSBSBB", "25": "BBSBBSSB", "26": "SBSBSSBB", "27": "SSBBBBSB", "28": "SBBBSBSB", "29": "SBSBSBSB", "30": "SSSBSBSS", "31": "SSSBBBBS", "32": "BBBBBBBS", "33": "BSSBSSBS", "34": "BBBSSBSB", "35": "BBSSBSSS", "36": "SSBBSBBB", "37": "BSBBSBSB", "38": "BSBBBSBB", "39": "SSSBBSSB", "40": "BBBSSSSB", "41": "SBSSBSSS", "42": "BBSBSBBB", "43": "BBSBBBSB", "44": "SSBBSSBB", "45": "SBBSBBSB", "46": "SSSBBSBS", "47": "SBBSBBBB", "48": "BSSSSSBB", "49": "BBBSSBBB", "50": "BSSBBBBS", "51": "BBSBSBBB", "52": "SSBBSSSS", "53": "SSBSBBSS", "54": "SBBBSSSS", "55": "SSSSSSSS", "56": "BBBSBBBS", "57": "BBBSSSBB", "58": "SBSBSSSB", "59": "BBSBSBBB", "60": "SBBSBBSB", "61": "SBBSBSSB", "62": "BBBBBBSS", "63": "SBSSBSBB", "64": "BBSSSSBB", "65": "BSBBBSBS", "66": "BSBSSBSB", "67": "BSSBSBSS", "68": "BBBBSBBS", "69": "BBSSSBSS", "70": "SSSBBSSB", "71": "BBBBSSBB", "72": "BSBBBSSB", "73": "BBBBBSBS", "74": "BBBSBSSB", "75": "SSBBBSBS", "76": "SSSSSBBS", "77": "SSBBBSBS", "78": "BBBBBBSS", "79": "BSBBBSSS", "80": "BBSSBBSS", "81": "BSSSBSBS", "82": "BBBSBSSB", "83": "BSSSSBSS", "84": "BBSBBSBB", "85": "SSBBBSBB", "86": "BBSBSSBB", "87": "BBSSBSSS", "88": "SSBSSBBS", "89": "BBSSBSBB", "90": "SBBSSSSS", "91": "SSBBSBSB", "92": "BSBBBBSB", "93": "BSSSBBBB", "94": "BSSBSBBS", "95": "SSSSSBSS", "96": "BSBSSSBB", "97": "SBSBBSSB", "98": "BBSBSSBB", "99": "BBSSSSBB" };
+const analysisPatterns = { "00": "✅❌✅✅✅❌✅✅", "01": "✅❌✅✅✅❌✅❌", "02": "❌❌❌❌❌❌❌✅", "03": "❌✅✅✅❌❌❌✅", "04": "✅❌❌❌✅✅✅❌", "05": "✅✅✅✅❌✅✅❌", "06": "✅✅❌✅❌✅✅❌", "07": "❌❌❌❌✅✅✅✅", "08": "✅✅✅✅✅✅❌❌", "09": "❌✅❌✅❌❌✅✅", "10": "✅✅❌❌✅✅✅❌", "11": "✅✅✅❌❌✅✅✅", "12": "❌✅✅✅✅✅✅✅", "13": "✅❌✅❌❌❌✅✅", "14": "✅✅❌❌❌❌✅❌", "15": "❌✅✅❌❌✅❌❌", "16": "✅❌❌❌❌❌✅✅", "17": "✅❌❌✅✅✅✅✅", "18": "✅✅❌✅✅✅✅✅", "19": "✅❌✅❌❌❌✅❌", "20": "✅❌❌✅❌❌✅❌", "21": "❌✅✅✅❌❌✅✅", "22": "✅❌✅❌✅✅✅✅", "23": "❌❌✅✅❌✅✅❌", "24": "✅❌✅✅❌❌✅✅", "25": "❌✅✅❌❌✅❌✅", "26": "✅✅❌❌❌✅❌❌", "27": "✅✅✅✅❌✅✅✅", "28": "❌❌❌❌✅✅✅✅", "29": "✅✅❌✅✅❌✅❌", "30": "❌❌❌✅❌✅❌✅", "31": "✅✅❌✅✅❌✅❌", "32": "❌✅❌✅✅❌✅✅", "33": "❌❌❌❌✅✅❌❌", "34": "✅✅❌❌❌❌✅✅", "35": "✅❌✅✅❌❌✅✅", "36": "✅❌❌❌❌❌❌❌", "37": "✅✅❌✅✅❌✅❌", "38": "✅❌❌❌❌✅❌✅", "39": "✅✅✅❌✅❌❌✅", "40": "✅❌❌❌✅✅❌❌", "41": "❌✅✅✅❌❌❌❌", "42": "✅✅✅✅✅❌✅✅", "43": "❌✅❌❌❌✅❌❌", "44": "❌❌✅✅❌❌✅❌", "45": "❌❌✅✅❌✅❌❌", "46": "✅✅✅✅✅✅❌✅", "47": "❌❌❌❌❌✅❌❌", "48": "✅❌✅✅❌✅❌✅", "49": "✅❌✅✅✅❌✅✅", "50": "❌❌✅✅❌❌✅✅", "51": "❌❌❌❌❌❌✅✅", "52": "❌✅❌❌❌✅❌✅", "53": "✅✅✅❌✅✅✅✅", "54": "✅❌❌❌✅✅❌✅", "55": "✅✅✅❌❌❌✅❌", "56": "✅❌❌❌❌✅✅❌", "57": "✅✅❌✅✅✅✅✅", "58": "❌❌❌✅❌✅✅✅", "59": "❌❌✅❌✅✅❌❌", "60": "❌✅✅✅❌✅✅❌", "61": "❌✅❌✅❌✅✅❌", "62": "❌✅✅❌❌❌✅✅", "63": "✅❌✅❌❌❌❌✅", "64": "❌❌✅✅✅✅❌✅", "65": "❌✅❌❌✅✅❌✅", "66": "✅❌✅✅✅❌❌❌", "67": "❌❌❌✅❌✅✅❌", "68": "❌✅✅✅❌❌✅✅", "69": "✅❌❌❌✅✅✅❌", "70": "✅✅✅❌✅✅❌✅", "71": "❌✅✅❌❌❌✅✅", "72": "❌❌✅❌❌✅❌✅", "73": "❌❌❌✅❌✅✅✅", "74": "❌❌✅✅✅✅✅✅", "75": "❌✅❌✅✅✅✅✅", "76": "❌❌❌✅❌❌✅❌", "77": "✅✅✅❌✅✅❌❌", "78": "✅❌✅✅✅❌❌✅", "79": "❌✅✅✅✅❌✅✅", "80": "✅❌✅✅✅✅❌✅", "81": "✅✅✅✅✅❌✅✅", "82": "❌❌✅❌❌✅❌✅", "83": "✅✅❌❌✅❌❌✅", "84": "❌✅✅✅❌✅✅✅", "85": "❌✅❌✅❌❌❌✅", "86": "✅❌✅❌✅✅❌❌", "87": "✅✅✅✅❌✅✅✅", "88": "❌❌✅✅✅❌✅❌", "89": "❌✅✅✅✅✅❌❌", "90": "✅❌✅❌❌✅✅✅", "91": "✅❌✅❌✅✅✅✅", "92": "✅✅❌✅✅✅✅❌", "93": "✅❌✅✅✅❌✅✅", "94": "❌✅❌✅❌✅✅❌", "95": "❌❌✅✅✅❌❌❌", "96": "❌✅✅✅✅✅❌❌", "97": "✅✅✅✅✅❌✅✅", "98": "✅❌✅✅✅✅❌✅", "99": "✅❌❌❌✅✅✅❌" };
+const coldPatterns = ["❌❌✅❌✅❌✅❌", "✅❌❌❌❌✅✅✅", "✅❌✅✅✅✅✅❌", "✅✅❌❌❌✅❌❌", "✅✅✅❌✅❌✅✅", "❌❌❌❌❌❌✅✅", "❌❌❌✅✅✅❌❌", "❌❌✅❌❌❌❌❌"];
+
+let rawInputs = JSON.parse(localStorage.getItem('rawInputs')) || [];
+let activeTracks = JSON.parse(localStorage.getItem('activeTracks')) || [];
+let historyLog = JSON.parse(localStorage.getItem('historyLog')) || [];
+let lockedTrackId = localStorage.getItem('lockedTrackId') || null;
+let cardModePrefs = JSON.parse(localStorage.getItem('cardModePrefs')) || {};
+
+// ON/OFF State
+let isAutoLockOn = JSON.parse(localStorage.getItem('isAutoLockOn')) || false;
+
+function saveData() { 
+    localStorage.setItem('rawInputs', JSON.stringify(rawInputs)); 
+    localStorage.setItem('activeTracks', JSON.stringify(activeTracks)); 
+    localStorage.setItem('historyLog', JSON.stringify(historyLog)); 
+    localStorage.setItem('lockedTrackId', lockedTrackId); 
+    localStorage.setItem('cardModePrefs', JSON.stringify(cardModePrefs));
+    localStorage.setItem('isAutoLockOn', isAutoLockOn);
+}
+
+// ခလုတ်နှိပ်လျှင် အလုပ်လုပ်မည့် Function
+function toggleLockMode() {
+    isAutoLockOn = !isAutoLockOn;
+    if (!isAutoLockOn) lockedTrackId = null;
+    saveData();
+    renderUI();
+}
+
+function getVotePrediction() {
+    let bVotes = 0, sVotes = 0;
+    activeTracks.forEach(t => {
+        let move = t.pattern[t.results.length];
+        let ana = (analysisPatterns[t.digit] && analysisPatterns[t.digit][t.results.length]) ? analysisPatterns[t.digit][t.results.length] : null;
+        let weight = (ana === '✅') ? 1.5 : 1;
+        if(move === "B") bVotes += weight; else if(move === "S") sVotes += weight;
+    });
+    if (bVotes === sVotes) return "-";
+    return bVotes > sVotes ? "B" : "S";
+}
+
+function findOppositeMatch(resArr) {
+    if (resArr.length < 3) return null;
+    const path = resArr.slice(0, 3).join('');
+    return coldPatterns.find(p => {
+        let oppStart = p.substring(0, 3).replace(/✅/g, 'T').replace(/❌/g, '✅').replace(/T/g, '❌');
+        return path === oppStart;
+    });
+}
+
+function handleInput(num) {
+    const bs = num >= 5 ? "B" : "S";
+    const currentVote = getVotePrediction();
+
+    for (let i = activeTracks.length - 1; i >= 0; i--) {
+        let t = activeTracks[i];
+        if (t.results.length < 8) {
+            let actualRes = (bs === t.pattern[t.results.length] ? "✅" : "❌");
+            const match = findOppositeMatch(t.results);
+            if (match && !t.coldPatternDone) {
+                if (match[t.results.length] === actualRes) t.coldPatternDone = true;
+            }
+            let voteRes = (currentVote === "-") ? "-" : (currentVote === bs ? `${currentVote} ✅` : `${currentVote} ❌`);
+            t.lastVoteDisplay = voteRes;
+            t.results.push(actualRes);
+            if (t.results.length === 8) {
+                historyLog.unshift({...t});
+                activeTracks.splice(i, 1);
+                if (t.id == lockedTrackId) lockedTrackId = null;
+            }
+        }
+    }
+
+    let lockCreated = false;
+    // System ON မှသာ Lock Logic အလုပ်လုပ်မည်
+    if (isAutoLockOn && lockedTrackId) {
+        let locked = activeTracks.find(t => t.id == lockedTrackId);
+        if (locked && (locked.results[locked.results.length-1] === "✅")) {
+            const p1 = rawInputs[rawInputs.length - 1];
+            lockedTrackId = null; 
+            createTrack(p1, num, true); 
+            lockCreated = true;
+        }
+    }
+    
+    if (rawInputs.length > 0 && !lockCreated) {
+        createTrack(rawInputs[rawInputs.length - 1], num, false);
+    }
+    
+    rawInputs.push(num);
+    saveData(); 
+    renderUI();
+}
+
+function createTrack(n1, n2, isLock) {
+    const cat = n1.toString() + n2.toString();
+    if (myPatterns[cat]) {
+        let savedMode = cardModePrefs[cat] || 'LIVE';
+        let newT = { id: Date.now() + Math.random(), digit: cat, pattern: myPatterns[cat], results: [], wasLocked: isLock, refMode: savedMode, lastVoteDisplay: "-", coldPatternDone: false };
+        activeTracks.push(newT); 
+        if (isAutoLockOn && (isLock || !lockedTrackId)) lockedTrackId = newT.id;
+    }
+}
+
+function switchCardRef(trackId) {
+    let t = activeTracks.find(x => x.id == trackId);
+    if(t) {
+        t.refMode = (t.refMode === 'ANALYSIS') ? 'LIVE' : 'ANALYSIS';
+        cardModePrefs[t.digit] = t.refMode;
+        saveData(); renderUI();
+    }
+}
+
+function renderUI() {
+    let bVotes = 0, sVotes = 0;
+    activeTracks.forEach(t => {
+        let move = t.pattern[t.results.length];
+        let ana = (analysisPatterns[t.digit] && analysisPatterns[t.digit][t.results.length]) ? analysisPatterns[t.digit][t.results.length] : null;
+        let weight = (ana === '✅') ? 1.5 : 1;
+        if(move === "B") bVotes += weight; else if(move === "S") sVotes += weight;
+    });
+    let total = bVotes + sVotes;
+    let bPer = total > 0 ? Math.round((bVotes/total)*100) : 50;
+    let sPer = total > 0 ? Math.round((sVotes/total)*100) : 50;
+    document.getElementById('brB').style.width = bPer + '%';
+    document.getElementById('brS').style.width = sPer + '%';
+    document.getElementById('lbB').innerText = `B: ${bPer}%`;
+    document.getElementById('lbS').innerText = `S: ${sPer}%`;
+
+    // Lock Toggle Button UI Update
+    const btn = document.getElementById('lockToggleBtn');
+    btn.innerText = isAutoLockOn ? "AUTO-LOCK: ON" : "AUTO-LOCK: OFF";
+    if(isAutoLockOn) btn.classList.add('active'); else btn.classList.remove('active');
+
+    const locked = activeTracks.find(t => t.id == lockedTrackId);
+    const stepIdx = locked ? locked.results.length : -1;
+    let nextBS = (locked && locked.pattern[stepIdx]) ? locked.pattern[stepIdx] : "-";
+    
+    // Global Blink Flag - တစ်ခုထက်ပိုမပြရန်
+    let globalBlinkUsed = false;
+
+    // Step Grid ထဲမှ Blink logic
+    for(let i=0; i<8; i++) {
+        let el = document.getElementById(`step-${i}`);
+        let res = locked ? locked.results[i] : "";
+        el.style.background = res==='✅'?'var(--green)':(res==='❌'?'var(--red)':'#111');
+        el.innerText = res || (i+1);
+        el.classList.remove('blink-active');
+
+        if (!globalBlinkUsed && locked && locked.results.length >= 3 && !locked.coldPatternDone) {
+            const match = findOppositeMatch(locked.results);
+            if (match && i === locked.results.length) {
+                el.classList.add('blink-active');
+                el.innerHTML = `<b>${match[i]}</b>`; 
+                globalBlinkUsed = true; 
+            }
+        }
+    }
+    
+    document.getElementById('predDisplay').innerText = nextBS;
+    document.getElementById('predDisplay').style.color = nextBS === "B" ? "var(--blue)" : (nextBS === "S" ? "var(--red)" : "var(--silver)");
+    document.getElementById('statusLabel').innerText = locked ? `LOCKED: ${locked.digit}` : "WAITING...";
+    
+    const last5 = rawInputs.slice(-5);
+    document.getElementById('recentDisplay').innerHTML = last5.map((v, i) => `<div style="width:24px; height:24px; border-radius:50%; background:${i===last5.length-1?'var(--mint)':'#21262d'}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; border:1px solid var(--border);">${v}</div>`).join('');
+    
+    // Live Monitor
+    document.getElementById('liveMonitor').innerHTML = activeTracks.map(t => {
+        const isLock = t.id == lockedTrackId;
+        const currentPos = t.results.length;
+        const currentRefMode = t.refMode || 'LIVE';
+        let normalMove = t.pattern[currentPos] || '-'; 
+        let coldSymbol = ""; 
+        let cardIsBlinking = false;
+
+        // တခြားကဒ် Blink မဖြစ်သေးမှသာ Blink ခွင့်ပေးမည်
+        if (!globalBlinkUsed && currentPos >= 3 && !t.coldPatternDone) {
+            const match = findOppositeMatch(t.results);
+            if (match && match[currentPos]) {
+                cardIsBlinking = true;
+                globalBlinkUsed = true; 
+                coldSymbol = match[currentPos]; 
+            }
+        }
+
+        let refRes = []; let refName = "NONE";
+        if (currentRefMode === 'ANALYSIS') {
+            let rawPat = analysisPatterns[t.digit];
+            refRes = rawPat ? rawPat.split('') : []; refName = "A";
+        } else {
+            const liveMatches = activeTracks.filter(x => x.id !== t.id && x.digit[0] === t.digit[0] && x.results.length > t.results.length);
+            if (liveMatches.length > 0) {
+                let src = liveMatches.sort((a,b) => a.results.length - b.results.length)[0];
+                refRes = src.results; refName = src.digit + "(L)";
+            } else {
+                const logMatch = historyLog.find(x => x.digit[0] === t.digit[0]);
+                if (logMatch) { refRes = logMatch.results; refName = logMatch.digit + "(H)"; }
+            }
+        }
+
+        let layers = '';
+        let maxDisplay = Math.max(currentPos, refRes.length);
+        for(let pos=0; pos < maxDisplay; pos++) {
+            const cR = t.results[pos], rR = refRes[pos];
+            let dotCol = (cR && rR) ? (cR === rR ? 'var(--mint)' : 'var(--red)') : 'transparent';
+            layers += `<div class="cell-stack"><div class="comp-dot" style="background:${dotCol};"></div><div class="res-cell" style="color:${cR==='✅'?'var(--mint)':'var(--red)'}">${cR||''}</div><div class="res-cell" style="opacity:0.3; font-size:9px; color:${rR==='✅'?'var(--mint)':'var(--red)'}">${rR||''}</div></div>`;
+        }
+
+        return `<div class="live-card ${isLock?'current-lock':''} ${currentRefMode==='ANALYSIS'?'analysis-mode':''}" onclick="if(isAutoLockOn){lockedTrackId=${t.id};renderUI();}">
+            <button class="ref-toggle ${currentRefMode==='ANALYSIS'?'active':''}" onclick="event.stopPropagation();switchCardRef(${t.id})">${currentRefMode==='ANALYSIS'?'Ref: A':'Ref: L'}</button>
+            <div style="position: absolute; top: 5px; right: 8px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px; font-weight: 900; color:${normalMove==='B'?'var(--blue)':(normalMove==='S'?'var(--red)':'var(--silver)')};">${normalMove}</span>
+                ${cardIsBlinking ? `<span class="blink-active" style="font-size: 16px; padding: 2px 6px; color:#000;">${coldSymbol}</span>` : ''}
+            </div>
+            <div style="font-size:11px; margin-bottom:4px;"><span>${isLock?'🔒':'A'} ${t.digit} <small>Step ${currentPos+1}</small></span></div>
+            <div class="three-layer-monitor">${layers||'...'}</div>
+            <div style="font-size:8px; color:var(--silver); text-align:right; margin-top:4px;">Ref: ${refName}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('historyBody').innerHTML = historyLog.slice(0, 30).map((h, idx) => {
+        const isWin = h.results.includes('✅');
+        return `<tr><td>${historyLog.length - idx}</td><td>${h.wasLocked?'🔒':'🔓'} ${h.digit}</td><td style="color:${h.lastVoteDisplay.includes('✅')?'var(--mint)':'var(--red)'}; font-weight:bold;">${h.lastVoteDisplay}</td><td>${h.results.join('')}</td><td style="color:${isWin?'var(--mint)':'var(--red)'}">${isWin?'WIN':'LOSS'}</td></tr>`;
+    }).join('');
+}
+
+function undoInput() { if(rawInputs.length>0){rawInputs.pop(); activeTracks.forEach(t=>{t.results.pop(); t.coldPatternDone=false;}); saveData(); renderUI();} }
+function resetData() { if(confirm("RESET ALL?")){localStorage.clear(); location.reload();} }
+function copyHistory() { let txt = historyLog.map((h,i)=> `${h.digit} | Vote: ${h.lastVoteDisplay} | ${h.results.join('')}`).join('\n'); navigator.clipboard.writeText(txt); alert("Copied!"); }
+renderUI();
+</script>
+</body>
+</html>
