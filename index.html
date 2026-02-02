@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>VIP STEALTH PRO - FINAL UPDATED</title>
+<title>VIP STEALTH PRO - COLD TRACKER UPDATED</title>
 <style>
 :root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9; --blue: #58a6ff; --gold: #ffd700; --silver: #8b949e; --green: #238636; --red: #f85149; --mint: #2ecc71; }
 body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 8px; margin: 0; overflow-x: hidden; }
@@ -133,6 +133,16 @@ function getVotePrediction() {
     return bVotes > sVotes ? "B" : "S";
 }
 
+// Logic helper to find if path is opposite of pattern start
+function findOppositeMatch(resArr) {
+    if (resArr.length < 3) return null;
+    const path = resArr.slice(0, 3).join('');
+    return coldPatterns.find(p => {
+        let oppStart = p.substring(0, 3).replace(/✅/g, 'T').replace(/❌/g, '✅').replace(/T/g, '❌');
+        return path === oppStart;
+    });
+}
+
 function handleInput(num) {
     const bs = num >= 5 ? "B" : "S";
     const currentVote = getVotePrediction();
@@ -142,12 +152,12 @@ function handleInput(num) {
         if (t.results.length < 8) {
             let actualRes = (bs === t.pattern[t.results.length] ? "✅" : "❌");
             
-            // --- Logic အသစ်: Cold Pattern တကယ်ထပ်တူကျခြင်း ရှိ/မရှိ စစ်ဆေးခြင်း ---
-            if (t.results.length >= 3 && !t.coldPatternDone) {
-                const path = t.results.join('');
-                const match = coldPatterns.find(p => p.startsWith(path));
-                if (match && match[t.results.length] === actualRes) {
-                    t.coldPatternDone = true; // Pattern အတိုင်း တကယ်ဖြစ်သွားရင် Done ဖြစ်သွားမယ် (Blink ရပ်မယ်)
+            // Cold Pattern Logic Update
+            const match = findOppositeMatch(t.results);
+            if (match && !t.coldPatternDone) {
+                // If it finally matches the pattern symbol, it's a win, so reset/stop blink
+                if (match[t.results.length] === actualRes) {
+                    t.coldPatternDone = true;
                 }
             }
 
@@ -195,7 +205,7 @@ function createTrack(n1, n2, isLock) {
             wasLocked: isLock, 
             refMode: savedMode, 
             lastVoteDisplay: "-",
-            coldPatternDone: false // Pattern ပြီးမြောက်မှု အခြေအနေ
+            coldPatternDone: false 
         };
         activeTracks.push(newT); 
         if (isLock || !lockedTrackId) lockedTrackId = newT.id;
@@ -241,10 +251,8 @@ function renderUI() {
         el.innerText = res || (i+1);
         el.classList.remove('blink-active');
 
-        // Blink Logic: Pattern မပြီးသေးသရွေ့ (Done မဖြစ်သေးသရွေ့) သာ Blink ပြမည်
         if (!anyBlinkActive && locked && locked.results.length >= 3 && !locked.coldPatternDone) {
-            const path = locked.results.join('');
-            const match = coldPatterns.find(p => p.startsWith(path));
+            const match = findOppositeMatch(locked.results);
             if (match && i === locked.results.length) {
                 el.classList.add('blink-active');
                 el.innerHTML = `<b>${match[i]}</b>`; 
@@ -269,10 +277,8 @@ function renderUI() {
         let coldSymbol = ""; 
         let cardIsBlinking = false;
 
-        // Card Blink Logic: Pattern မပြီးသေးသရွေ့သာ Blink ပြမည်
         if (!anyBlinkActive && currentPos >= 3 && !t.coldPatternDone) {
-            const path = t.results.join('');
-            const match = coldPatterns.find(p => p.startsWith(path));
+            const match = findOppositeMatch(t.results);
             if (match && match[currentPos]) {
                 cardIsBlinking = true;
                 anyBlinkActive = true; 
