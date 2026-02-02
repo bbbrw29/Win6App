@@ -133,7 +133,6 @@ function getVotePrediction() {
     return bVotes > sVotes ? "B" : "S";
 }
 
-// Logic helper to find if path is opposite of pattern start
 function findOppositeMatch(resArr) {
     if (resArr.length < 3) return null;
     const path = resArr.slice(0, 3).join('');
@@ -152,10 +151,8 @@ function handleInput(num) {
         if (t.results.length < 8) {
             let actualRes = (bs === t.pattern[t.results.length] ? "✅" : "❌");
             
-            // Cold Pattern Logic Update
             const match = findOppositeMatch(t.results);
             if (match && !t.coldPatternDone) {
-                // If it finally matches the pattern symbol, it's a win, so reset/stop blink
                 if (match[t.results.length] === actualRes) {
                     t.coldPatternDone = true;
                 }
@@ -177,10 +174,16 @@ function handleInput(num) {
     if (lockedTrackId) {
         let locked = activeTracks.find(t => t.id == lockedTrackId);
         if (locked && (locked.results[locked.results.length-1] === "✅")) {
-            const p1 = rawInputs[rawInputs.length - 1];
-            lockedTrackId = null; 
-            createTrack(p1, num, true); 
-            lockCreated = true;
+            // Cold Tracking Persistent Logic
+            const match = findOppositeMatch(locked.results);
+            const isColdPersistent = (locked.refMode === 'COLD') && match && !locked.coldPatternDone;
+            
+            if (!isColdPersistent) {
+                const p1 = rawInputs[rawInputs.length - 1];
+                lockedTrackId = null; 
+                createTrack(p1, num, true); 
+                lockCreated = true;
+            }
         }
     }
     
@@ -215,7 +218,9 @@ function createTrack(n1, n2, isLock) {
 function switchCardRef(trackId) {
     let t = activeTracks.find(x => x.id == trackId);
     if(t) {
-        t.refMode = (t.refMode === 'ANALYSIS') ? 'LIVE' : 'ANALYSIS';
+        const modes = ['LIVE', 'ANALYSIS', 'COLD', 'NONE'];
+        let idx = modes.indexOf(t.refMode);
+        t.refMode = modes[(idx + 1) % modes.length];
         cardModePrefs[t.digit] = t.refMode;
         saveData(); renderUI();
     }
@@ -243,7 +248,6 @@ function renderUI() {
     
     let anyBlinkActive = false;
 
-    // Step Grid (Top Display)
     for(let i=0; i<8; i++) {
         let el = document.getElementById(`step-${i}`);
         let res = locked ? locked.results[i] : "";
@@ -251,7 +255,7 @@ function renderUI() {
         el.innerText = res || (i+1);
         el.classList.remove('blink-active');
 
-        if (!anyBlinkActive && locked && locked.results.length >= 3 && !locked.coldPatternDone) {
+        if (locked && (locked.refMode === 'COLD' || locked.refMode === 'LIVE') && locked.results.length >= 3 && !locked.coldPatternDone) {
             const match = findOppositeMatch(locked.results);
             if (match && i === locked.results.length) {
                 el.classList.add('blink-active');
@@ -263,61 +267,49 @@ function renderUI() {
     
     document.getElementById('predDisplay').innerText = nextBS;
     document.getElementById('predDisplay').style.color = nextBS === "B" ? "var(--blue)" : (nextBS === "S" ? "var(--red)" : "var(--silver)");
-    document.getElementById('statusLabel').innerText = locked ? `LOCKED: ${locked.digit}` : "WAITING...";
+    document.getElementById('statusLabel').innerText = locked ? `LOCKED: ${locked.digit} (${locked.refMode})` : "WAITING...";
     
     const last5 = rawInputs.slice(-5);
     document.getElementById('recentDisplay').innerHTML = last5.map((v, i) => `<div style="width:24px; height:24px; border-radius:50%; background:${i===last5.length-1?'var(--mint)':'#21262d'}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; border:1px solid var(--border);">${v}</div>`).join('');
     
-    // Live Monitor
     document.getElementById('liveMonitor').innerHTML = activeTracks.map(t => {
         const isLock = t.id == lockedTrackId;
         const currentPos = t.results.length;
         const currentRefMode = t.refMode || 'LIVE';
         let normalMove = t.pattern[currentPos] || '-'; 
-        let coldSymbol = ""; 
-        let cardIsBlinking = false;
+        let coldSymbol = ""; let cardIsBlinking = false;
 
-        if (!anyBlinkActive && currentPos >= 3 && !t.coldPatternDone) {
-            const match = findOppositeMatch(t.results);
-            if (match && match[currentPos]) {
-                cardIsBlinking = true;
-                anyBlinkActive = true; 
-                coldSymbol = match[currentPos]; 
-            }
+        const match = findOppositeMatch(t.results);
+        if ((currentRefMode === 'COLD' || currentRefMode === 'LIVE') && match && currentPos >= 3 && !t.coldPatternDone) {
+            cardIsBlinking = true; coldSymbol = match[currentPos]; 
         }
 
         let refRes = []; let refName = "NONE";
         if (currentRefMode === 'ANALYSIS') {
-            let rawPat = analysisPatterns[t.digit];
-            refRes = rawPat ? rawPat.split('') : []; refName = "A";
-        } else {
+            refRes = (analysisPatterns[t.digit] || "").split(''); refName = "A";
+        } else if (currentRefMode === 'LIVE') {
             const liveMatches = activeTracks.filter(x => x.id !== t.id && x.digit[0] === t.digit[0] && x.results.length > t.results.length);
             if (liveMatches.length > 0) {
                 let src = liveMatches.sort((a,b) => a.results.length - b.results.length)[0];
                 refRes = src.results; refName = src.digit + "(L)";
-            } else {
-                const logMatch = historyLog.find(x => x.digit[0] === t.digit[0]);
-                if (logMatch) { refRes = logMatch.results; refName = logMatch.digit + "(H)"; }
             }
         }
 
         let layers = '';
-        let maxDisplay = Math.max(currentPos, refRes.length);
-        for(let pos=0; pos < maxDisplay; pos++) {
+        for(let pos=0; pos < 8; pos++) {
             const cR = t.results[pos], rR = refRes[pos];
             let dotCol = (cR && rR) ? (cR === rR ? 'var(--mint)' : 'var(--red)') : 'transparent';
-            layers += `<div class="cell-stack"><div class="comp-dot" style="background:${dotCol};"></div><div class="res-cell" style="color:${cR==='✅'?'var(--mint)':'var(--red)'}">${cR||''}</div><div class="res-cell" style="opacity:0.3; font-size:9px; color:${rR==='✅'?'var(--mint)':'var(--red)'}">${rR||''}</div></div>`;
+            layers += `<div class="cell-stack"><div class="comp-dot" style="background:${dotCol};"></div><div class="res-cell" style="color:${cR==='✅'?'var(--mint)':'var(--red)'}">${cR||''}</div></div>`;
         }
 
         return `<div class="live-card ${isLock?'current-lock':''} ${currentRefMode==='ANALYSIS'?'analysis-mode':''}" onclick="lockedTrackId=${t.id};renderUI();">
-            <button class="ref-toggle ${currentRefMode==='ANALYSIS'?'active':''}" onclick="event.stopPropagation();switchCardRef(${t.id})">${currentRefMode==='ANALYSIS'?'Ref: A':'Ref: L'}</button>
+            <button class="ref-toggle" onclick="event.stopPropagation();switchCardRef(${t.id})">Ref: ${currentRefMode[0]}</button>
             <div style="position: absolute; top: 5px; right: 8px; display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 20px; font-weight: 900; color:${normalMove==='B'?'var(--blue)':(normalMove==='S'?'var(--red)':'var(--silver)')};">${normalMove}</span>
                 ${cardIsBlinking ? `<span class="blink-active" style="font-size: 16px; padding: 2px 6px; color:#000;">${coldSymbol}</span>` : ''}
             </div>
             <div style="font-size:11px; margin-bottom:4px;"><span>${isLock?'🔒':'A'} ${t.digit} <small>Step ${currentPos+1}</small></span></div>
-            <div class="three-layer-monitor">${layers||'...'}</div>
-            <div style="font-size:8px; color:var(--silver); text-align:right; margin-top:4px;">Ref: ${refName}</div>
+            <div class="three-layer-monitor">${layers}</div>
         </div>`;
     }).join('');
 
