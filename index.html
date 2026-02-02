@@ -16,7 +16,6 @@ h4 { margin: 0 0 5px 0; color: var(--gold); border-bottom: 1px solid var(--borde
     50% { opacity: 0.5; transform: scale(1.1); box-shadow: 0 0 10px var(--mint); }
     100% { opacity: 1; transform: scale(1); }
 }
-/* Blink style ကို သင်အလိုရှိတဲ့ Symbol ✅/❌ အတွက်ပဲ သုံးပါမယ် */
 .blink-active { animation: coldBlink 0.6s infinite !important; background: rgba(46, 204, 113, 0.2) !important; border: 1px solid var(--mint) !important; border-radius: 4px; }
 
 .vote-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
@@ -141,9 +140,20 @@ function handleInput(num) {
     for (let i = activeTracks.length - 1; i >= 0; i--) {
         let t = activeTracks[i];
         if (t.results.length < 8) {
+            let actualRes = (bs === t.pattern[t.results.length] ? "✅" : "❌");
+            
+            // --- Logic အသစ်: Cold Pattern တကယ်ထပ်တူကျခြင်း ရှိ/မရှိ စစ်ဆေးခြင်း ---
+            if (t.results.length >= 3 && !t.coldPatternDone) {
+                const path = t.results.join('');
+                const match = coldPatterns.find(p => p.startsWith(path));
+                if (match && match[t.results.length] === actualRes) {
+                    t.coldPatternDone = true; // Pattern အတိုင်း တကယ်ဖြစ်သွားရင် Done ဖြစ်သွားမယ် (Blink ရပ်မယ်)
+                }
+            }
+
             let voteRes = (currentVote === "-") ? "-" : (currentVote === bs ? `${currentVote} ✅` : `${currentVote} ❌`);
             t.lastVoteDisplay = voteRes;
-            t.results.push(bs === t.pattern[t.results.length] ? "✅" : "❌");
+            t.results.push(actualRes);
             
             if (t.results.length === 8) {
                 historyLog.unshift({...t});
@@ -177,7 +187,16 @@ function createTrack(n1, n2, isLock) {
     const cat = n1.toString() + n2.toString();
     if (myPatterns[cat]) {
         let savedMode = cardModePrefs[cat] || 'LIVE';
-        let newT = { id: Date.now() + Math.random(), digit: cat, pattern: myPatterns[cat], results: [], wasLocked: isLock, refMode: savedMode, lastVoteDisplay: "-" };
+        let newT = { 
+            id: Date.now() + Math.random(), 
+            digit: cat, 
+            pattern: myPatterns[cat], 
+            results: [], 
+            wasLocked: isLock, 
+            refMode: savedMode, 
+            lastVoteDisplay: "-",
+            coldPatternDone: false // Pattern ပြီးမြောက်မှု အခြေအနေ
+        };
         activeTracks.push(newT); 
         if (isLock || !lockedTrackId) lockedTrackId = newT.id;
     }
@@ -210,8 +229,6 @@ function renderUI() {
 
     const locked = activeTracks.find(t => t.id == lockedTrackId);
     const stepIdx = locked ? locked.results.length : -1;
-    
-    // Normal Prediction ကိုပဲ အမြဲယူပါမယ် (Cold ကြောင့် မပြောင်းပါ)
     let nextBS = (locked && locked.pattern[stepIdx]) ? locked.pattern[stepIdx] : "-";
     
     let anyBlinkActive = false;
@@ -224,8 +241,8 @@ function renderUI() {
         el.innerText = res || (i+1);
         el.classList.remove('blink-active');
 
-        // Blink ဖြစ်ရင် ✅/❌ Symbol ကိုပဲ ပြပါမယ်
-        if (!anyBlinkActive && locked && locked.results.length >= 3) {
+        // Blink Logic: Pattern မပြီးသေးသရွေ့ (Done မဖြစ်သေးသရွေ့) သာ Blink ပြမည်
+        if (!anyBlinkActive && locked && locked.results.length >= 3 && !locked.coldPatternDone) {
             const path = locked.results.join('');
             const match = coldPatterns.find(p => p.startsWith(path));
             if (match && i === locked.results.length) {
@@ -252,8 +269,8 @@ function renderUI() {
         let coldSymbol = ""; 
         let cardIsBlinking = false;
 
-        // Cold Pattern Logic (Blink for Symbol ONLY)
-        if (!anyBlinkActive && currentPos >= 3) {
+        // Card Blink Logic: Pattern မပြီးသေးသရွေ့သာ Blink ပြမည်
+        if (!anyBlinkActive && currentPos >= 3 && !t.coldPatternDone) {
             const path = t.results.join('');
             const match = coldPatterns.find(p => p.startsWith(path));
             if (match && match[currentPos]) {
@@ -263,7 +280,6 @@ function renderUI() {
             }
         }
 
-        // Reference Logic
         let refRes = []; let refName = "NONE";
         if (currentRefMode === 'ANALYSIS') {
             let rawPat = analysisPatterns[t.digit];
@@ -289,15 +305,10 @@ function renderUI() {
 
         return `<div class="live-card ${isLock?'current-lock':''} ${currentRefMode==='ANALYSIS'?'analysis-mode':''}" onclick="lockedTrackId=${t.id};renderUI();">
             <button class="ref-toggle ${currentRefMode==='ANALYSIS'?'active':''}" onclick="event.stopPropagation();switchCardRef(${t.id})">${currentRefMode==='ANALYSIS'?'Ref: A':'Ref: L'}</button>
-            
             <div style="position: absolute; top: 5px; right: 8px; display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 20px; font-weight: 900; color:${normalMove==='B'?'var(--blue)':(normalMove==='S'?'var(--red)':'var(--silver)')};">
-                    ${normalMove}
-                </span>
-                
+                <span style="font-size: 20px; font-weight: 900; color:${normalMove==='B'?'var(--blue)':(normalMove==='S'?'var(--red)':'var(--silver)')};">${normalMove}</span>
                 ${cardIsBlinking ? `<span class="blink-active" style="font-size: 16px; padding: 2px 6px; color:#000;">${coldSymbol}</span>` : ''}
             </div>
-
             <div style="font-size:11px; margin-bottom:4px;"><span>${isLock?'🔒':'A'} ${t.digit} <small>Step ${currentPos+1}</small></span></div>
             <div class="three-layer-monitor">${layers||'...'}</div>
             <div style="font-size:8px; color:var(--silver); text-align:right; margin-top:4px;">Ref: ${refName}</div>
@@ -310,7 +321,7 @@ function renderUI() {
     }).join('');
 }
 
-function undoInput() { if(rawInputs.length>0){rawInputs.pop(); activeTracks.forEach(t=>t.results.pop()); saveData(); renderUI();} }
+function undoInput() { if(rawInputs.length>0){rawInputs.pop(); activeTracks.forEach(t=>{t.results.pop(); t.coldPatternDone=false;}); saveData(); renderUI();} }
 function resetData() { if(confirm("RESET ALL?")){localStorage.clear(); location.reload();} }
 function copyHistory() { let txt = historyLog.map((h,i)=> `${h.digit} | Vote: ${h.lastVoteDisplay} | ${h.results.join('')}`).join('\n'); navigator.clipboard.writeText(txt); alert("Copied!"); }
 renderUI();
